@@ -1,4 +1,4 @@
-from Mapping import Bowtie2
+from MapDNA import Bowtie2
 from RemoveAdapter import AdapterRemoval
 from stepbase import Configure,Schedule
 
