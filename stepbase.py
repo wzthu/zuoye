@@ -306,6 +306,8 @@ class StepBase:
             if self.__multiRun :
                 self._multiRun()
             else:
+                if self.__inputSize == -1:
+                    raise Exception('call self._setInputSize(your sample size) in impInitIO')
                 for i in range(self.__inputSize):
                     self._singleRun(i)
             Configure.setTmpDir(tmpdir)
@@ -446,38 +448,12 @@ class StepBase:
     def getInput(self, inputName):
         return self.inputs[inputName]
     
-    def getInputList(self, inputName):
-        """
-        the wraper of getInput(). if the input is the single string,
-        it will wrap it will list. Otherwise it will return the input as it is.
-        """
-        if isinstance(self.inputs[inputName],list):
-            return self.inputs[inputName]
-        else:
-            return [self.inputs[inputName]]
+
 
     def setInput(self, inputName, inputValue):
         self.inputs[inputName] = inputValue
 
-    def setInputDirOrFile(self, inputName, inputValue):
-        """
-        when input parameter is a list or single string,
-        use this parameter to generate all of the file paths under the path or
-        just use the single string path directly
-        inputName: the key name of inputs
-        inputValue: string of directory or file path, or list of file paths  
-        """
-        if inputValue is None:
-            self.inputs[inputName] = None
-        else:
-            if isinstance(inputValue,list):
-                self.inputs[inputName] = inputValue
-            else:
-                if os.path.isdir(inputValue):
-                    filelist = os.listdir(inputValue)
-                    self.inputs[inputName] = [os.path.join(inputValue,s) for s in filelist ]
-                else:
-                    self.inputs[inputName] = inputValue            
+    
     
     def getOutputs(self,):
         return list(self.outputs.keys())
@@ -602,118 +578,38 @@ class Step(StepBase):
     def getBoolParamCmd(self,cmdName,paramName):
         return cmdName if self.getParam(paramName) else ''
     
-    
-        
-"""        
-    def initOutputPrefix1To1(self,outputName,outputPrefix,outputSuffix, inputName):
-        fastqInput1List = self.getInput('inputName')
-        if fastqInput1List is None:
-            self.setOutput(outputName, None)                       
+    def setInputDirOrFile(self, inputName, inputValue):
+        """
+        when input parameter is a list or single string,
+        use this parameter to generate all of the file paths under the path or
+        just use the single string path directly
+        inputName: the key name of inputs
+        inputValue: string of directory or file path, or list of file paths  
+        """
+        if inputValue is None:
+            self.inputs[inputName] = None
         else:
-            self._setInputSize(len(fastqInput1List))
-            outputList = []
-            if outputPrefix is None:
-                for i in range(len(fastqInput1List)):
-                    filePrefix = os.path.split(fastqInput1List[i])[-1].split('.')[0]                                      
-                    anOutPut = filePrefix + ('.%d.%s'%(i,outputSuffix))
-                    outputList.append(anOutPut)            
-                self.setOutput(outputName, Configure.getTmpPath(outputList))                
+            if isinstance(inputValue,list):
+                self.inputs[inputName] = inputValue
             else:
-                for i in range(len(fastqInput1List)):
-                    outputList.append(outputPrefix + ('.%d.'%(i,outputSuffix)))
-        
-    def initOutputPrefix2To1(self,outputName, outputPrefix, outputSuffix, inputName1, inputName2):
-        fastqInput1List = self.getInput('inputName1')
-        fastqInput2List = self.getInput('inputName2')
-        if fastqInput1List is None or fastqInput2List is None:
-            self.setOutput(outputName, None)                       
+                if os.path.isdir(inputValue):
+                    filelist = os.listdir(inputValue)
+                    filelist.sort()
+                    self.inputs[inputName] = [os.path.join(inputValue,s) for s in filelist ]
+                else:
+                    self.inputs[inputName] = inputValue      
+    
+    def getInputList(self, inputName):
+        """
+        the wraper of getInput(). if the input is the single string,
+        it will wrap it will list. Otherwise it will return the input as it is.
+        """
+        if isinstance(self.inputs[inputName],list):
+            return self.inputs[inputName]
         else:
-            self._setInputSize(len(fastqInput1List))
-            outputList = []
-            if outputPrefix is None:
-                for i in range(len(fastqInput1List)):
-                    filePrefix = self.getMaxFileNamePrefix(fastqInput1List[i],fastqInput2List[i])
-                    if filePrefix == '':
-                        filePrefix = 'sample'                   
-                    anOutPut = filePrefix + ('.%d.%s'%(i,outputSuffix))
-                    outputList.append(anOutPut)            
-                self.setOutput(outputName, Configure.getTmpPath(outputList))                
-            else:
-                for i in range(len(fastqInput1List)):
-                    outputList.append(outputPrefix + ('.%d.'%(i,outputSuffix)))
-    
-"""
-                           
-                 
-         
-"""
-class Bowtie2(BaseStep):
-    def __init__(self,**kwargs):
-        super(Bowtie2, self).__init__(**kwargs)
-        return
-    
-    def call():
+            return [self.inputs[inputName]]
+        
 
-class BaseTest:
-    def __init__(self,):
-        print("BaseTest")
-    def __call__(self, *args):
-        print("BaseTest __call__")
-        self.call()
-        
-    @abstractmethod
-    def call(self, *args):
-        print("call BaseTest")
-        print(args)
-    
-class SubTest(BaseTest):
-    def __init__(self,):
-        print("SubTest")
-    
-    def call(self,a=5):
-        print("call SubTest")
-        
-class SubTest1(BaseTest):
-    def __init__(self,):
-        print("SubTest")
-    
- """   
-
-"""
-        #set all output files
-        fastqInput1List = self.getInput('fastqInput1')
-        fastqInput2List = self.getInput('fastqInput2')
-        if fastqInput1List is None or fastqInput2List is None:
-            self.setOutput('samOutput', None)                       
-            self.setOutput('mapRsOutput',None)            
-        else:
-            self._setInputSize(len(fastqInput1List))
-            samOutput = []
-            if samOutputPrefix is None:
-                for i in range(len(fastqInput1List)):
-                    filePrefix = self.getMaxFileNamePrefix(fastqInput1List[i],fastqInput2List[i])
-                    if filePrefix == '':
-                        filePrefix = 'sample'                   
-                    asamOutput = filePrefix + ('.%d.sam'%(i))
-                    samOutput.append(asamOutput)            
-                self.setOutput('samOutput', Configure.getTmpPath(samOutput))                
-            else:
-                for i in range(len(fastqInput1List)):
-                    samOutput.append(samOutputPrefix + ('.%d.sam'%(i)))
-                           
-            mapRsOutput = []        
-            if mapRsOutputPrefix is None: 
-                for i in range(len(fastqInput1List)):
-                    filePrefix = self.getMaxFileNamePrefix(fastqInput1List[i],fastqInput2List[i])
-                    if filePrefix == '':
-                        filePrefix = 'sample'                   
-                    amapRsOutput = filePrefix + ('.%d.txt'%(i))
-                    mapRsOutput.append(amapRsOutput)            
-                self.setOutput('mapRsOutput', Configure.getTmpPath(mapRsOutput))                
-            else:
-                for i in range(len(fastqInput1List)):
-                    samOutput.append(samOutputPrefix + ('.%d.txt'%(i)))            
-"""   
         
 
         
