@@ -7,7 +7,7 @@ Created on Tue Feb 27 14:05:43 2018
 
 import os
 from hashlib import md5
-from graphmng import GraphAll,GraphATACgl
+from GraphMng import GraphAll,GraphATACgl
 import time
 import subprocess
 
