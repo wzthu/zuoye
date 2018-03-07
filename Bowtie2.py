@@ -5,7 +5,7 @@ Created on Fri Mar  2 16:28:52 2018
 @author: WeiZheng
 """
 
-from stepbase import Step,Configure
+from StepBase import Step,Configure
 import subprocess
 import os
 

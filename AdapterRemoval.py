@@ -6,7 +6,7 @@ Created on Sun Mar  4 13:22:35 2018
 """
 
        
-from stepbase import Step,Configure
+from StepBase import Step,Configure
 import os
 
 class AdapterRemoval(Step):
