@@ -5,7 +5,7 @@ Created on Fri Mar  2 16:28:52 2018
 @author: WeiZheng
 """
 
-from stepbase import Step,Configure
+from StepBase import Step,Configure
 import subprocess
 import os
 
@@ -76,8 +76,8 @@ class Bowtie2(Step):
             self.setInput('bt2IdxFiles', bt2IdxFiles)
 
         # create output file paths and set
-        self.setOutputDir1To1('samOutput', samOutputDir,'bowtie2','sam','fastqInput1') 
-        self.setOutputDir1To1('mapRsOutput',mapRsOutputDir,'result','txt','fastqInput1')
+        self.setOutputDir1To1('samOutput', samOutputDir,None,'sam','fastqInput1') 
+        self.setOutputDir1To1('mapRsOutput',mapRsOutputDir,None,'result.txt','fastqInput1')
         
         # set how many sample are there
         if fastqInput1 is not None:

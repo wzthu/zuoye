@@ -7,7 +7,7 @@ Created on Tue Feb 27 14:05:43 2018
 
 import os
 from hashlib import md5
-from graphmng import GraphAll,GraphATACgl
+from GraphMng import GraphAll,GraphATACgl
 import time
 import subprocess
 
@@ -540,7 +540,8 @@ class Step(StepBase):
         outputName(str): the key name of the file path list to be generate
         outputDir(str or None): the folder of the output file stored, None or string is OK.
                    if None, its value will set globally
-        outputPrefix(str): the prefix name of output file name 
+        outputPrefix(str or None): the prefix name of output file name. 
+                                   if it is None, the prefix of inputName will be use as the templete
         outputSuffix(str): the suffix name of output file name
         inputName(str): the input file paths to be referenced
         it will set paths list of outputDir/outputPrefix.*.outputSuffix like paths for outputName
@@ -551,9 +552,15 @@ class Step(StepBase):
         else:
             if not isinstance(inputList,list):
                 inputList = [inputList]
-            outputList = []            
-            for i in range(len(inputList)):
-                outputList.append(outputPrefix + '.' + str(i) + '.' + outputSuffix)
+            outputList = [] 
+            if outputPrefix is None:
+                fileBasename = [os.path.basename(s) for s in inputList]
+                prefixs = [s.split('.')[0] for s in fileBasename]
+                for i in range(len(inputList)):
+                    outputList.append(prefixs[i] + '.' + outputSuffix)
+            else:
+                for i in range(len(inputList)):
+                    outputList.append(outputPrefix + '.' + str(i) + '.' + outputSuffix)
             if outputDir is None:
                 self.setOutput(outputName,Configure.getTmpPath(outputList))
             else:        
@@ -595,6 +602,9 @@ class Step(StepBase):
                 if os.path.isdir(inputValue):
                     filelist = os.listdir(inputValue)
                     filelist.sort()
+                    suffix = [s.split('.')[-1] for s in filelist]
+                    if len(set(suffix)) != 1:
+                        raise Exception('the suffix of files under path:',inputName,'is not the same, check the file format under the directory')
                     self.inputs[inputName] = [os.path.join(inputValue,s) for s in filelist ]
                 else:
                     self.inputs[inputName] = inputValue      
