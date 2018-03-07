@@ -586,7 +586,7 @@ class Step(StepBase):
                 else:
                     self.setOutput(outputName,Configure.getTmpPath(fileNameForUnsetOutPath))
             else:
-                self.setOutput(outputFilePath)
+                self.setOutput(outputName,outputFilePath)
             
     def callCmdline(self,cmdline,shell = False, stdoutToLog = True):
         if not shell:
