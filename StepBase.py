@@ -261,6 +261,7 @@ class StepBase:
         try:
             self.checkFilePath(checkExist=False)
             Schedule.add(self)
+            print(self.getStepFolderName +'is ready and added to Schedule')
         except Exception:
             pass
         
@@ -565,6 +566,27 @@ class Step(StepBase):
                 self.setOutput(outputName,Configure.getTmpPath(outputList))
             else:        
                 self.setOutput(outputName,[os.path.join(outputDir,s) for s in outputList])
+                
+    def setOutputDirNTo1(self, outputName, outputFilePath, fileNameForUnsetOutPath, inputName):
+        """
+        Use the known N input file paths to generate the one output file.
+        outputName(str): the key name of the file path list to be generate
+        outputFilePath(str or None): the path the output file, None or string is OK.
+                   if None, its value will set globally
+        fileNameForUnsetOutPath(str): the candidate name of output file name when outputFilePath is None. 
+        inputName(str): the input file paths to be referenced        
+        """
+        inputList = self.getInput(inputName)
+        if inputList is None:
+            self.setOutput(outputName, None)
+        else:
+            if outputFilePath is None:
+                if fileNameForUnsetOutPath is None:
+                    raise Exception('fileNameForUnsetOutPath can not be None')
+                else:
+                    self.setOutput(outputName,Configure.getTmpPath(fileNameForUnsetOutPath))
+            else:
+                self.setOutput(outputFilePath)
             
     def callCmdline(self,cmdline,shell = False, stdoutToLog = True):
         if not shell:
