@@ -592,6 +592,7 @@ class Step(StepBase):
             else:
                 if os.path.isdir(inputValue):
                     filelist = os.listdir(inputValue)
+                    filelist.sort()
                     self.inputs[inputName] = [os.path.join(inputValue,s) for s in filelist ]
                 else:
                     self.inputs[inputName] = inputValue      
