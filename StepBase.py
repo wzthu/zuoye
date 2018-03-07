@@ -557,7 +557,7 @@ class Step(StepBase):
                 fileBasename = [os.path.basename(s) for s in inputList]
                 prefixs = [s.split('.')[0] for s in fileBasename]
                 for i in range(len(inputList)):
-                    outputList.append(outputPrefix + '.' + prefixs[i] + '.' + outputSuffix)
+                    outputList.append(prefixs[i] + '.' + outputSuffix)
             else:
                 for i in range(len(inputList)):
                     outputList.append(outputPrefix + '.' + str(i) + '.' + outputSuffix)
