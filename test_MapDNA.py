@@ -2,7 +2,9 @@ from MapDNA import Bowtie2
 from RemoveAdapter import AdapterRemoval
 from stepbase import Configure,Schedule
 
-Configure.setRefDir('/home/zwei/ref')
+import os
+
+Configure.setRefDir(os.path.join(os.path.expanduser('~'),'ref'))
 Configure.setGenome('hg19')
 
 

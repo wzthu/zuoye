@@ -306,6 +306,8 @@ class StepBase:
             if self.__multiRun :
                 self._multiRun()
             else:
+                if self.__inputSize == -1:
+                    raise Exception('call self._setInputSize(your sample size) in impInitIO')
                 for i in range(self.__inputSize):
                     self._singleRun(i)
             Configure.setTmpDir(tmpdir)
@@ -592,6 +594,7 @@ class Step(StepBase):
             else:
                 if os.path.isdir(inputValue):
                     filelist = os.listdir(inputValue)
+                    filelist.sort()
                     self.inputs[inputName] = [os.path.join(inputValue,s) for s in filelist ]
                 else:
                     self.inputs[inputName] = inputValue      
