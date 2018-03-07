@@ -83,10 +83,10 @@ class AdapterRemoval(Step):
   
         
         # create output file paths and set
-        self.setOutputDir1To1('fastqOutput1',fastqOutputDir1,'sample_1', 'fastq','fastqInput1')       
-        self.setOutputDir1To1('fastqOutput2',fastqOutputDir2,'sample_2', 'fastq','fastqInput2')
-        self.setOutputDir1To1('adapterOutput', None, 'adapter', 'txt', 'fastqInput1')
-        self.setOutputDir1To1('settingsOutput', None, 'report' ,'settings', 'fastqInput1')
+        self.setOutputDir1To1('fastqOutput1',fastqOutputDir1, None, 'fastq','fastqInput1')       
+        self.setOutputDir1To1('fastqOutput2',fastqOutputDir2, None, 'fastq','fastqInput2')
+        self.setOutputDir1To1('adapterOutput', None, None, 'adapter.txt', 'fastqInput1')
+        self.setOutputDir1To1('settingsOutput', None, None,'settings', 'fastqInput1')
         
         # set how many sample are there
         if fastqInput1 is not None:
@@ -151,7 +151,7 @@ class AdapterRemoval(Step):
                 '--output1',fastqOutput1[i],
                 '--output2',fastqOutput2[i],
                 '--threads',str(self.getParam('threads')),                
-                '--basename', Configure.getTmpPath('report.%d'%(i))]  
+                '--basename', settingsOutput[i][0:-9]]  
         print(' '.join(cmdline))
         #run commandline
         self.callCmdline(cmdline)
