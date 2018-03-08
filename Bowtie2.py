@@ -5,7 +5,7 @@ Created on Fri Mar  2 16:28:52 2018
 @author: WeiZheng
 """
 
-from stepbase import Step,Configure
+from StepBase import Step,Configure
 import subprocess
 import os
 
@@ -76,8 +76,8 @@ class Bowtie2(Step):
             self.setInput('bt2IdxFiles', bt2IdxFiles)
 
         # create output file paths and set
-        self.setOutputDir1To1('samOutput', samOutputDir,'bowtie2','sam','fastqInput1') 
-        self.setOutputDir1To1('mapRsOutput',mapRsOutputDir,'result','txt','fastqInput1')
+        self.setOutputDir1To1('samOutput', samOutputDir,None,'sam','fastqInput1') 
+        self.setOutputDir1To1('mapRsOutput',mapRsOutputDir,None,'result.txt','fastqInput1')
         
         # set how many sample are there
         if fastqInput1 is not None:
@@ -97,38 +97,7 @@ class Bowtie2(Step):
         #self.setParamIO('samOutputDir',samOutputDir)
         #self.setParamIO('mapRsOutputDir',mapRsOutputDir) 
 
-    def _multiRun(self,):
-        fastqInput1 = self.getInputList('fastqInput1')
-        fastqInput2 = self.getInputList('fastqInput2')
-        samOutput = self.getOutputList('samOutput')
-        mapRsOutput = self.getOutputList('mapRsOutput')
-        for i in range(len(fastqInput1)):
-            
-            
-            #'--no-discordant ' if self.getParam('isNoDiscordant') else '' + \
-            #'--no-unal ' if self.getParam('isNoUnal') else '' + \
-            #'--no-mixed' if self.getParam('isNoMixed') else '' + \
-           cmdline = [
-                'bowtie2',
-                '-p',str(self.getParam('threads')),
-                self.getBoolParamCmd('--no-discordant ','isNoDiscordant'),
-                self.getBoolParamCmd('--no-unal ','isNoUnal'),
-                self.getBoolParamCmd('--no-mixed ','isNoMixed'),
-                '-X' , str(self.getParam('X')),
-                self.getUnsetParams(),
-                ' -x %s -1 %s -2 %s -S %s '%(
-                    self.getParamIO('bt2Idx'),
-                    fastqInput1[i],
-                    fastqInput2[i],
-                    samOutput[i]),
-                 
-                ]
-            
-           result = self.callCmdline(cmdline)
-           #optional
-           f = open(mapRsOutput[i],'wb')
-           f.write(result.stderr)
-            
+ 
             
     def _singleRun(self, i):
         """
