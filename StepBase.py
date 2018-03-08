@@ -645,21 +645,24 @@ class Step(StepBase):
                 else:
                     self.inputs[inputName] = inputValue
                     
-    
     def setInputDirRecursion(self,inputValue):
+        self.setInputDirRecursionFunc(inputValue,'')
+        
+    def setInputDirRecursionFunc(self,inputValue, paFolder):
         if inputValue is None:
             return 
         if not os.path.isdir(inputValue):
             raise Exception('inputValue is not a directory:',inputValue)
         fileOrDir = os.listdir(inputValue)
         fileOrDir.sort()
-        fileOrDir0 = fileOrDir.copy()
-        fileOrDir = [os.path.join(inputValue,s) for s in fileOrDir]
+        
+        fileparFoder = [os.path.join(paFolder,s) for s in fileOrDir]
+        fileOrDir = [os.path.join(inputValue,s) for s in fileOrDir]        
         for i in range(len(fileOrDir)):
             if os.path.isdir(fileOrDir[i]):
-                self.setInputDirRecursion(fileOrDir[i])
+                self.setInputDirRecursion(fileOrDir[i],fileparFoder[i])
             else:
-                self.setInput(fileOrDir0[i],fileOrDir[i])
+                self.setInput(fileparFoder[i],fileOrDir[i])
       
     
     def getInputList(self, inputName):
