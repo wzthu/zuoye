@@ -8,7 +8,6 @@ from StepBase import Step
 import os
 
 class Cellranger(Step):
-
     def __init__(self,
                  outputdir = None,
                  fastqInput = None,
