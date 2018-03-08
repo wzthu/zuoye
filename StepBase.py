@@ -739,7 +739,7 @@ class Step(StepBase):
         For developer and user
         Get input or output parameters set in __init__() or call()
         """
-        return super(Step,self).getParamIO()
+        return super(Step,self).getParamIO(paramName)
     
     def setParamIO(self, paramName, paramValue):
         """
