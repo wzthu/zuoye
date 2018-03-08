@@ -14,20 +14,20 @@ class FilterBam(Step):
                  bamInput = None,
                  bamOutputDir = None,
                  tagReject = None,
-                 cmbParam = None,
+                 cmdParam = None,
                  **kwargs):
         super(Step, self).__init__(cmdParam, **kwargs)
 
         self.setParamIO('bamInput', bamInput)
-        self.setParamIO('bamInput', bamInput)
+        self.setParamIO('bamOutputDir', bamOutputDir)
 
         self.initIO()
 
         self.setParam('tagReject', tagReject)
 
     def impInitIO(self,):
-        bamInput = getParamIO('bamInput')
-        bamOutputDir = getParamIO('bamOutputDir')
+        bamInput = self.getParamIO('bamInput')
+        bamOutputDir = self.getParamIO('bamOutputDir')
 
         self.setInputDirOrFile('bamInput', bamInput)
         self.setOutputDir1To1('bamOutput', bamOutputDir, 'unalign_tagged_filterd', 'bam', 'bamInput')
@@ -41,13 +41,13 @@ class FilterBam(Step):
 
     def _singleRun(self, i):
         bamInput = self.getInputList('bamInput')
-        bamOutput = self.getOutputList('bamoOutput')
+        bamOutput = self.getOutputList('bamOutput')
 
         tagReject = self.getParam('tagReject')
 
         cmdline = [
-                '../../Drop-seq_tools-1.13/FilterBAM', 'INPUT=%s'%(bamInput),
-                'OUTPUT=%s'%(bamoOutput), 'TAG_REJECT=%s'%(tagReject)
+                '../../dropseq/Drop-seq_tools-1.13/FilterBAM', 'INPUT=%s'%(bamInput),
+                'OUTPUT=%s'%(bamOutput), 'TAG_REJECT=%s'%(tagReject)
                 ]
         self.callCmdline(cmdline)
         
