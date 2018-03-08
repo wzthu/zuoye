@@ -673,7 +673,7 @@ class Step(StepBase):
         For developer and user
         get input file paths of inputName
         """
-        return super(Step,self).getInput()
+        return super(Step,self).getInput(inputName)
 
     def setInput(self, inputName, inputValue):
         """
@@ -694,7 +694,7 @@ class Step(StepBase):
         For developer and user
         get output file paths of outputName
         """
-        return super(Step,self).getOutput()
+        return super(Step,self).getOutput(outputName)
     
     def setOutput(self, outputName, outputValue):
         """
@@ -718,7 +718,7 @@ class Step(StepBase):
         For developer and user
         get parameter of paramName. parameters except for input and output parameters
         """
-        return super(Step,self).getParam()
+        return super(Step,self).getParam(paramName)
     
     def setParam(self, paramName, paramValue):
         """
