@@ -112,6 +112,11 @@ class GraphAll(GraphMng):
                 ['Star','HTSeq'],
                 #10x Genomeics
                 ['Qualification10x','PCA'],
+                #drop-seq
+                ['FastqToBam','BamMerge'],
+                ['BamMerge','TagBarcode'],
+                ['TagBarcode','TagBarcode'],
+                ['TagBarcode','FilterBam'],
                 #ATAC-seq
                 ['SRAToFastq','FastQC'],
                 ['SRAToFastq','AdapterRemoval'],
