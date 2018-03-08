@@ -643,7 +643,24 @@ class Step(StepBase):
                         raise Exception('the suffix of files under path:',inputName,'is not the same, check the file format under the directory')
                     self.inputs[inputName] = [os.path.join(inputValue,s) for s in filelist ]
                 else:
-                    self.inputs[inputName] = inputValue      
+                    self.inputs[inputName] = inputValue
+                    
+    
+    def setInputDirRecursion(self,inputValue):
+        if inputValue is None:
+            return 
+        if not os.path.isdir(inputValue):
+            raise Exception('inputValue is not a directory:',inputValue)
+        fileOrDir = os.listdir(inputValue)
+        fileOrDir.sort()
+        fileOrDir0 = fileOrDir.copy()
+        fileOrDir = [os.path.join(inputValue,s) for s in fileOrDir]
+        for i in range(len(fileOrDir)):
+            if os.path.isdir(fileOrDir[i]):
+                self.setInputDirRecursion(fileOrDir[i])
+            else:
+                self.setInput(fileOrDir0[i],fileOrDir[i])
+      
     
     def getInputList(self, inputName):
         """
