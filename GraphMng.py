@@ -117,9 +117,10 @@ class GraphAll(GraphMng):
                 ['SRAToFastq','AdapterRemoval'],
                 ['AdapterRemoval','Bowtie2'],
                 ['Bowtie2','SamToBam'],
-                ['BamToSam','SamToBam'],
-                ['SamToBam','BamToSam'],
-                ['SamToBam','DuplicateRemoval'],
+                ['SamToBam', 'BamSort'],
+                ['BamSort', 'RmDuplicates'],
+                ['RmDuplicates', 'BamToBed'],
+                ['BamToBed', 'RmChrOrMergeAllSample']
                 ]
         super(GraphAll, self).__init__([edge1],[node1])        
         
