@@ -46,8 +46,8 @@ class FilterBam(Step):
         tagReject = self.getParam('tagReject')
 
         cmdline = [
-                '../../dropseq/Drop-seq_tools-1.13/FilterBAM', 'INPUT=%s'%(bamInput),
-                'OUTPUT=%s'%(bamOutput), 'TAG_REJECT=%s'%(tagReject)
+                '../../dropseq/Drop-seq_tools-1.13/FilterBAM', 'INPUT=%s'%(bamInput[i]),
+                'OUTPUT=%s'%(bamOutput[i]), 'TAG_REJECT=%s'%(tagReject)
                 ]
         self.callCmdline(cmdline)
         
