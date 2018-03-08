@@ -37,7 +37,7 @@ class FilterBam(Step):
 
     def call(self, *args):
         bamUpstream = args[0]
-        self.setParamIO('bamInput', bamUpstream.getOutput('bamoOutput'))
+        self.setParamIO('bamInput', bamUpstream.getOutput('bamOutput'))
 
     def _singleRun(self, i):
         bamInput = self.getInputList('bamInput')

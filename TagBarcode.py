@@ -28,7 +28,6 @@ class TagBarcode(Step):
         self.setParamIO('bamInput', bamInput)
         self.setParamIO('bamOutputDir', bamOutputDir)
         self.setParamIO('sumOutputDir', sumOutputDir)
-        self.initIO()
 
         self.setParam('baseStart', baseStart)
         self.setParam('baseEnd', baseEnd)
@@ -37,13 +36,14 @@ class TagBarcode(Step):
         self.setParam('discardRead', discardRead)
         self.setParam('tagName', tagName)
         self.setParam('numBaseBelowQuality', numBaseBelowQuality)
+        self.initIO()
 
     def impInitIO(self,):
         bamInput = self.getParamIO('bamInput')
         bamOutputDir = self.getParamIO('bamOutputDir')
         sumOutputDir = self.getParamIO('sumOutputDir')
-        tagName = self.getParamIO('tagName')        
-
+        tagName = self.getParam('tagName')        
+        #print(tagName)
         self.setInputDirOrFile('bamInput', bamInput)
         self.setOutputDir1To1('bamOutput', bamOutputDir, 'unalign_tagged_%s'%(tagName), 'bam', 'bamInput')
         self.setOutputDir1To1('sumOutput', sumOutputDir, 'unalign_tagged_%s.bam_summary'%(tagName), 'txt', 'bamInput')
