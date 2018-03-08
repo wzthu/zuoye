@@ -424,18 +424,7 @@ class StepBase:
                 if not os.path.exists(filePath):
                     raise Exception('File path of',iodict,key,' not found:',filePath)
                 
-    def getFileList(self, pathPrefix, filePath):
-        fileList = self.getListInFile(filePath)
-        for i in range(len(fileList)):
-            fileList[i] =  os.path.join(pathPrefix,fileList[i])
-        return fileList
-    
-    def getListInFile(self, filePath):
-        listFile = open(filePath)
-        fileList = listFile.readlines()
-        if len(fileList) == 0:
-            raise Exception('file',filePath,'can not be empty')
-        return fileList
+
     
     def checkResult(self,):
         return True
@@ -462,11 +451,7 @@ class StepBase:
     def getOutput(self,outputName):
         return self.outputs[outputName]
     
-    def getOutputList(self, outputName):
-        if isinstance(self.outputs[outputName],list):
-            return self.outputs[outputName]
-        else:
-            return [self.outputs[outputName]]
+
     
     def setOutput(self, outputName, outputValue):
         self.outputs[outputName] = outputValue
@@ -534,9 +519,28 @@ class Step(StepBase):
         else:
             self.setInput(inputName,self.getFileList(inputPath,inputListFile))
     
+    def getFileList(self, pathPrefix, filePath):
+        """
+        For developer:
+        """
+        fileList = self.getListInFile(filePath)
+        for i in range(len(fileList)):
+            fileList[i] =  os.path.join(pathPrefix,fileList[i])
+        return fileList
+    
+    def getListInFile(self, filePath):
+        """
+        For developer:
+        """
+        listFile = open(filePath)
+        fileList = listFile.readlines()
+        if len(fileList) == 0:
+            raise Exception('file',filePath,'can not be empty')
+        return fileList
     
     def setOutputDir1To1(self, outputName, outputDir, outputPrefix, outputSuffix, inputName):
         """
+        For developer:
         Use the known input file paths to generate the output file paths.
         outputName(str): the key name of the file path list to be generate
         outputDir(str or None): the folder of the output file stored, None or string is OK.
@@ -569,6 +573,7 @@ class Step(StepBase):
                 
     def setOutputDirNTo1(self, outputName, outputFilePath, fileNameForUnsetOutPath, inputName):
         """
+        For developer:
         Use the known N input file paths to generate the one output file.
         outputName(str): the key name of the file path list to be generate
         outputFilePath(str or None): the path the output file, None or string is OK.
@@ -589,6 +594,10 @@ class Step(StepBase):
                 self.setOutput(outputName,outputFilePath)
             
     def callCmdline(self,cmdline,shell = False, stdoutToLog = True):
+        """
+        For developer:
+            call the command line and write log 
+        """
         if not shell:
             cmdline = ' '.join(cmdline)
         print(cmdline)
@@ -605,10 +614,15 @@ class Step(StepBase):
             raise 
             
     def getBoolParamCmd(self,cmdName,paramName):
+        """
+        For developer:
+            get command line parameters for boolean parameter
+        """
         return cmdName if self.getParam(paramName) else ''
     
     def setInputDirOrFile(self, inputName, inputValue):
         """
+        For developer:
         when input parameter is a list or single string,
         use this parameter to generate all of the file paths under the path or
         just use the single string path directly
@@ -633,15 +647,130 @@ class Step(StepBase):
     
     def getInputList(self, inputName):
         """
+        For developer:
         the wraper of getInput(). if the input is the single string,
         it will wrap it will list. Otherwise it will return the input as it is.
         """
-        if isinstance(self.inputs[inputName],list):
-            return self.inputs[inputName]
-        else:
-            return [self.inputs[inputName]]
+        return self.convertToList(self.inputs[inputName])            
         
-
+    def getOutputList(self, outputName):
+        """
+        For developer:
+        the wraper of getOutput(). if the output is the single string,
+        it will wrap it will list. Otherwise it will return the output as it is.
+        """
+        return self.convertToList(self.outputs[outputName])
         
+    def getInputs(self,):
+        """
+        For developer and user
+        get Valid keys for input file paths 
+        """
+        return super(Step,self).getInputs()
+           
+    def getInput(self, inputName):
+        """
+        For developer and user
+        get input file paths of inputName
+        """
+        return super(Step,self).getInput()
 
+    def setInput(self, inputName, inputValue):
+        """
+        For developer and user
+        set input file paths of inputName with inputValue
+        """
+        super(Step,self).setInput(inputName,inputValue)
+    
+    def getOutputs(self,):
+        """
+        For developer and user
+        get Valid keys for output file paths 
+        """
+        return super(Step,self).getOutputs()
+    
+    def getOutput(self,outputName):
+        """
+        For developer and user
+        get output file paths of outputName
+        """
+        return super(Step,self).getOutput()
+    
+    def setOutput(self, outputName, outputValue):
+        """
+        For developer
+        set output file paths of outputName with inputValue
+        """
+        super(Step,self).setOutput(outputName,outputValue)
+    
+    def getUnsetParams(self,):
+        return super(Step,self).getUnsetParams()
+    
+    def getParams(self,):
+        """
+        For developer and user
+        get Valid keys for parameters except for input and output parameters 
+        """
+        return super(Step,self).getParams()
+    
+    def getParam(self, paramName):
+        """
+        For developer and user
+        get parameter of paramName. parameters except for input and output parameters
+        """
+        return super(Step,self).getParam()
+    
+    def setParam(self, paramName, paramValue):
+        """
+        For developer
+        Set parameters (except for input or output parameters) in __init__()
+        """
+        super(Step,self).setOutput(paramName, paramValue)
+        
+    def getParamIOs(self,):
+        """
+        For developer and user
+        Get parameters (except for input or output parameters) setted in __init__()
+        """
+        return super(Step,self).getParamIOs()
+    
+    def getParamIO(self, paramName):
+        """
+        For developer and user
+        Get input or output parameters set in __init__() or call()
+        """
+        return super(Step,self).getParamIO()
+    
+    def setParamIO(self, paramName, paramValue):
+        """
+        For developer
+        Set input  or output parameters at __init__() and 
+        Set input parameters from upstream at call()
+        """
+        return super(Step,self).setParamIO(paramName, paramValue)
+        
+    def initParam(self,**kwargs):
+        """
+        For User
+        reinit the all or part of parameters by calling like this:
+        object.initParam(paramName1,'paramValue1',paramName1,'paramValue1')
+        """
+        keyIO = self.getParamIOs()
+        keyParam = self.getParams()
+        isReinitIO = False
+        for key in list(kwargs.keys()):
+            if key not in keyIO and key not in keyParam:
+                raise Exception('parameter name:',key,'is not valid')
+            
+        for key in kwargs.keys():
+            if key in keyIO:
+                self.setParamIO(kwargs[key])
+                isReinitIO = True
+            elif key in keyParam:
+                self.setParam(kwargs[key])
+        
+        if isReinitIO:
+            self.initIO()
+            
+            
         
