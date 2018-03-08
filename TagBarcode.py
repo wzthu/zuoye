@@ -44,7 +44,7 @@ class TagBarcode(Step):
         sumOutputDir = self.getParamIO('sumOutputDir')
 
         self.setInputDirOrFile('bamInput', bamInput)
-        self.setOutputDir1To1('bamOutput', bamOutputDir, 'unalign_tagged_Cell.bam', 'bam', 'bamInput')
+        self.setOutputDir1To1('bamOutput', bamOutputDir, 'unalign_tagged_Cell', 'bam', 'bamInput')
         self.setOutputDir1To1('sumOutput', sumOutputDir, 'unalign_tagged_Cellular.bam_summary', 'txt', 'bamInput')
 
         if bamInput is not None:
