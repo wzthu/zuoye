@@ -97,38 +97,7 @@ class Bowtie2(Step):
         #self.setParamIO('samOutputDir',samOutputDir)
         #self.setParamIO('mapRsOutputDir',mapRsOutputDir) 
 
-    def _multiRun(self,):
-        fastqInput1 = self.getInputList('fastqInput1')
-        fastqInput2 = self.getInputList('fastqInput2')
-        samOutput = self.getOutputList('samOutput')
-        mapRsOutput = self.getOutputList('mapRsOutput')
-        for i in range(len(fastqInput1)):
-            
-            
-            #'--no-discordant ' if self.getParam('isNoDiscordant') else '' + \
-            #'--no-unal ' if self.getParam('isNoUnal') else '' + \
-            #'--no-mixed' if self.getParam('isNoMixed') else '' + \
-           cmdline = [
-                'bowtie2',
-                '-p',str(self.getParam('threads')),
-                self.getBoolParamCmd('--no-discordant ','isNoDiscordant'),
-                self.getBoolParamCmd('--no-unal ','isNoUnal'),
-                self.getBoolParamCmd('--no-mixed ','isNoMixed'),
-                '-X' , str(self.getParam('X')),
-                self.getUnsetParams(),
-                ' -x %s -1 %s -2 %s -S %s '%(
-                    self.getParamIO('bt2Idx'),
-                    fastqInput1[i],
-                    fastqInput2[i],
-                    samOutput[i]),
-                 
-                ]
-            
-           result = self.callCmdline(cmdline)
-           #optional
-           f = open(mapRsOutput[i],'wb')
-           f.write(result.stderr)
-            
+ 
             
     def _singleRun(self, i):
         """
