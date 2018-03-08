@@ -725,7 +725,7 @@ class Step(StepBase):
         For developer
         Set parameters (except for input or output parameters) in __init__()
         """
-        super(Step,self).setOutput(paramName, paramValue)
+        super(Step,self).setParam(paramName, paramValue)
         
     def getParamIOs(self,):
         """
