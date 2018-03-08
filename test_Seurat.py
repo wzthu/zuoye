@@ -1,33 +1,21 @@
+# -*- coding: utf-8 -*-
+"""
+@author: Zhenyi Wang
+"""
 from stepbase import Configure,Schedule
 from Seurat import Seurat
+import os
 
-Configure.setRefDir('/home/zwei/ref')
+Seurat_result = Seurat(inputDir='F:/HCA/mm10', outputDir='F:/HCA/stepone') 
 
-
-
-adrm = AdapterRemoval(fastqInput1='./minidata/atac/sample1/chr20_1.1.fq',fastqInput2='./minidata/atac/sample1/chr20_2.1.fq')
-"""
 # To see if all input and output parameter are right in paramsIO 
-adrm.paramsIO
+Seurat_result.paramsIO
 
 # To see if other parameters are right in params
-adrm.params
+Seurat_result.params
 
 # To see if all input files are right
-adrm.inputs 
-
-# To see if all input files are right
-adrm.params
-"""
-
-rs=Bowtie2()
-results = rs(adrm)
-
-"""
-bt2Obj = Bowtie2()
-rs=Bowtie2()(adrm)
-"""
-sb = SamToBam()(rs)
+Seurat_result.inputs 
 
 Schedule.run()
 

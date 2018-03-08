@@ -29,33 +29,30 @@ class Seurat(Step):
         if threads is None:
             threads = Configure.getThreads()
         self.setParam('threads',threads)
+        self._setMultiRun()
         
     def impInitIO(self,):
         """
         This function is to initialize 
         all of the input and output files from the io parameters set in __init__() 
         """
-        
         # obtain all input and output parameters        
         inputDir = self.getParamIO('inputDir')
         outputDir = self.getParamIO('outputDir')        
-
-
         if inputDir is None:
-        	self.setInput('barcodes'，None)
+        	self.setInput('barcodes',None)
         	self.setInput('genes', None)
-        	self.setInput('matrix'，None)
+        	self.setInput('matrix',None)
         else:
-        	self.setInput('barcodes',os.path.join(inputDir,'barcodes'))
-        	self.setInput('genes',os.path.join(inputDir,'genes'))
-        	self.setInput('matrix',os.path.join(inputDir,'matrix'))
+        	self.setInput('barcodes',os.path.join(inputDir,'barcodes.tsv'))
+        	self.setInput('genes',os.path.join(inputDir,'genes.tsv'))
+        	self.setInput('matrix',os.path.join(inputDir,'matrix.mtx'))
         #set all input files        
    
         # create output file paths and set
-        self.setOutputDir1To1('VlnPlot', outputDir,'VlnPlot','jpeg','genes') 
-        self.setOutputDir1To1('GenePlot', outputDir,'GenePlot','jpeg','genes') 
-        
-        
+        self.setOutputDir1To1('VlnPlot', outputDir,'VlnPlot','jpg','genes') 
+        self.setOutputDir1To1('GenePlot', outputDir,'GenePlot','jpg','genes') 
+        '''
     def call(self, *args):
         """
         called by Seurat()(object)
@@ -65,7 +62,7 @@ class Seurat(Step):
         
         # set all required input parameters from upstream object
         self.setParamIO('fastqInput1',fastqUpstream.getOutput('fastqOutput1'))
-        
+        '''
 
 
     def _multiRun(self,):
@@ -75,10 +72,12 @@ class Seurat(Step):
         VlnPlot = self.getOutput('VlnPlot')
         GenePlot = self.getOutput('GenePlot')
         cmdline = ['Rscript',
-        			'Seurat.R',
-        			barcodes[0:-12],
-        			VlnPlot[0:-11],
-        		  ]            
+        		   'Seurat.R',
+        			self.getParamIO('inputDir'),
+                    self.getParamIO('outputDir')
+        			]
+        # cmdline = ' '.join(cmdline)		     
+        # print(' '.join(cmdline))      
         self.callCmdline(cmdline)
            
             
