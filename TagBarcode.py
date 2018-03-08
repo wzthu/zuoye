@@ -56,7 +56,7 @@ class TagBarcode(Step):
 
     def _singleRun(self, i):
         bamInput = self.getInputList('bamInput')
-        bamoOutput = self.getOutputList('bamOutput')
+        bamOutput = self.getOutputList('bamOutput')
         sumOutput = self.getOutputList('sumOutput')
 
         baseStart = self.getParam('baseStart')
@@ -69,7 +69,7 @@ class TagBarcode(Step):
 
         cmdline = [
                 '../../dropseq/Drop-seq_tools-1.13/TagBamWithReadSequenceExtended',
-                'INPUT=%s'%(bamInput[i]), 'OUTPUT=%s'%(bamoOutput[i]), 'SUMMARY=%s'%(sumOutput[i]),
+                'INPUT=%s'%(bamInput[i]), 'OUTPUT=%s'%(bamOutput[i]), 'SUMMARY=%s'%(sumOutput[i]),
                 'BASE_RANGE=%d-%d'%(baseStart, baseEnd), 'BASE_QUALITY=%d'%(baseQuality),
                 'BARCODED_READ=%d'%(barcodedRead), 'DISCARD_READ=%s'%(str(discardRead)),
                 'TAG_NAME=%s'%(tagName), 'NUM_BASES_BELOW_QUALITY=%d'%(numBaseBelowQuality)
