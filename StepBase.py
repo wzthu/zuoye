@@ -660,7 +660,7 @@ class Step(StepBase):
         fileOrDir = [os.path.join(inputValue,s) for s in fileOrDir]        
         for i in range(len(fileOrDir)):
             if os.path.isdir(fileOrDir[i]):
-                self.setInputDirRecursion(fileOrDir[i],fileparFoder[i])
+                self.setInputDirRecursionFunc(fileOrDir[i],fileparFoder[i])
             else:
                 self.setInput(fileparFoder[i],fileOrDir[i])
       
