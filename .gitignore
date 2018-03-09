@@ -1,5 +1,6 @@
 # test step folder
 step_*/
+.idea/
 
 #R folder
 .Rhistory/
