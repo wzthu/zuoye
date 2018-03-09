@@ -652,6 +652,23 @@ class Step(StepBase):
         """
         return cmdName if self.getParam(paramName) else ''
     
+    def setInputFileInDir(self, inputName, inputDir, inputFileName):
+        """
+        For developer:
+        when input parameter is a list or single string,
+        use this parameter to generate all of the file paths under the path or
+        just use the single string path directly
+        inputName: the key name of inputs
+        inputValue: string of directory or file path, or list of file paths  
+        """
+        if inputDir is None:
+            self.setInput(inputName,None)
+        else:
+            if inputFileName is None:
+                raise Exception('inputFileName can not be None')
+            else:
+                self.setInput(inputName,os.path.join(inputDir,inputFileName))
+                    
     def setInputDirOrFile(self, inputName, inputValue):
         """
         For developer:

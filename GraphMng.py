@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
 Created on Fri Mar  2 19:22:29 2018
-
 @author: WeiZheng
 """
 
@@ -87,6 +86,11 @@ class GraphAll(GraphMng):
                 #Smart-seq
         node1 = ['SRAToFastq',
                  'FastQC',
+                 'FastqDump',
+                 'Hisat2',
+                 'SamToBam',
+                 'Bamsort',
+                 'BamSort',
                  'Tophat',
                  'Star',
                  'Cufflinks',
@@ -105,12 +109,20 @@ class GraphAll(GraphMng):
         
         edge1 = [
                 #Smart-seq
+                ['FastqDump','Hisat2'],
+                ['Hisat2','SamToBam'],
+                ['SamToBam','Bamsort'],
+                ['Bamsort','Cufflinks'],
+                ['SamToBam','BamSort'],
+                ['BamSort','Cufflinks'],
+            
                 ['SRAToFastq','FastQC'],
                 ['SRAToFastq','Tophat'],
                 ['SRAToFastq','Star'],
                 ['Tophat','Cufflinks'],
                 ['Star','HTSeq'],
                 #10x Genomeics
+                ['Cellranger','Seurat'],
                 ['Qualification10x','PCA'],
                 #drop-seq
                 ['FastqToBam','BamMerge'],
@@ -125,7 +137,10 @@ class GraphAll(GraphMng):
                 ['SamToBam', 'BamSort'],
                 ['BamSort', 'RmDuplicates'],
                 ['RmDuplicates', 'BamToBed'],
-                ['BamToBed', 'RmChrOrMergeAllSample']
+                ['BamToBed', 'MergeToFrag'],
+                ['BamToBed', 'RmChrOrMergeAllSample'],
+                ['RmChrOrMergeAllSample', 'MergeToFrag'],
+                ['RmChrOrMergeAllSample', 'BedSort']
                 ]
         super(GraphAll, self).__init__([edge1],[node1])        
         
@@ -144,9 +159,4 @@ class GraphATACgl(GraphMng):
                 
         
         
-        
-        
-        
-        
-            
         

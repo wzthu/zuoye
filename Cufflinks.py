@@ -5,7 +5,7 @@ Created on 2018-3-7 10:44:26
 @author: Song Shaoming
 """
 
-from stepbase import Step,Configure
+from StepBase import Step,Configure
 import os
 
 class Cufflinks(Step):
