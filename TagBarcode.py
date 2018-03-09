@@ -45,8 +45,8 @@ class TagBarcode(Step):
         tagName = self.getParam('tagName')        
         #print(tagName)
         self.setInputDirOrFile('bamInput', bamInput)
-        self.setOutputDir1To1('bamOutput', bamOutputDir, 'unalign_tagged_%s'%(tagName), 'bam', 'bamInput')
-        self.setOutputDir1To1('sumOutput', sumOutputDir, 'unalign_tagged_%s.bam_summary'%(tagName), 'txt', 'bamInput')
+        self.setOutputDirNTo1('bamOutput', os.path.join(bamOutputDir, 'unalign_tagged_%s'%(tagName), 'bam'), '', 'bamInput')
+        self.setOutputDirNTo1('sumOutput', os.path.join(sumOutputDir, 'unalign_tagged_%s.bam_summary'%(tagName), 'txt'), '', 'bamInput')
 
         if bamInput is not None:
             self._setInputSize(len(self.getInputList('bamInput')))

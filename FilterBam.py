@@ -30,7 +30,7 @@ class FilterBam(Step):
         bamOutputDir = self.getParamIO('bamOutputDir')
 
         self.setInputDirOrFile('bamInput', bamInput)
-        self.setOutputDir1To1('bamOutput', bamOutputDir, 'unalign_tagged_filterd', 'bam', 'bamInput')
+        self.setOutputDirNTo1('bamOutput', os.path.join(bamOutputDir, 'unalign_tagged_filterd.bam'), '', 'bamInput')
 
         if bamInput is not None:
             self._setInputSize(len(self.getInputList('bamInput')))
