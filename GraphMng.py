@@ -113,7 +113,7 @@ class GraphAll(GraphMng):
                 ['Tophat','Cufflinks'],
                 ['Star','HTSeq'],
                 #10x Genomeics
-                ['Qualification10x','PCA'],
+                ['Cellranger','Seurat'],
                 #drop-seq
                 ['FastqToBam','BamMerge'],
                 ['BamMerge','TagBarcode'],
