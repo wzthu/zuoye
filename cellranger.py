@@ -21,6 +21,8 @@ class Cellranger(Step):
         self.setParamIO('outputdir', outputdir)
         self.setParam('id', outputdir)
         self.initIO()
+		
+		
         self.setParam('expectcells', expectcells)
         self._setMultiRun()
 
@@ -46,8 +48,6 @@ class Cellranger(Step):
         self.setInputDirOrFile('genes.gtf', os.path.join(refile, 'genes', 'genes.gtf'))
         self.setInputDirOrFile('genome.fa', os.path.join(refile, 'fasta', 'genome.fa'))
 
-        if outputdir is None:
-            self.setParamIO('outputdir',outputdir)
         self.setOutputDirNTo1('barcodes', os.path.join(outputdir, 'outs', 'filtered_gene_bc_matrices', 'barcode.tsv'), '', 'fastqInput')
         self.setOutputDirNTo1('genes', os.path.join(outputdir, 'outs', 'filtered_gene_bc_matrices', 'genes.tsv'), '', 'fastqInput')
         self.setOutputDirNTo1('matrix', os.path.join(outputdir, 'outs', 'filtered_gene_bc_matrices', 'matrix.mtx'), '', 'fastqInput')
@@ -65,11 +65,11 @@ class Cellranger(Step):
 
         # if same outputdir already exist, delete it
         if os.path.isdir(outputdir):
-            self.cmdline1 = ['docker run', 'rm', '-r %s' % outputdir]
+            self.cmdline1 = ['rm', '-r %s' % outputdir]
             self.callCmdline(self.cmdline1)
 
         # run 10x cellranger
-        self.cmdline2 = ['docker run', 'cellranger', 'count', '--id=%s --expect-cells=%s --transcriptome=%s --fastqs=%s'
+        self.cmdline2 = ['cellranger', 'count', '--id=%s --expect-cells=%s --transcriptome=%s --fastqs=%s'
                          % (id, str(expectcells), refile, fastqInput)]
         self.callCmdline(self.cmdline2)
 

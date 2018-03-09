@@ -662,7 +662,7 @@ class Step(StepBase):
         inputValue: string of directory or file path, or list of file paths  
         """
         if inputDir is None:
-            self.setInput(inputName,None)
+            self.setInput(inputName, None)
         else:
             if inputFileName is None:
                 raise Exception('inputFileName can not be None')

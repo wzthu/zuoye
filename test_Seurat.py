@@ -6,8 +6,7 @@ from StepBase import Configure,Schedule
 from Seurat import Seurat
 import os
 
-Seurat_result = Seurat(inputDir='F:/HCA/mm10', 
-	                   outputDir='F:/HCA/stepone') 
+test = Seurat(outputdir = 'test_seurat', rscript = '/data/test_celranger/Seurat.R')
 
 # To see if all input and output parameter are right in paramsIO 
 Seurat_result.paramsIO

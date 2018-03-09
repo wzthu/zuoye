@@ -1,84 +1,83 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-@author: Zhenyi Wang
+@author: Frankie
+@date: 20180308
 """
-
-from StepBase import Step,Configure
-import subprocess
+from StepBase import Step
 import os
 
 class Seurat(Step):
     def __init__(self,
-                 inputDir = None,
-                 outputDir = None,
-                 threads = None,
-                 cmdParam = None, 
+                 outputdir = None,
+                 barcodes = None,
+                 genes = None,
+                 rscript = None,
+                 matrix = None,
+                 # densematrix = None,
+                 cmdParam = None,
                  **kwargs):
-        super(Step, self).__init__(cmdParam,**kwargs)
-        """
-        __init__(): Initialize the class with inputs, outputs and other parameters.
-        Setting all parameter is the main target of this function.
-        """
-        
-        # set all input and output parameters
-        self.setParamIO('inputDir',inputDir)
-        self.setParamIO('outputDir',outputDir) 
-        # call self.initIO()
+        super(Step, self).__init__(cmdParam, **kwargs)
+        # if densematrix or sparsematrix?
+        # if matrix!=None and barcodes!=None and genes!=None:
+        self.setParamIO('matrix', matrix)
+        self.setParamIO('barcodes', barcodes)
+        self.setParamIO('genes', genes)
+        # else:
+        #     self.setParamIO('densematrix', densematrix)
+        self.setParamIO('outputdir', outputdir)
+        self.setParamIO('rscript', rscript)
         self.initIO()
-        #set other parameters
-        if threads is None:
-            threads = Configure.getThreads()
-        self.setParam('threads',threads)
         self._setMultiRun()
-        
-    def impInitIO(self,):
-        """
-        This function is to initialize 
-        all of the input and output files from the io parameters set in __init__() 
-        """
-        # obtain all input and output parameters        
-        inputDir = self.getParamIO('inputDir')        
-        outputDir = self.getParamIO('outputDir')  
-        
-        #set all input files
-                
-        self.setInputFileInDir('matrixdata', inputDir, 'matrix.mtx')
-        self.setInputFileInDir('barcodes', inputDir, 'barcodes.tsv')
-        self.setInputFileInDir('genes', inputDir, 'genes.tsv')
 
-        # create output file paths and set
-        self.setOutputDir1To1('VlnPlot', outputDir,'VlnPlot','jpg','genes') 
-        self.setOutputDir1To1('GenePlot', outputDir,'GenePlot','jpg','genes')
-        self.setOutputDir1To1('FindVariableGenes', outputDir,'FindVariableGenes','jpg','genes')
-        self.setOutputDir1To1('tSNE_findcluster', outputDir,'tSNE_findcluster','jpg','genes')
-        if outputDir is None:
-            self.setParamIO('outputDir',Configure.getTmpDir())     
+    def impInitIO(self,):
+
+        matrix = self.getParamIO('matrix')
+        barcodes = self.getParamIO('barcodes')
+        genes = self.getParamIO('genes')
+        outputdir = self.getParamIO('outputdir')
+
+        # set input paths
+        self.setInputDirOrFile('matrix', matrix)
+        self.setInputDirOrFile('barcodes', barcodes)
+        self.setInputDirOrFile('genes', genes)
+
+        # set output paths
+        self.setOutputDir1To1('violinplot', outputdir, 'violinplot', 'jpeg', 'genes')
+        self.setOutputDir1To1('geneplot', outputdir, 'geneplot', 'jpeg', 'genes')
+        self.setOutputDir1To1('Elbowplot', outputdir, 'Elbowplot', 'jpeg', 'genes')
+        # need to be segmented
+        self.setOutputDir1To1('TSNEplot', outputdir, 'TSNEplot', 'jpeg', 'genes')
+
 
     def call(self, *args):
-        """
-        called by Seurat()(object)
-        """
+
         # the first object
-        cellrangerUpstream = args[0]      
-        
+        cellrangerUpstream = args[0]
+
         # set all required input parameters from upstream object
-        self.setParamIO('inputDir',cellrangerUpstream.getParamIO('outputDir'))
-        
-    def _multiRun(self,):
-        matrixdata = self.getInput('matrixdata')
-        barcodes = self.getInput('barcodes')
-        genes = self.getInput('genes')
-        VlnPlot = self.getOutput('VlnPlot')
-        GenePlot = self.getOutput('GenePlot')
+        self.setParamIO('barcodes', cellrangerUpstream.getOutput('barcodes'))
+        self.setParamIO('genes', cellrangerUpstream.getOutput('genes'))
+        self.setParamIO('matrix', cellrangerUpstream.getOutput('matrix'))
+
+        # print(self.cmdline)
+
+    def _multiRun(self, ):
+        # get input parameters
+        barcodes = self.getParamIO('barcodes')
+        genes = self.getParamIO('genes')
+        matrix = self.getParamIO('matrix')
+        rscript = self.getParamIO('rscript')
+
+        # get output parameters
+        outputdir = self.getParamIO('outputdir')
+
         cmdline = ['Rscript',
-        		   'Seurat.R',
-        			matrixdata,
-                    barcodes,
-                    genes,
-                    self.getParamIO('outputDir')
-        			]
-        # cmdline = ' '.join(cmdline)		     
-        #print(' '.join(cmdline))
+                   rscript,
+                   matrix,
+                   barcodes,
+                   genes,
+                   outputdir]
+        print(cmdline)
         self.callCmdline(cmdline)
-           
-            
+
