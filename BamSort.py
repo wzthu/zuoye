@@ -1,50 +1,64 @@
 # -*- coding: utf-8 -*-
 """
-Created on 2018-3-8 20:06:30
-
-@author: Song Shaoming
+designed for scATAC-seq
+@author: Weizhang
+sort BED file using bedtools
 """
 
-from stepbase import Step,Configure
-import os
-
-class Bamsort(Step):
-	def __init__(self,
-				 bamInput = None,
-				 bamOutputDir = None,
-				 cmdParam = None,
-				 **kwargs
-				 ):
-		super(Step, self).__init__(cmdParam,**kwargs)
-
-		self.setParamIO('bamInput',bamInput)
-		self.setParamIO('bamOutputDir',bamOutputDir)
-
-		self.initIO()
-
-	def impInitIO(self,):
-		bamInput = self.getParamIO('bamInput')
-		bamOutputDir = self.getParamIO('bamOutputDir')
-
-		self.setInputDirOrFile('bamInput',bamInput)
-		self.setOutputDir1To1('bamOutput',bamOutputDir,'sorted','bam','bamInput')
-
-		if bamInput is not None:
-			self._setInputSize(len(self.getInputList('bamInput')))
+from StepBase import Step, Configure
 
 
-	def call(self, *args):
+class BedSort(Step):
+    def __init__(self,
+                 bedInput=None,
+                 bedOutputDir=None,
+                 cmdParam=None,
+                 **kwargs):
+        super(Step, self).__init__(cmdParam, **kwargs)
 
-		bamUpstream = args[0]
-		self.setParamIO('bamInput',bamUpstream.getOutput('bamOutput'))
+        # set IO parameters
+        self.setParamIO('bedInput', bedInput)
+        self.setParamIO('bedOutputDir', bedOutputDir)
 
-	def _singleRun(self, i):
-		bamInput = self.getInputList('bamInput')
-		bamOutput = self.getOutputList('bamOutput')
+        self.initIO()
 
-		cmdline = [
-				'samtools sort',
-				bamInput[i],
-				'-o',bamOutput[i]
-				]
-		self.callCmdline(cmdline)
+    def impInitIO(self):
+        bedInput = self.getParamIO('bedInput')
+        bedOutputDir = self.getParamIO('bedOutputDir')
+
+        # set all input files
+        self.setInputDirOrFile('bedInput', bedInput)
+        # set all output files
+        self.setOutputDir1To1('bedOutput', bedOutputDir, None, 'bed', 'bedInput')
+
+        if bedInput is not None:
+            self._setInputSize(len(self.getInputList('bedInput')))
+
+    def call(self, *args):
+        samUpstream = args[0]
+
+        # samOutput is from the former step (Mapping)
+        self.setParamIO('bedInput', samUpstream.getOutput('mergedfilename'))
+
+    def _multiRun(self,):
+        bedInput = self.getInputList('bedInput')
+        bedOutput = self.getOutputList('bedOutput')
+        for i in range(len(bedInput)):
+            cmdline = [
+                'sortBed -i',
+                bedInput[i],
+                '>',
+                bedOutput[i]
+            ]
+            result = self.callCmdline(cmdline)
+
+    def _singleRun(self, i):
+        bedInput = self.getInputList('bedInput')
+        bedOutput = self.getOutputList('bedOutput')
+        cmdline = [
+            'sortBed -i',
+            bedInput[i],
+            '>',
+            bedOutput[i]
+        ]
+        result = self.callCmdline(cmdline)
