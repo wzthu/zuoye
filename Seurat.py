@@ -43,12 +43,14 @@ class Seurat(Step):
         #set all input files
                 
         self.setInputFileInDir('matrixdata', inputDir, 'matrix.mtx')
-        self.setInputFileInDir('barcodes', inputDir, 'barcode.tsv')
+        self.setInputFileInDir('barcodes', inputDir, 'barcodes.tsv')
         self.setInputFileInDir('genes', inputDir, 'genes.tsv')
 
         # create output file paths and set
         self.setOutputDir1To1('VlnPlot', outputDir,'VlnPlot','jpg','genes') 
         self.setOutputDir1To1('GenePlot', outputDir,'GenePlot','jpg','genes')
+        self.setOutputDir1To1('FindVariableGenes', outputDir,'FindVariableGenes','jpg','genes')
+        self.setOutputDir1To1('tSNE_findcluster', outputDir,'tSNE_findcluster','jpg','genes')
         if outputDir is None:
             self.setParamIO('outputDir',Configure.getTmpDir())     
 
@@ -62,9 +64,6 @@ class Seurat(Step):
         # set all required input parameters from upstream object
         self.setParamIO('inputDir',cellrangerUpstream.getParamIO('outputDir'))
         
-        
-        
-
     def _multiRun(self,):
         matrixdata = self.getInput('matrixdata')
         barcodes = self.getInput('barcodes')
@@ -79,7 +78,7 @@ class Seurat(Step):
                     self.getParamIO('outputDir')
         			]
         # cmdline = ' '.join(cmdline)		     
-      
+        #print(' '.join(cmdline))
         self.callCmdline(cmdline)
            
             
