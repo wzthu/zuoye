@@ -25,19 +25,19 @@ print("\n")
 sb=SamToBam(threads=6)(rs)
 
 print("SamToBam output:")
-print(sb.getOutput('BamOutput'))
+print(sb.getOutput('bamOutput'))
 print("\n")
 
 bs=BamSort(threads=3)(sb)
 
 print("BamSort output:")
-print(bs.getOutput('BamOutput'))
+print(bs.getOutput('bamOutput'))
 print("\n")
 
 rd=RmDuplicates(picard='/home/wzhang/software/Picard/picard.jar', memory='-Xmx4g')(bs)
 
 print("RmDuplicates output:")
-print(bs.getOutput('BamOutput'))
+print(bs.getOutput('bamOutput'))
 print("\n")
 
 bb=BamToBed()(rd)
@@ -47,11 +47,11 @@ print(bb.getOutput('bedOutput'))
 print("\n")
 
 # just for a test
-# mtf1=MergeToFrag()(bb)
-#
-# print("MergeToFrag1 output:")
-# print(mtf1.getOutput('bedOutput'))
-# print("\n")
+mtf1=MergeToFrag()(bb)
+
+print("MergeToFrag1 output:")
+print(mtf1.getOutput('bedOutput'))
+print("\n")
 
 chr_info = ['chr1', 'chr2', 'chr3', 'chr4', 'chr5', 'chr6', 'chr7', 'chr8', 'chr9', 'chr10', 'chr11', 'chr12', 'chr13',
             'chr14', 'chr15', 'chr16', 'chr17', 'chr18', 'chr19', 'chr20', 'chr21', 'chr22', 'chrX']
