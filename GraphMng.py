@@ -112,20 +112,14 @@ class GraphAll(GraphMng):
                 ['Star','HTSeq'],
                 #10x Genomeics
                 ['Qualification10x','PCA'],
-                #drop-seq
-                ['FastqToBam','BamMerge'],
-                ['BamMerge','TagBarcode'],
-                ['TagBarcode','TagBarcode'],
-                ['TagBarcode','FilterBam'],
                 #ATAC-seq
                 ['SRAToFastq','FastQC'],
                 ['SRAToFastq','AdapterRemoval'],
                 ['AdapterRemoval','Bowtie2'],
                 ['Bowtie2','SamToBam'],
-                ['SamToBam', 'BamSort'],
-                ['BamSort', 'RmDuplicates'],
-                ['RmDuplicates', 'BamToBed'],
-                ['BamToBed', 'RmChrOrMergeAllSample']
+                ['BamToSam','SamToBam'],
+                ['SamToBam','BamToSam'],
+                ['SamToBam','DuplicateRemoval'],
                 ]
         super(GraphAll, self).__init__([edge1],[node1])        
         
