@@ -37,7 +37,7 @@ class RmDuplicates(Step):
         # set all input files
         self.setInputDirOrFile('bamInput', bamInput)
         # set all output files
-        self.setOutputDir1To1('BamOutput', bamOutputDir, None, 'bam', 'bamInput')
+        self.setOutputDir1To1('bamOutput', bamOutputDir, None, 'bam', 'bamInput')
         self.setOutputDir1To1('METRICS', bamOutputDir, None, 'picard_METRICS.txt', 'bamInput')
 
         if bamInput is not None:
@@ -47,11 +47,11 @@ class RmDuplicates(Step):
         samUpstream = args[0]
 
         # samOutput is from the former step (Mapping)
-        self.setParamIO('bamInput', samUpstream.getOutput('BamOutput'))
+        self.setParamIO('bamInput', samUpstream.getOutput('bamOutput'))
 
     def _multiRun(self,):
         bamInput = self.getInputList('bamInput')
-        bamOutput = self.getOutputList('BamOutput')
+        bamOutput = self.getOutputList('bamOutput')
         matrixOutput = self.getOutputList('METRICS')
 
         for i in range(len(bamInput)):
@@ -66,7 +66,7 @@ class RmDuplicates(Step):
 
     def _singleRun(self, i):
         bamInput = self.getInputList('bamInput')
-        bamOutput = self.getOutputList('BamOutput')
+        bamOutput = self.getOutputList('bamOutput')
         matrixOutput = self.getOutputList('METRICS')
         cmdline = [
             'java', str(self.getParam('memory')), '-jar',
