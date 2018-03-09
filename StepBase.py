@@ -554,6 +554,9 @@ class Step(StepBase):
         inputName(str): the input file paths to be referenced
         it will set paths list of outputDir/outputPrefix.*.outputSuffix like paths for outputName
         """
+        suffixDot = '.'
+        if outputSuffix == '':
+            suffixDot =''
         inputList = self.getInput(inputName)
         if inputList is None:
             self.setOutput(outputName, None)
@@ -568,10 +571,10 @@ class Step(StepBase):
                     outputList.append(prefixs[i] + sep + outputSuffix)
             else:
                 if len(inputList) == 1:
-                    outputList.append(outputPrefix + '.' + outputSuffix)
+                    outputList.append(outputPrefix + suffixDot + outputSuffix)
                 else:
                     for i in range(len(inputList)):
-                        outputList.append(outputPrefix + sep + str(i) + '.' + outputSuffix)
+                        outputList.append(outputPrefix + sep + str(i) + suffixDot + outputSuffix)
             if outputDir is None:
                 self.setOutput(outputName,Configure.getTmpPath(outputList))
             else:        
