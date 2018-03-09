@@ -34,7 +34,7 @@ class SamToBam(Step):
         # set all input files
         self.setInputDirOrFile('samInput', samInput)
         # set all output files
-        self.setOutputDir1To1('BamOutput', bamOutputDir, None, 'bam', 'samInput')
+        self.setOutputDir1To1('bamOutput', bamOutputDir, None, 'bam', 'samInput')
 
         if samInput is not None:
             self._setInputSize(len(self.getInputList('samInput')))
@@ -47,7 +47,7 @@ class SamToBam(Step):
 
     def _multiRun(self,):
         samInput = self.getInputList('samInput')
-        bamOutput = self.getOutputList('BamOutput')
+        bamOutput = self.getOutputList('bamOutput')
         for i in range(len(samInput)):
             cmdline = [
                 'samtools view -b -S',
@@ -58,7 +58,7 @@ class SamToBam(Step):
 
     def _singleRun(self, i):
         samInput = self.getInputList('samInput')
-        bamOutput = self.getOutputList('BamOutput')
+        bamOutput = self.getOutputList('bamOutput')
 
         cmdline = [
             'samtools view -b -S',

@@ -61,4 +61,6 @@ class BedSort(Step):
             '>',
             bedOutput[i]
         ]
+
         result = self.callCmdline(cmdline)
+

@@ -506,6 +506,9 @@ class StepBase:
         
     def _setInputSize(self,inputSize):
         self.__inputSize = inputSize
+        
+    def _setUpstreamSize(self,size):
+        self.__upstreamSize = size
     
 class Step(StepBase):
     def __init__(self,cmdParam,**kwargs):
