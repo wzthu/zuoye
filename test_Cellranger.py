@@ -1,4 +1,4 @@
-from cellranger import Cellranger
+from Cellranger import Cellranger
 from StepBase import Configure, Schedule
 
 
