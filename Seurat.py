@@ -3,14 +3,16 @@
 @author: Zhenyi Wang
 """
 
-from stepbase import Step,Configure
+from StepBase import Step,Configure
 import subprocess
 import os
 
 class Seurat(Step):
     def __init__(self,
-                 inputDir = None,                 
-                 outputDir = None, 
+                 Matrixdata = None,                 
+                 barcodes = None, 
+                 genes = None,
+                 outputDir = None,
                  threads = None,
                  cmdParam = None, 
                  **kwargs):
@@ -21,8 +23,10 @@ class Seurat(Step):
         """
         
         # set all input and output parameters
-        self.setParamIO('inputDir',inputDir)
-        self.setParamIO('outputDir',outputDir)   
+        self.setParamIO('Matrixdata',Matrixdata)
+        self.setParamIO('barcodes',barcodes)   
+        self.setParamIO('genes',genes) 
+        self.setParamIO('outputDir',outputDir) 
         # call self.initIO()
         self.initIO()
         #set other parameters
@@ -37,47 +41,49 @@ class Seurat(Step):
         all of the input and output files from the io parameters set in __init__() 
         """
         # obtain all input and output parameters        
-        inputDir = self.getParamIO('inputDir')
-        outputDir = self.getParamIO('outputDir')        
-        if inputDir is None:
-        	self.setInput('barcodes',None)
-        	self.setInput('genes', None)
-        	self.setInput('matrix',None)
-        else:
-        	self.setInput('barcodes',os.path.join(inputDir,'barcodes.tsv'))
-        	self.setInput('genes',os.path.join(inputDir,'genes.tsv'))
-        	self.setInput('matrix',os.path.join(inputDir,'matrix.mtx'))
+        Matrixdata = self.getParamIO('Matrixdata')
+        barcodes = self.getParamIO('barcodes')   
+        genes = self.getParamIO('genes')  
+        outputDir = self.getParamIO('outputDir')  
+        
         #set all input files        
-   
+        self.setInputDirOrFile('Matrixdata', Matrixdata)
+        self.setInputDirOrFile('barcodes', barcodes)
+        self.setInputDirOrFile('genes', genes)
+
         # create output file paths and set
         self.setOutputDir1To1('VlnPlot', outputDir,'VlnPlot','jpg','genes') 
-        self.setOutputDir1To1('GenePlot', outputDir,'GenePlot','jpg','genes') 
-        '''
+        self.setOutputDir1To1('GenePlot', outputDir,'GenePlot','jpg','genes')
+        if outputDir is None:
+        	self.setParamIO('outputDir',Configure.getTmp())     
+
     def call(self, *args):
         """
         called by Seurat()(object)
         """
         # the first object
-        fastqUpstream = args[0]      
+        cellrangerUpstream = args[0]      
         
         # set all required input parameters from upstream object
-        self.setParamIO('fastqInput1',fastqUpstream.getOutput('fastqOutput1'))
-        '''
-
+        self.setParamIO('Matrixdata',cellrangerUpstream.getOutput('matrix.mtx'))
+        self.setParamIO('barcodes',cellrangerUpstream.getOutput('barcodes.tsv'))
+        self.setParamIO('genes',cellrangerUpstream.getOutput('genes.tsv'))
 
     def _multiRun(self,):
+        Matrixdata = self.getInput('Matrixdata')
         barcodes = self.getInput('barcodes')
         genes = self.getInput('genes')
-        matrix = self.getInput('matrix')
         VlnPlot = self.getOutput('VlnPlot')
         GenePlot = self.getOutput('GenePlot')
         cmdline = ['Rscript',
         		   'Seurat.R',
-        			self.getParamIO('inputDir'),
+        			Matrixdata,
+                    barcodes,
+                    genes,
                     self.getParamIO('outputDir')
         			]
         # cmdline = ' '.join(cmdline)		     
-        # print(' '.join(cmdline))      
+        print(' '.join(cmdline))      
         self.callCmdline(cmdline)
            
             
