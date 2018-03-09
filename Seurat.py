@@ -55,7 +55,7 @@ class Seurat(Step):
         self.setOutputDir1To1('VlnPlot', outputDir,'VlnPlot','jpg','genes') 
         self.setOutputDir1To1('GenePlot', outputDir,'GenePlot','jpg','genes')
         if outputDir is None:
-        	self.setParamIO('outputDir',Configure.getTmp())     
+            self.setParamIO('outputDir',Configure.getTmpDir())     
 
     def call(self, *args):
         """
@@ -65,9 +65,8 @@ class Seurat(Step):
         cellrangerUpstream = args[0]      
         
         # set all required input parameters from upstream object
-        self.setParamIO('Matrixdata',cellrangerUpstream.getOutput('matrix.mtx'))
-        self.setParamIO('barcodes',cellrangerUpstream.getOutput('barcodes.tsv'))
-        self.setParamIO('genes',cellrangerUpstream.getOutput('genes.tsv'))
+        self.setParamIO('Matrixdata',cellrangerUpstream.getParamIO('outputDir'))
+        
 
     def _multiRun(self,):
         Matrixdata = self.getInput('Matrixdata')
