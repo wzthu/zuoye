@@ -46,11 +46,11 @@ class MergeToFrag(Step):
             self.setParamIO('bedInput', samUpstream.getOutput('bedOutput'))
         elif isinstance(samUpstream, RmChrOrMergeAllSample):
             mergedfile = samUpstream.getOutputList('mergedfilename')
-            print("RmChrOrMergeAllSample mergedfilename:")
-            print(mergedfile)
+            # print("RmChrOrMergeAllSample mergedfilename:")
+            # print(mergedfile)
             otherbed = samUpstream.getOutputList('bedOutput')
-            print("RmChrOrMergeAllSample bedOutput:")
-            print(otherbed)
+            # print("RmChrOrMergeAllSample bedOutput:")
+            # print(otherbed)
             otherbed = mergedfile + otherbed
             self.setParamIO('bedInput', otherbed)
 
