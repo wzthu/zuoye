@@ -652,6 +652,23 @@ class Step(StepBase):
         """
         return cmdName if self.getParam(paramName) else ''
     
+    def setInputFileInDir(self, inputName, inputDir, inputFileName):
+        """
+        For developer:
+        when input parameter is a list or single string,
+        use this parameter to generate all of the file paths under the path or
+        just use the single string path directly
+        inputName: the key name of inputs
+        inputValue: string of directory or file path, or list of file paths  
+        """
+        if inputDir is None:
+            self.setInput(inputName,None)
+        else:
+            if inputFileName is None:
+                raise Exception('inputFileName can not be None')
+            else:
+                self.setInput(inputName,os.path.join(inputDir,inputFileName))
+                    
     def setInputDirOrFile(self, inputName, inputValue):
         """
         For developer:
@@ -704,6 +721,13 @@ class Step(StepBase):
         it will wrap it will list. Otherwise it will return the input as it is.
         """
         return self.convertToList(self.inputs[inputName])            
+
+    def getInputDir(self, inputName):
+        filePath = self.getInputList(inputName)
+        return os.path.dirname(filePath[0])
+    
+    def getInputPrefix(self, inputName, prefix):       
+        return self.getInputDir(inputName) + prefix
         
     def getOutputList(self, outputName):
         """
@@ -712,7 +736,15 @@ class Step(StepBase):
         it will wrap it will list. Otherwise it will return the output as it is.
         """
         return self.convertToList(self.outputs[outputName])
-        
+
+    def getOutputDir(self, outputName):
+        filePath = self.getOutputList(outputName)
+        return os.path.dirname(filePath[0])
+    
+    def getOutputPrefix(self, outputName, prefix):
+        return self.getOutputDir(outputName) + prefix
+    
+    
     def getInputs(self,):
         """
         For developer and user
@@ -793,12 +825,13 @@ class Step(StepBase):
         """
         return super(Step,self).getParamIO(paramName)
     
-    def setParamIO(self, paramName, paramValue):
+    def setParamIO(self, paramName, paramValue, setTmp = False):
         """
         For developer
         Set input  or output parameters at __init__() and 
         Set input parameters from upstream at call()
         """
+
         return super(Step,self).setParamIO(paramName, paramValue)
         
     def initParam(self,**kwargs):
