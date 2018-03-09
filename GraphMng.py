@@ -88,6 +88,9 @@ class GraphAll(GraphMng):
                  'FastQC',
                  'FastqDump',
                  'Hisat2',
+                 'SamToBam',
+                 'Bamsort',
+                 'BamSort',
                  'Tophat',
                  'Star',
                  'Cufflinks',
@@ -107,6 +110,12 @@ class GraphAll(GraphMng):
         edge1 = [
                 #Smart-seq
                 ['FastqDump','Hisat2'],
+                ['Hisat2','SamToBam'],
+                ['SamToBam','Bamsort'],
+                ['Bamsort','Cufflinks'],
+                ['SamToBam','BamSort'],
+                ['BamSort','Cufflinks'],
+            
                 ['SRAToFastq','FastQC'],
                 ['SRAToFastq','Tophat'],
                 ['SRAToFastq','Star'],
@@ -114,6 +123,7 @@ class GraphAll(GraphMng):
                 ['Star','HTSeq'],
                 #10x Genomeics
                 ['Cellranger','Seurat'],
+                ['Qualification10x','PCA'],
                 #drop-seq
                 ['FastqToBam','BamMerge'],
                 ['BamMerge','TagBarcode'],
