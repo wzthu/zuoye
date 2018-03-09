@@ -129,6 +129,15 @@ class GraphAll(GraphMng):
                 ['BamMerge','TagBarcode'],
                 ['TagBarcode','TagBarcode'],
                 ['TagBarcode','FilterBam'],
+                ['FilterBam', 'TrimAdapter'],
+                ['TrimAdapter','TrimPolyA'],
+                ['TrimPolyA','BamToFastq'],
+                ['BamToFastq','StarAlign'],
+                ['StarAlign','SortBam'],
+                ['TrimPolyA','MergeBamAlign'],
+                ['MergeBamAlign','TagGene'],
+                ['TagGene','DetectError'],
+                ['DetectError','DigitalExpression'],
                 #ATAC-seq
                 ['SRAToFastq','FastQC'],
                 ['SRAToFastq','AdapterRemoval'],
@@ -142,7 +151,10 @@ class GraphAll(GraphMng):
                 ['RmChrOrMergeAllSample', 'MergeToFrag'],
                 ['RmChrOrMergeAllSample', 'BedSort']
                 ]
-        super(GraphAll, self).__init__([edge1],[node1])        
+
+        edge2 = [['SortBam','MergeBamAlign']]
+
+        super(GraphAll, self).__init__([edge1,edge2],[node1,[]])        
         
 class GraphATACgl(GraphMng):
     def __init__(self,*args):

@@ -506,6 +506,9 @@ class StepBase:
         
     def _setInputSize(self,inputSize):
         self.__inputSize = inputSize
+        
+    def _setUpstreamSize(self,size):
+        self.__upstreamSize = size
     
 class Step(StepBase):
     def __init__(self,cmdParam,**kwargs):
@@ -662,7 +665,7 @@ class Step(StepBase):
         inputValue: string of directory or file path, or list of file paths  
         """
         if inputDir is None:
-            self.setInput(inputName,None)
+            self.setInput(inputName, None)
         else:
             if inputFileName is None:
                 raise Exception('inputFileName can not be None')
