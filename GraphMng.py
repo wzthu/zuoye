@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
 Created on Fri Mar  2 19:22:29 2018
-
 @author: WeiZheng
 """
 
@@ -86,9 +85,9 @@ class GraphAll(GraphMng):
     def __init__(self,*args):
                 #Smart-seq
         node1 = ['SRAToFastq',
-	         'FastqDump',
-		 'Hisat2',
                  'FastQC',
+                 'FastqDump',
+                 'Hisat2',
                  'Tophat',
                  'Star',
                  'Cufflinks',
@@ -107,7 +106,7 @@ class GraphAll(GraphMng):
         
         edge1 = [
                 #Smart-seq
-		['FastqDump','Hisat2'],
+                ['FastqDump','Hisat2'],
                 ['SRAToFastq','FastQC'],
                 ['SRAToFastq','Tophat'],
                 ['SRAToFastq','Star'],
@@ -147,9 +146,4 @@ class GraphATACgl(GraphMng):
                 
         
         
-        
-        
-        
-        
-            
         
