@@ -1,64 +1,74 @@
 # -*- coding: utf-8 -*-
 """
+
 designed for scATAC-seq
+
 @author: Weizhang
-sort BED file using bedtools
+
 """
 
-from StepBase import Step, Configure
+from StepBase import Step
 
 
-class BedSort(Step):
+class BamSort(Step):
     def __init__(self,
-                 bedInput=None,
-                 bedOutputDir=None,
+                 bamInput=None,
+                 bamOutputDir=None,
+                 threads=1,
                  cmdParam=None,
                  **kwargs):
         super(Step, self).__init__(cmdParam, **kwargs)
 
         # set IO parameters
-        self.setParamIO('bedInput', bedInput)
-        self.setParamIO('bedOutputDir', bedOutputDir)
+        self.setParamIO('bamInput', bamInput)
+        self.setParamIO('bamOutputDir', bamOutputDir)
 
         self.initIO()
 
+        # set other parameters
+        self.setParam('threads', threads)
+
     def impInitIO(self):
-        bedInput = self.getParamIO('bedInput')
-        bedOutputDir = self.getParamIO('bedOutputDir')
+        bamInput = self.getParamIO('bamInput')
+        bamOutputDir = self.getParamIO('bamOutputDir')
 
         # set all input files
-        self.setInputDirOrFile('bedInput', bedInput)
+        self.setInputDirOrFile('bamInput', bamInput)
         # set all output files
-        self.setOutputDir1To1('bedOutput', bedOutputDir, None, 'bed', 'bedInput')
+        self.setOutputDir1To1('bamOutput', bamOutputDir, None, 'bam', 'bamInput')
 
-        if bedInput is not None:
-            self._setInputSize(len(self.getInputList('bedInput')))
+        if bamInput is not None:
+            self._setInputSize(len(self.getInputList('bamInput')))
 
     def call(self, *args):
         samUpstream = args[0]
 
         # samOutput is from the former step (Mapping)
-        self.setParamIO('bedInput', samUpstream.getOutput('mergedfilename'))
+        self.setParamIO('bamInput', samUpstream.getOutput('bamOutput'))
 
     def _multiRun(self,):
-        bedInput = self.getInputList('bedInput')
-        bedOutput = self.getOutputList('bedOutput')
-        for i in range(len(bedInput)):
+        bamInput = self.getInputList('bamInput')
+        bamOutput = self.getOutputList('bamOutput')
+
+        for i in range(len(bamInput)):
             cmdline = [
-                'sortBed -i',
-                bedInput[i],
-                '>',
-                bedOutput[i]
+                'samtools sort -O BAM',
+                '-@', str(self.getParam('threads')),
+                '-o', bamOutput[i], bamInput[i]
             ]
             result = self.callCmdline(cmdline)
 
     def _singleRun(self, i):
-        bedInput = self.getInputList('bedInput')
-        bedOutput = self.getOutputList('bedOutput')
+        samInput = self.getInputList('bamInput')
+        bamOutput = self.getOutputList('bamOutput')
+
         cmdline = [
-            'sortBed -i',
-            bedInput[i],
-            '>',
-            bedOutput[i]
+            'samtools sort -O BAM',
+            '-@', str(self.getParam('threads')),
+            '-o', bamOutput[i], samInput[i]
         ]
+
         result = self.callCmdline(cmdline)
+
+
+
