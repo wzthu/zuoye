@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from BamSort import BamSort
+from BamSortDNA import BamSort
 from StepBase import Configure,Schedule
 
 Configure.setRefDir('/home/wzhang/genome/hg19_bowtie2/')

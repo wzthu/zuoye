@@ -1,4 +1,4 @@
-from Bamsort import Bamsort
+from BamSortRNA import Bamsort
 from stepbase import Configure,Schedule
 
 import os
