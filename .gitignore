@@ -1,5 +1,9 @@
 # test step folder
 step_*/
+.idea/
+
+#R folder
+.Rhistory/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
