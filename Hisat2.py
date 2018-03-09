@@ -1,7 +1,7 @@
 # coding: utf-8
 
 from StepBase import Step,Configure,Schedule
-#from FastqDump import FastqDump
+from FastqDump import FastqDump
 class Hisat2(Step):
 
     def  __init__(self,
@@ -79,9 +79,9 @@ class Hisat2(Step):
         Upstream = args[0]
 
         # set all required input parameters from upstream object
-        #if isinstance(Upstream,FastqDump):
-        #    self.setParamIO('fastqInput1',fastqUpstream.getOutput('fastqOutput1'))
-        #    self.setParamIO('fastqInput2',fastqUpstream.getOutput('fastqOutput2'))
+        if isinstance(Upstream,FastqDump):
+            self.setParamIO('fastqInput1',Upstream.getOutput('fastqOutput1'))
+            self.setParamIO('fastqInput2',Upstream.getOutput('fastqOutput2'))
 
 
     def _singleRun(self,i):
