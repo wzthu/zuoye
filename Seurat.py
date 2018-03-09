@@ -9,7 +9,7 @@ import os
 
 class Seurat(Step):
     def __init__(self,
-                 inputDir = None
+                 inputDir = None,
                  outputDir = None,
                  threads = None,
                  cmdParam = None, 
@@ -60,7 +60,9 @@ class Seurat(Step):
         cellrangerUpstream = args[0]      
         
         # set all required input parameters from upstream object
-        self.setParamIO('Matrixdata',cellrangerUpstream.getParamIO('outputDir'))
+        self.setParamIO('inputDir',cellrangerUpstream.getParamIO('outputDir'))
+        
+        
         
 
     def _multiRun(self,):
