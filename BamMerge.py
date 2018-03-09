@@ -28,7 +28,7 @@ class BamMerge(Step):
 
         self.setInputDirOrFile('bamInput', bamInput)
         #self.setOutputDir1To1('bamOutput', bamOutputDir, 'merged', 'bam', 'bamInput')
-        self.setOutputDirNTo1('bamOutput', bamOutputDir, 'merged.bam', 'bamInput')
+        self.setOutputDirNTo1('bamOutput', os.path.join(bamOutputDir, 'unaligned_data.bam'), '', 'bamInput')
         if bamInput is not None:
             self._setInputSize(len(self.getInputList('bamInput')))
         self._setMultiRun()

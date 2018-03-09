@@ -37,8 +37,8 @@ class TrimAdapter(Step):
         sumOutputDir = self.getParamIO('sumOutputDir')
 
         self.setInputDirOrFile('bamInput', bamInput)
-        self.setOutputDir1To1('bamOutput', bamOutputDir, 'unaligned_tagged_trimmed_smart', 'bam', 'bamInput')
-        self.setOutputDir1To1('sumOutput', sumOutputDir, 'adapter_trimming_report', 'txt', 'bamInput')
+        self.setOutputDirNTo1('bamOutput', os.path.join(bamOutputDir, 'unaligned_tagged_trimmed_smart.bam'), '',  'bamInput')
+        self.setOutputDirNTo1('sumOutput', os.path.join(sumOutputDir, 'adapter_trimming_report.txt'), '', 'bamInput')
 
         if bamInput is not None:
             self._setInputSize(len(self.getInputList('bamInput')))
@@ -50,7 +50,7 @@ class TrimAdapter(Step):
     def _singleRun(self, i):
         bamInput = self.getInputList('bamInput')
         bamOutput = self.getOutputList('bamOutput')
-        sumOutput = self.getOutputList('bamOutput')
+        sumOutput = self.getOutputList('sumOutput')
 
         adapterSeq = self.getParam('adapterSeq')
         misMatches = self.getParam('misMatches')
