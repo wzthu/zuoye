@@ -86,6 +86,8 @@ class GraphAll(GraphMng):
     def __init__(self,*args):
                 #Smart-seq
         node1 = ['SRAToFastq',
+	         'FastqDump',
+		 'Hisat2',
                  'FastQC',
                  'Tophat',
                  'Star',
@@ -105,6 +107,7 @@ class GraphAll(GraphMng):
         
         edge1 = [
                 #Smart-seq
+		['FastqDump','Hisat2'],
                 ['SRAToFastq','FastQC'],
                 ['SRAToFastq','Tophat'],
                 ['SRAToFastq','Star'],
