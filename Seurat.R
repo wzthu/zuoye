@@ -1,75 +1,69 @@
- Args <- commandArgs()
- matrixdata <- Args[6]
- barcodes <- Args[7]
- genes <- Args[8]
- outputpath <- Args[9]
- #gene_lowthread <- Args[10]
- #gene_highthread <- Args[11]
- print(matrixdata)
- print(barcodes)
- print(genes)
- print(outputpath)
- library(Seurat)
- library(dplyr)
- library(Matrix)
- #install.packages('Seurat')
- celldata <- Matrix::readMM(file = matrixdata)
- cellname <- read.table(file = barcodes, header = FALSE, colClasses = "character")[[1]]
- genename <- read.table(file = genes, header = FALSE, colClasses = "character")[[1]]
- rownames(celldata) <- genename
- colnames(celldata) <- cellname
- #VLplot
- cell <- CreateSeuratObject(raw.data = celldata, min.cells = 3, min.genes = 200, 
-                             project = "10X_data")
- jpeg(filename = as.character(paste(as.character(outputpath),"/", "VlnPlot.jpg",sep = "")))
- VlnPlot(object = cell, features.plot = c("nGene", "nUMI"), nCol = 2)
- dev.off()
- jpeg(filename = as.character(paste(as.character(outputpath),"/", "GenePlot.jpg",sep = "")))
- GenePlot(object = cell, gene1 = "nUMI", gene2 = "nGene")
- dev.off()
- #cell <- FilterCells(object = cell, subset.names = "nGene", 
-                      #low.thresholds = c(gene_lowthread), high.thresholds = c(gene_highthread))
- #Normalizing the data
- cell <- NormalizeData(object = cell, normalization.method = "LogNormalize", 
-                        scale.factor = 10000)
- #Detection of variable genes across the single cells
- jpeg(filename = as.character(paste(as.character(outputpath),"/", "FindVariableGenes.jpg",sep = "")))
- cell <- FindVariableGenes(object = cell, mean.function = ExpMean, dispersion.function = LogVMR, 
-                            x.low.cutoff = 0.0125, x.high.cutoff = 3, y.cutoff = 0.5)
- dev.off()
- length(x = cell@var.genes)
- #Scaling the data and removing unwanted sources of variation
- cell <- ScaleData(object = cell, vars.to.regress = "nUMI")
- #Perform linear dimensional reduction
- cell <- RunPCA(object = cell, pc.genes = cell@var.genes, do.print = TRUE, pcs.print = 1:5, 
-                 genes.print = 5)
- # Examine and visualize PCA results a few different ways
- # Prints a set of genes that most strongly define a set of principal components
- PrintPCA(object = cell, pcs.print = 1:5, genes.print = 5, use.full = FALSE)
- #Visualize top genes associated with principal components
- #VizPCA(object = cell, pcs.use = 1:2)
- #PCAPlot(object = cell, dim.1 = 1, dim.2 = 2)  
- # ProjectPCA scores each gene in the dataset (including genes not included
- # in the PCA) based on their correlation with the calculated components.
- # Though we don't use this further here, it can be used to identify markers
- # that are strongly correlated with cellular heterogeneity, but may not have
- # passed through variable gene selection.  The results of the projected PCA
- # can be explored by setting use.full=T in the functions above
- cell <- ProjectPCA(object = cell, do.print = FALSE)
- # NOTE: This process can take a long time for big datasets, comment out for
- # expediency.  More approximate techniques such as those implemented in
- # PCElbowPlot() can be used to reduce computation time
- cell <- JackStraw(object = cell, num.replicate = 100, do.print = FALSE)
- #JackStrawPlot(object = cell, PCs = 1)
- #PCElbowPlot(object = cell)
- cell <- FindClusters(object = cell, reduction.type = "pca", dims.use = 1:10, 
-                       resolution = 0.5, print.output = 0, save.SNN = TRUE, force.recalc = T) 
- PrintFindClustersParams(object = cell) 
- cell <- RunTSNE(object = cell, dims.use = 1:10, do.fast = TRUE)
- jpeg(filename = as.character(paste(as.character(outputpath),"/", "tSNE_findcluster.jpg",sep = "")))
- TSNEPlot(object = cell)
- dev.off()
- 
- 
- 
+Args <- commandArgs()
+print(Args)
+
+matrix <- Args[0]
+barcodes <- Args[1]
+genes <- Args[2]
+#projectname <- Args[3]
+output <- Args[3]
+
+library(Seurat)
+library(dplyr)
+library(Matrix)
+
+read10x <- function(matrix,barcode,genes)
+{
+celldata = Matrix::readMM(file = matrix)
+cellname = read.table(file = barcode, header = FALSE, colClasses = "character")[[1]]
+genename = read.table(file = genes, header = FALSE, colClasses = "character")[[1]]
+rownames(celldata) = genename
+colnames(celldata) = cellname
+return(celldata)
+}
+
+#load data
+rawdata = read10X(matrix,barcode,genes)
+test = CreateSeuratObject(raw.data = rawdata,project = "Frankie so tired")
+
+#processing
+mito.genes <- grep(pattern = "^MT-", x = rownames(x = test@data), value = TRUE)
+percent.mito <- Matrix::colSums(test@raw.data[mito.genes, ])/Matrix::colSums(test@raw.data)
+
+test <- AddMetaData(object = test, metadata = percent.mito, col.name = "percent.mito")
+
+##########################
+jpeg(file=output+"Violinplot.jpeg")
+VlnPlot(object = test, features.plot = c("nGene", "nUMI", "percent.mito"), nCol = 3)
+dev.off()
+
+########################
+jpeg(file=output+"geneplot.jpeg")
+par(mfrow = c(1, 2))
+GenePlot(object = test, gene1 = "nUMI", gene2 = "nGene")
+dev.off()
+
+
+test <- FilterCells(object = test, subset.names = c("nGene","nUMI"), 
+                    low.thresholds = c(-Inf, -Inf), high.thresholds = c(3500,10000))
+test <- NormalizeData(object = test, normalization.method = "LogNormalize",scale.factor = 10000)
+test <- FindVariableGenes(object = test, mean.function = ExpMean,x.low.cutoff = 0.05, x.high.cutoff = 3, y.cutoff = 1)
+test <- ScaleData(object = test,vars.to.regress = "nUMI")
+test <- RunPCA(object = test, pc.genes = test@var.genes,pcs.compute = 30)
+
+jpeg(file=output+"Elbowplot.jpeg")
+PCElbowPlot(object = test,num.pc = 30)
+dev.off()
+
+test <- FindClusters(object = test, reduction.type = "pca", dims.use = 1:5, resolution = 0.3,
+                      print.output = 1, save.SNN = TRUE)
+test <- RunTSNE(object = test, dims.use = 1:5,do.fast = TRUE)
+
+jpeg(file=output+"TSNEplot.jpeg")
+TSNEPlot(object = test)
+dev.off()
+
+# FeaturePlot(test,features.plot = "S100B",cols.use = c("white","red"))
+# cluster3.markers <- FindMarkers(object = test, ident.1 = 1, logfc.threshold = 0.8)
+# print(x = head(x = cluster4.markers, n = 5))
+
  

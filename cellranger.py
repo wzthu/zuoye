@@ -21,8 +21,6 @@ class Cellranger(Step):
         self.setParamIO('outputdir', outputdir)
         self.setParam('id', outputdir)
         self.initIO()
-		
-		
         self.setParam('expectcells', expectcells)
         self._setMultiRun()
 
