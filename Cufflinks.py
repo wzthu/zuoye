@@ -49,13 +49,13 @@ class Cufflinks(Step):
 		#fragBiasCorrectInput = self.getParamIO('fragBiasCorrectInput')
 
 		self.setInputDirOrFile('bamInput',bamInput)
-		self.setInputDirOrFile('gtfInput',gtfInput)
+		# self.setInputDirOrFile('gtfInput',gtfInput)
 		#self.setInputDirOrFile('fragBiasCorrectInput',fragBiasCorrectInput)
 
 		#if fragBiasCorrectInput is None:
 		#	self.setParamIO('fragBiasCorrectInput',' ')
 
-		self.setOutputDirNTo1('outputDir',outputDir,'genes.fpkm_tracking','bamInput')
+		self.setOutputDir1To1('outputDir',outputDir,'cufflinks','suffix','bamInput')
 
 		if bamInput is not None:
 			self._setInputSize(len(self.getInputList('bamInput')))
@@ -68,10 +68,10 @@ class Cufflinks(Step):
 
 	def _singleRun(self,i):
 		bamInput = self.getInputList('bamInput')
-		gtfInput = self.getInputList('gtfInput')
+		gtfInput = self.getParamIO('gtfInput')
 		#fragBiasCorrectInput = self.getInputList('fragBiasCorrectInput')
-		print('uhhh')
 		outputDir = self.getOutputList('outputDir')
+		print(outputDir)
 
 		cmdline = [
 				'cufflinks',
@@ -81,7 +81,7 @@ class Cufflinks(Step):
 				self.getBoolParamCmd('--total-hits-norm','istotalHitsNorm'),
 				'-m',str(self.getParam('fragLenMean')),
 				'-s',str(self.getParam('fragLenStdDev')),
-				'-G',gtfInput[i],
+				'-G',gtfInput,
 				'-o',outputDir[i],
 				bamInput[i]
 				]
