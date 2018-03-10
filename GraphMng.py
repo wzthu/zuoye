@@ -139,7 +139,6 @@ class GraphAll(GraphMng):
                 ['TagGene','DetectError'],
                 ['DetectError','DigitalExpression'],
                 #ATAC-seq
-                ['SRAToFastq','FastQC'],
                 ['SRAToFastq','AdapterRemoval'],
                 ['AdapterRemoval','Bowtie2'],
                 ['Bowtie2','SamToBam'],
