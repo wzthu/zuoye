@@ -52,7 +52,7 @@ class BamToBed(Step):
         samUpstream = args[0]
 
         # samOutput is from the former step (Mapping)
-        self.setParamIO('bamInput', samUpstream.getOutput('BamOutput'))
+        self.setParamIO('bamInput', samUpstream.getOutput('bamOutput'))
 
     def _multiRun(self,):
         bamInput = self.getInputList('bamInput')

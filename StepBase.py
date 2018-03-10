@@ -506,6 +506,9 @@ class StepBase:
         
     def _setInputSize(self,inputSize):
         self.__inputSize = inputSize
+        
+    def _setUpstreamSize(self,size):
+        self.__upstreamSize = size
     
 class Step(StepBase):
     def __init__(self,cmdParam,**kwargs):
@@ -551,6 +554,9 @@ class Step(StepBase):
         inputName(str): the input file paths to be referenced
         it will set paths list of outputDir/outputPrefix.*.outputSuffix like paths for outputName
         """
+        suffixDot = '.'
+        if outputSuffix == '':
+            suffixDot =''
         inputList = self.getInput(inputName)
         if inputList is None:
             self.setOutput(outputName, None)
@@ -565,10 +571,10 @@ class Step(StepBase):
                     outputList.append(prefixs[i] + sep + outputSuffix)
             else:
                 if len(inputList) == 1:
-                    outputList.append(outputPrefix + '.' + outputSuffix)
+                    outputList.append(outputPrefix + suffixDot + outputSuffix)
                 else:
                     for i in range(len(inputList)):
-                        outputList.append(outputPrefix + sep + str(i) + '.' + outputSuffix)
+                        outputList.append(outputPrefix + sep + str(i) + suffixDot + outputSuffix)
             if outputDir is None:
                 self.setOutput(outputName,Configure.getTmpPath(outputList))
             else:        
@@ -662,7 +668,7 @@ class Step(StepBase):
         inputValue: string of directory or file path, or list of file paths  
         """
         if inputDir is None:
-            self.setInput(inputName,None)
+            self.setInput(inputName, None)
         else:
             if inputFileName is None:
                 raise Exception('inputFileName can not be None')
