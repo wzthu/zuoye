@@ -14,7 +14,6 @@ class Cufflinks(Step):
 				 gtfInput = None,
 				# fragBiasCorrectInput = None,
 				 outputDir = None,
-				 
 				 threads = None,
 				 ismultiReadCorrect = None,
 				 isupperQuartileForm = None,
@@ -56,6 +55,7 @@ class Cufflinks(Step):
 		#	self.setParamIO('fragBiasCorrectInput',' ')
 
 		self.setOutputDir1To1('outputDir',outputDir,'cufflinks','suffix','bamInput')
+		self.setOutput('assembliesOutput',os.path.join(Configure.getTmpDir(), 'assemblies.txt'))
 
 		if bamInput is not None:
 			self._setInputSize(len(self.getInputList('bamInput')))
@@ -71,7 +71,7 @@ class Cufflinks(Step):
 		gtfInput = self.getParamIO('gtfInput')
 		#fragBiasCorrectInput = self.getInputList('fragBiasCorrectInput')
 		outputDir = self.getOutputList('outputDir')
-		print(outputDir)
+		print(os.path.join(Configure.getTmpDir(), 'assemblies.txt'))
 
 		cmdline = [
 				'cufflinks',
@@ -83,7 +83,10 @@ class Cufflinks(Step):
 				'-s',str(self.getParam('fragLenStdDev')),
 				'-G',gtfInput,
 				'-o',outputDir[i],
-				bamInput[i]
+				bamInput[i],
+				';',
+				'echo', '"'+os.path.join(outputDir[i],'transcripts.gtf')+'" >>',
+				os.path.join(Configure.getTmpDir(), 'assemblies.txt')
 				]
 		self.callCmdline(cmdline)
 
