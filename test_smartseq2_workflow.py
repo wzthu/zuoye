@@ -26,7 +26,7 @@ bamsort = Bamsort()(sam2bam)
 print (bamsort.outputs)
 
 #Cufflinks
-
+# cufflinks =Cufflinks(bamInput = '/data/sqchen/zuoye/step_03_Bamsort/sorted.0.bam',gtfInput='/data/sqchen/genome.gtf',outputDir='../smartseq2_cufflinks_result')
 cufflinks =Cufflinks(gtfInput='../../yinqijin/genome.gtf',outputDir='../smartseq2_cufflinks_result')(bamsort)
 print (cufflinks.outputs)
 
