@@ -75,18 +75,22 @@ class AdapterRemoval(Step):
 
 
         
-        
         #set all input files
         self.setInputDirOrFile('fastqInput1',fastqInput1)       
         self.setInputDirOrFile('fastqInput2',fastqInput2)
 
-  
         
         # create output file paths and set
+
+        if fastqOutputDir1 is None:
+            self.setParamIO('fastqOutputDir1',Configure.getTmpDir())
+        if fastqOutputDir2 is None:
+            self.setParamIO('fastqOutputDir2',Configure.getTmpDir())
         self.setOutputDir1To1('fastqOutput1',fastqOutputDir1, None, 'fastq','fastqInput1')       
         self.setOutputDir1To1('fastqOutput2',fastqOutputDir2, None, 'fastq','fastqInput2')
         self.setOutputDir1To1('adapterOutput', None, None, 'adapter.txt', 'fastqInput1')
         self.setOutputDir1To1('settingsOutput', None, None,'settings', 'fastqInput1')
+        
         
         # set how many sample are there
         if fastqInput1 is not None:
@@ -132,17 +136,19 @@ class AdapterRemoval(Step):
                     '--file2',fastqInput2[i],
                     '--identify-adapters',
                     '--threads',str(self.getParam('threads')),
-                    '| grep \'Consensus:\' >',
-                    adapterOutput[i]
+                    '| grep Consensus: >',
+                    adapterOutput[i],
                     ]
             print(' '.join(cmdline))
             #run commandline
-            self.callCmdline(cmdline)
-            result = self.getListInFile(adapterOutput[i])            
+            #self.callCmdline('V1',cmdline,stdoutToLog = False)
+            self.callCmdline('V1',cmdline)
+            print(self.convertToRealPath(adapterOutput[i]))
+            result = self.getListInFile(self.convertToRealPath(adapterOutput[i]))
             adapter1 = self.adapter1[str(i)] = result[0].split()[1]
             adapter2 = self.adapter2[str(i)] = result[1].split()[1]
         #combine the command line   
-        cmdline  = [
+        cmdline  = [#'/root/software/adapterremoval/build/AdapterRemoval',
                 'AdapterRemoval',
                 '--file1',fastqInput1[i],
                 '--file2',fastqInput2[i],
@@ -152,7 +158,7 @@ class AdapterRemoval(Step):
                 '--output2',fastqOutput2[i],
                 '--threads',str(self.getParam('threads')),                
                 '--basename', settingsOutput[i][0:-9]]  
-        print(' '.join(cmdline))
+        print(' '.join(cmdline));
         #run commandline
-        self.callCmdline(cmdline)
+        self.callCmdline('V1',cmdline)
         

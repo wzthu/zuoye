@@ -76,6 +76,10 @@ class Bowtie2(Step):
             self.setInput('bt2IdxFiles', bt2IdxFiles)
 
         # create output file paths and set
+        if samOutputDir is None:
+            self.setParamIO('samOutputDir',Configure.getTmpDir())
+        if mapRsOutputDir is None:
+            self.setParamIO('mapRsOutputDir',Configure.getTmpDir())
         self.setOutputDir1To1('samOutput', samOutputDir,None,'sam','fastqInput1') 
         self.setOutputDir1To1('mapRsOutput',mapRsOutputDir,None,'result.txt','fastqInput1')
         
@@ -109,9 +113,9 @@ class Bowtie2(Step):
         fastqInput2 = self.getInputList('fastqInput2')
         samOutput = self.getOutputList('samOutput')
         mapRsOutput = self.getOutputList('mapRsOutput')
-        
+        bt2IdxFiles = self.getInput('bt2IdxFiles')            
         #combine the command line
-        cmdline = [
+        cmdline = [#'/root/software/bowtie2-2.3.4.1-linux-x86_64/bowtie2',
                 'bowtie2',
                 '-p',str(self.getParam('threads')),
                 self.getBoolParamCmd('--no-discordant ','isNoDiscordant'),
@@ -121,6 +125,7 @@ class Bowtie2(Step):
                 self.getUnsetParams(),
                 ' -x %s -1 %s -2 %s -S %s '%(
                     self.getParamIO('bt2Idx'),
+                    #bt2IdxFiles[0],
                     fastqInput1[i],
                     fastqInput2[i],
                     samOutput[i]),
@@ -128,10 +133,12 @@ class Bowtie2(Step):
                 ]
         
         #run commandline           
-        result = self.callCmdline(cmdline)
+        result = self.callCmdline('V1',cmdline,stdoutToLog = True)
+        #result = self.callCmdline(cmdline,stdoutToLog = False)
         
         #optional
-        f = open(mapRsOutput[i],'wb')   
+        f = open(self.convertToRealPath(mapRsOutput[i]),'wb')   
+        f.write(result.stdout)
         f.write(result.stderr)
             
         
