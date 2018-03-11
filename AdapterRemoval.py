@@ -7,6 +7,7 @@ Created on Sun Mar  4 13:22:35 2018
 
        
 from StepBase import Step,Configure
+from SRAToFastq import SRAToFastq
 import os
 
 class AdapterRemoval(Step):
@@ -101,12 +102,10 @@ class AdapterRemoval(Step):
         called by AdapterRemoval()(upstreamObj)
         """
         # the first object
-        fastqUpstream = args[0] 
-        
-        # set all required input parameters from upstream object
-        self.setParamIO('fastqInput1',fastqUpstream.getOutput('fastqOutput1'))
-        self.setParamIO('fastqInput2',fastqUpstream.getOutput('fastqOutput2'))
-   
+        fastqUpstream = args[0]
+
+        self.setParamIO('fastqInput1', fastqUpstream.getOutput('fastqOutput1'))
+        self.setParamIO('fastqInput2', fastqUpstream.getOutput('fastqOutput2'))
             
     def _singleRun(self, i):
         """

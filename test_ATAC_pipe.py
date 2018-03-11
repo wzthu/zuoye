@@ -9,12 +9,24 @@ from BamToBed import BamToBed
 from RmChrOrMergeAllSample import RmChrOrMergeAllSample
 from MergeToFrag import MergeToFrag
 from BedSort import BedSort
+from SRAToFastq import SRAToFastq
 
 Configure.setRefDir('/home/wzhang/genome/hg19_bowtie2/')
 Configure.setGenome('hg19')
 
+stf=SRAToFastq(sraInput='./minidata/atac/SraForTest')
 
-adrm = AdapterRemoval(fastqInput1='./minidata/atac/end1',fastqInput2='./minidata/atac/end2')
+print("SRAToFastq output:")
+print(stf.getOutput('fastqOutput1'))
+print(stf.getOutput('fastqOutput2'))
+print("\n")
+
+adrm = AdapterRemoval()(stf)
+
+print("AdapterRemoval output:")
+print(adrm.getOutput('fastqOutput1'))
+print(adrm.getOutput('fastqOutput2'))
+print("\n")
 
 rs=Bowtie2()(adrm)
 
@@ -76,4 +88,8 @@ print(bedsort.getOutput('bedOutput'))
 print("\n")
 
 Schedule.run()
+
+
+
+
 
