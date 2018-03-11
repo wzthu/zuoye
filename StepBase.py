@@ -408,9 +408,9 @@ class StepBase:
         return time.strftime("%Y-%m-%d %H:%M:%S",time.localtime(time.time()))
     
     def linkRecursive(self,originPath,desPath):
-        print(originPath)
-        print('To')
-        print(desPath)
+        #print(originPath)
+        #print('To')
+        #print(desPath)
         if os.path.isfile(originPath):
             subprocess.run(['rm','-rf',desPath])
             subprocess.run(['ln',originPath,desPath])
@@ -470,7 +470,7 @@ class StepBase:
                 '.tmp',
                  origin[1:])
         os.makedirs(virDir,exist_ok=True)
-        print(['ln','-f',origin,virPath])
+        #print(['ln','-f',origin,virPath])
         subprocess.run(['ln','-f',origin,virPath])
     
     def linkRealPaths(self,des):
@@ -485,7 +485,7 @@ class StepBase:
                 '.tmp',
                  des[1:])
         os.makedirs(virDir,exist_ok=True)
-        print(['ln','-f',virPath,des])
+        #print(['ln','-f',virPath,des])
         if os.path.exists(virPath):
             subprocess.run(['ln','-f',virPath,des])
         else:
@@ -524,9 +524,8 @@ class StepBase:
                     for afile in files:
                         self.linkVirtualPaths(afile)
                 self.__virtual = True        
-            tmpdir = self.push()            
-            Configure.setTmpDir(os.path.join(Configure.getDockerPath(),self.getStepFolderName()))            
-            
+            self.push(os.path.join(Configure.getDockerPath(),self.getStepFolderName()))            
+           
             
             if self.__multiRun :
                 self._multiRun()
@@ -543,7 +542,7 @@ class StepBase:
                         self.callCmdline('V1', 'chmod 777 -R ' + Configure.getTmpDir(),shell = True, stdoutToLog = False)
                     else:
                         pass#self.callCmdline('V1', 'chmod 777 -R ' + self.top(), shell = True, stdoutToLog = False)                  
-                    
+            
             self.pop()        
             if Configure.isDocker():        
                 self.__virtual = False
@@ -682,10 +681,10 @@ class StepBase:
     def getInput(self, inputName):
         if self.__virtual:
             if isinstance(self.inputs[inputName],list):
-                print([os.path.join(Configure.getDockerPath(),self.getStepFolderName(),'.tmp',s[1:]) for s in self.inputs[inputName]])
+                #print([os.path.join(Configure.getDockerPath(),self.getStepFolderName(),'.tmp',s[1:]) for s in self.inputs[inputName]])
                 return [os.path.join(Configure.getDockerPath(),self.getStepFolderName(),'.tmp',s[1:]) for s in self.inputs[inputName]]
             else:
-                print(os.path.join(Configure.getDockerPath(),self.getStepFolderName(),'.tmp',self.inputs[inputName][1:]))
+                #print(os.path.join(Configure.getDockerPath(),self.getStepFolderName(),'.tmp',self.inputs[inputName][1:]))
                 return os.path.join(Configure.getDockerPath(),self.getStepFolderName(),'.tmp',self.inputs[inputName][1:])
         else:
             return self.inputs[inputName]
@@ -796,8 +795,9 @@ class StepBase:
         self.__upstreamSize = size
     def _setVirtual(self, virtual = True):
         self.__virtual = virtual
-    def push(self):        
+    def push(self,newTmp):        
         self.tmpdirStack.append(Configure.getTmpDir())
+        Configure.setTmpDir(newTmp)
         return Configure.getTmpDir()
     def pop(self,):
         tpdir=self.tmpdirStack.pop()
@@ -805,7 +805,12 @@ class StepBase:
         return tpdir
         return 
     def top(self,):
-        return self.tmpdirStack[-1]
+        if len(self.tmpdirStack) == 0:
+            print('return here')
+            return None
+        else:
+            print('return here1')
+            return self.tmpdirStack[-1]
     
 class Step(StepBase):
     def __init__(self,cmdParam,**kwargs):
@@ -938,8 +943,16 @@ class Step(StepBase):
             cmdline = ' '.join(cmdline)
             
         if Configure.isDocker() and dockerVersion is not None:
-            cmdline = 'bash -c \"' + cmdline +'\"'
-            Schedule.startDocker(versions=dockerVersion)
+            cmdline = 'bash -c \"' + cmdline +'\"'            
+            if self.top() is not None:
+                
+                cur = Configure.getTmpDir()
+                self.pop()                
+                Schedule.startDocker(versions=dockerVersion)
+                self.push(cur)
+            else:                
+                Schedule.startDocker(versions=dockerVersion) 
+                
             cmdline = Schedule.getDockerCMD(cmdline,dockerVersion)
         
         

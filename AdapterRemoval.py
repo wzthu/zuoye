@@ -7,7 +7,6 @@ Created on Sun Mar  4 13:22:35 2018
 
        
 from StepBase import Step,Configure
-from SRAToFastq import SRAToFastq
 import os
 
 class AdapterRemoval(Step):
@@ -138,11 +137,10 @@ class AdapterRemoval(Step):
                     '| grep Consensus: >',
                     adapterOutput[i],
                     ]
-            print(' '.join(cmdline))
             #run commandline
             #self.callCmdline('V1',cmdline,stdoutToLog = False)
             self.callCmdline('V1',cmdline)
-            print(self.convertToRealPath(adapterOutput[i]))
+            #print(self.convertToRealPath(adapterOutput[i]))
             result = self.getListInFile(self.convertToRealPath(adapterOutput[i]))
             adapter1 = self.adapter1[str(i)] = result[0].split()[1]
             adapter2 = self.adapter2[str(i)] = result[1].split()[1]
@@ -157,7 +155,6 @@ class AdapterRemoval(Step):
                 '--output2',fastqOutput2[i],
                 '--threads',str(self.getParam('threads')),                
                 '--basename', settingsOutput[i][0:-9]]  
-        print(' '.join(cmdline));
         #run commandline
         self.callCmdline('V1',cmdline)
         
