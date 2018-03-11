@@ -48,7 +48,7 @@ class Seurat(Step):
         # set output/input paths
         # if inputdir is None, os will error
         if inputdir is not None:
-            self.setInputDirOrFile('barcodes', os.path.join(inputdir, 'barcode.tsv'))
+            self.setInputDirOrFile('barcodes', os.path.join(inputdir, 'barcodes.tsv'))
             self.setInputDirOrFile('genes', os.path.join(inputdir, 'genes.tsv'))
             self.setInputDirOrFile('matrix', os.path.join(inputdir, 'matrix.mtx'))
             self.setOutputDirNTo1('violinplot', os.path.join(outputdir, 'violinplot.jpeg'), '', 'barcodes')
