@@ -28,9 +28,8 @@ class Configure:
         'docker':True,
         'dockerPath':'/data',
         'dockerVersion':{
-                'V1':'hca:py2',
-                'V2':'hca:v4',
-                'V3':'hca:v5',
+                'V1':'hca:latest',
+                'V2':'hca:py2',
                 #'V4':'hca:v4',
                # 'V':'hca:latest'
                 },
@@ -241,6 +240,7 @@ class Schedule:
                         '-d',
                         '-t',
                         '--name=' + cls._getContainerName(version),
+                        '--privileged=true',
                         '-v',Configure.getTmpDir() + ':' + Configure.getDockerPath(),
                         Configure.getDockerVersion(version),
                         '/bin/bash',
@@ -251,6 +251,7 @@ class Schedule:
                         '-d',
                         '-t',
                         '--name=' + cls._getContainerName(version),
+                        '--privileged=true',
                         '-v',Configure.getTmpDir() + ':' + Configure.getDockerPath(),
                         Configure.getDockerVersion(version),
                         '/bin/bash',
@@ -933,7 +934,7 @@ class Step(StepBase):
             else:
                 self.setOutput(outputName,outputFilePath)
             
-    def callCmdline(self,dockerVersion,cmdline,shell = False, stdoutToLog = True):
+    def callCmdline(self,dockerVersion,cmdline,shell = False, stdoutToLog = True, otherPrefix = None):
         """
         For developer:
             call the command line and write log 
@@ -955,7 +956,8 @@ class Step(StepBase):
                 
             cmdline = Schedule.getDockerCMD(cmdline,dockerVersion)
         
-        
+        if otherPrefix is not None:
+            cmdline = cmdline + ' ' + otherPrefix
         
         
         print(cmdline)
