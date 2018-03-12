@@ -46,15 +46,16 @@ class SamToBam(Step):
         self.setParamIO('samInput', samUpstream.getOutput('samOutput'))
 
     def _multiRun(self,):
-        samInput = self.getInputList('samInput')
-        bamOutput = self.getOutputList('bamOutput')
-        for i in range(len(samInput)):
-            cmdline = [
-                'samtools view -b -S',
-                '-@', str(self.getParam('threads')),
-                '-o', bamOutput[i], samInput[i]
-            ]
-            result = self.callCmdline(cmdline)
+        pass
+        # samInput = self.getInputList('samInput')
+        # bamOutput = self.getOutputList('bamOutput')
+        # for i in range(len(samInput)):
+        #     cmdline = [
+        #         'samtools view -b -S',
+        #         '-@', str(self.getParam('threads')),
+        #         '-o', bamOutput[i], samInput[i]
+        #     ]
+        #     result = self.callCmdline(cmdline)
 
     def _singleRun(self, i):
         samInput = self.getInputList('samInput')
@@ -66,7 +67,7 @@ class SamToBam(Step):
             '-o', bamOutput[i], samInput[i]
         ]
 
-        result = self.callCmdline(cmdline)
+        result = self.callCmdline('V1', cmdline)
 
 
 
