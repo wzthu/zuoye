@@ -49,7 +49,7 @@ class Cellranger(Step):
         if outputdir is None:
             self.setParamIO('outputdir', Configure.getTmpDir())
             outputdir = self.getParamIO('outputdir')
-            self.resultdir = 'Cellranger'
+            self.resultdir = 'Cellranger1'
         else:
             self.resultdir = ''
 
@@ -75,47 +75,50 @@ class Cellranger(Step):
                 # use given path
                 dir = outputdir.split('/')[-1]
                 if os.path.isdir(outputdir):
-                    self.cmdline0 = ['rm -r', '%s' % outputdir]
-                    self.callCmdline(self.cmdline0)
-                self.cmdline1 = ['srun', 'cellranger', 'count',
+                    cmdline = ['rm -r', '%s' % outputdir]
+                    self.callCmdline(cmdline)
+                cmdline = ['srun', 'cellranger', 'count',
                                  '--id=%s --expect-cells=%s --transcriptome=%s --fastqs=%s'
                                  % (dir, str(expectcells), refile, fastqInput)]
-                self.callCmdline(self.cmdline1)
+                print(cmdline)
+                self.callCmdline(self.cmdline, stdoutToLog=False)
             else:
                 # use default filepath
                 if os.path.isdir('%s/Cellranger' % outputdir):
-                    self.cmdline2 = ['rm -r', '%s' % outputdir]
-                    self.callCmdline(self.cmdline2)
+                    cmdline = ['rm -r', '%s/Cellranger' % outputdir]
+                    self.callCmdline(cmdline, stdoutToLog=False)
 
                 # run 10x cellranger
-                self.cmdline3 = ['srun', 'cellranger', 'count', '--id=Cellranger --expect-cells=%s --transcriptome=%s --fastqs=%s'
-                                 % (str(expectcells), refile, fastqInput)]
-                self.callCmdline(self.cmdline3)
+                cmdline = ['srun', 'cellranger', 'count', '--id=Cellranger', '--expect-cells=%s --transcriptome=%s --fastqs=%s'
+                           % (str(expectcells), refile, fastqInput)]
+                print(cmdline)
+                self.callCmdline(cmdline, stdoutToLog=False)
                 # move results file
-                self.cmdline4 = ['mv', 'Cellranger %s' % outputdir]
-                self.callCmdline(self.cmdline4)
+                cmdline = ['mv', 'Cellranger %s' % outputdir]
+                self.callCmdline(cmdline, stdoutToLog=False)
         else:
             if self.resultdir is '':
                 # use given path
                 dir = outputdir.split('/')[-1]
                 if os.path.isdir(outputdir):
-                    self.cmdline0 = ['rm -r', '%s' % outputdir]
-                    self.callCmdline(self.cmdline0)
-                self.cmdline1 = ['srun', 'cellranger', 'count',
+                    cmdline = ['rm -r', '%s' % outputdir]
+                    self.callCmdline(cmdline, stdoutToLog=False)
+                cmdline = ['srun', 'cellranger', 'count',
                                  '--id=%s  --transcriptome=%s --fastqs=%s'
                                  % (dir, refile, fastqInput)]
-                self.callCmdline(self.cmdline1)
+                print(cmdline)
+                self.callCmdline(cmdline, stdoutToLog=False)
             else:
                 # use default filepath
                 if os.path.isdir('%s/Cellranger' % outputdir):
-                    self.cmdline2 = ['rm -r', '%s' % outputdir]
-                    self.callCmdline(self.cmdline2)
+                    cmdline = ['rm -r', '%s/Cellranger' % outputdir]
+                    self.callCmdline(cmdline, stdoutToLog=False)
 
                 # run 10x cellranger
-                self.cmdline3 = ['srun', 'cellranger', 'count',
-                                 '--id=Cellranger --transcriptome=%s --fastqs=%s'
+                cmdline = ['srun', 'cellranger', 'count',
+                                 '--id=Cellranger', '--transcriptome=%s --fastqs=%s'
                                  % (refile, fastqInput)]
-                self.callCmdline(self.cmdline3)
+                self.callCmdline(cmdline, stdoutToLog=False)
                 # move results file
-                self.cmdline4 = ['mv', 'Cellranger %s' % outputdir]
-                self.callCmdline(self.cmdline4)
+                self.cmdline = ['mv', 'Cellranger %s' % outputdir]
+                self.callCmdline(cmdline, stdoutToLog=False)
