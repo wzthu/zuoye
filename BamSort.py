@@ -47,16 +47,17 @@ class BamSort(Step):
         self.setParamIO('bamInput', samUpstream.getOutput('bamOutput'))
 
     def _multiRun(self,):
-        bamInput = self.getInputList('bamInput')
-        bamOutput = self.getOutputList('bamOutput')
-
-        for i in range(len(bamInput)):
-            cmdline = [
-                'samtools sort -O BAM',
-                '-@', str(self.getParam('threads')),
-                '-o', bamOutput[i], bamInput[i]
-            ]
-            result = self.callCmdline(cmdline)
+        pass
+        # bamInput = self.getInputList('bamInput')
+        # bamOutput = self.getOutputList('bamOutput')
+        #
+        # for i in range(len(bamInput)):
+        #     cmdline = [
+        #         'samtools sort -O BAM',
+        #         '-@', str(self.getParam('threads')),
+        #         '-o', bamOutput[i], bamInput[i]
+        #     ]
+        #     result = self.callCmdline(cmdline)
 
     def _singleRun(self, i):
         samInput = self.getInputList('bamInput')
@@ -68,7 +69,7 @@ class BamSort(Step):
             '-o', bamOutput[i], samInput[i]
         ]
 
-        result = self.callCmdline(cmdline)
+        result = self.callCmdline('V1', cmdline)
 
 
 
