@@ -148,10 +148,14 @@ class GraphAll(GraphMng):
                 ['BamToBed', 'MergeToFrag'],
                 ['BamToBed', 'RmChrOrMergeAllSample'],
                 ['RmChrOrMergeAllSample', 'MergeToFrag'],
-                ['RmChrOrMergeAllSample', 'BedSort']
+                ['RmChrOrMergeAllSample', 'BedSort'],
+                ['BedSort', 'GenPeakWithFilter'],
+                ['RmDuplicates', 'VarAndClustering'],
                 ]
 
-        edge2 = [['SortBam','MergeBamAlign']]
+        edge2 = [['SortBam','MergeBamAlign'],
+                 ['GenPeakWithFilter', 'VarAndClustering']
+                 ]
 
         super(GraphAll, self).__init__([edge1,edge2],[node1,[]])        
         
