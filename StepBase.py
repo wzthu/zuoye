@@ -28,11 +28,11 @@ class Configure:
         'docker':True,
         'dockerPath':'/data',
         'dockerVersion':{
-                'V1':'hca:v1',
-                'V2':'hca:v2',
-                'V3':'hca:v3',
-                'V4':'hca:v4',
-                'V':'hca:latest'
+                'V1':'hca:py2',
+                'V2':'hca:v4',
+                'V3':'hca:v5',
+                #'V4':'hca:v4',
+               # 'V':'hca:latest'
                 },
         'identity':None,
         }   
