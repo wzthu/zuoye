@@ -4,35 +4,14 @@ from StepBase import Configure,Schedule
 
 import os
 
-Configure.setRefDir(os.path.join(os.path.expanduser('~'),'ref'))
+Configure.setRefDir('/home/wzhang/genome/hg19_bowtie2/')
 Configure.setGenome('hg19')
+#Configure.setIdentity('zwei')
+Configure.enableDocker(False)
 
 
-adrm = AdapterRemoval(fastqInput1=['./minidata/atac/sample1/chr20_1.1.fq',
-                                   './minidata/atac/sample2/chr20_1.2.fq'],
-                      fastqInput2=['./minidata/atac/sample1/chr20_2.1.fq',
-                                   './minidata/atac/sample2/chr20_2.2.fq'])
-"""
-# To see if all input and output parameter are right in paramsIO 
-adrm.paramsIO
-
-# To see if other parameters are right in params
-adrm.params
-
-# To see if all input files are right
-adrm.inputs 
-
-# To see if all input files are right
-adrm.params
-"""
-
-rs=Bowtie2()(adrm)
-
-"""
-bt2Obj = Bowtie2()
-rs=Bowtie2()(adrm)
-"""
-
+rs=Bowtie2(fastqInput1='./minidata/atac/end1',
+           fastqInput2='./minidata/atac/end2')
 
 Schedule.run()
 

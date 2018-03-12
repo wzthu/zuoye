@@ -24,7 +24,16 @@ class Configure:
         'regpipe':{
                 'All':GraphAll(),
                 'ATACgl':GraphATACgl()        
-                },        
+                }, 
+        'docker':True,
+        'dockerPath':'/data',
+        'dockerVersion':{
+                'V1':'hca:latest',
+                'V2':'hca:py2',
+                #'V4':'hca:v4',
+               # 'V':'hca:latest'
+                },
+        'identity':None,
         }   
    
     def __init__(self,):
@@ -60,6 +69,47 @@ class Configure:
         return cls.__config['threads']
     
     @classmethod
+    def setDockerPath(cls,val):
+        cls.__config['dockerPath'] = val
+    
+    @classmethod
+    def getDockerPath(cls,):
+        # get the globle configure of threads size
+        return cls.__config['dockerPath']
+    
+    @classmethod
+    def enableDocker(cls,val = True):
+        if val:
+            cls.getIdentity()
+        cls.__config['docker'] = val
+        
+    @classmethod
+    def isDocker(cls,):
+        return cls.__config['docker']  
+    
+    @classmethod
+    def setDockerVersion(cls,version,name):
+        cls.__config['dockerVersion'][version] = name
+    
+    @classmethod 
+    def getDockerVersions(cls):
+        return cls.__config['dockerVersion'].keys()
+    
+    @classmethod 
+    def getDockerVersion(cls,version):
+        return cls.__config['dockerVersion'][version]
+    
+    @classmethod 
+    def setIdentity(cls,identity):
+        cls.__config['identity'] = identity
+    
+    @classmethod 
+    def getIdentity(cls,):
+        if cls.__config['identity'] is None:
+            raise Exception('call Configure.setIdentity(\'yourDockerId\') first before using docker')
+        return cls.__config['identity']
+    
+    @classmethod
     def setGenome(cls,val):
         if cls.__config['refdir'] is None:
             raise Exception('refdir should be configure first, call Configure.setRefDir for configuration')
@@ -67,6 +117,8 @@ class Configure:
         cls.__config['bt2Idx'] = os.path.join(cls.getRefDir(),val)
         suffix = ['.1.bt2','.2.bt2','.3.bt2','.4.bt2','.rev.1.bt2','.rev.2.bt2']
         cls.__config['bt2IdxFiles'] = [ cls.__config['bt2Idx'] + s for s in suffix ]
+        
+        cls.__config['genome'] = val
         
         
     @classmethod
@@ -94,7 +146,8 @@ class Configure:
     
     @classmethod
     def setTmpDir(cls,folderPath):
-        Configure.checkFolderPath(folderPath)
+        if not folderPath.startswith(cls.getDockerPath()):
+            Configure.checkFolderPath(folderPath)
         cls.__config['tmpdir'] = folderPath
         
     @classmethod
@@ -135,6 +188,7 @@ class Configure:
 class Schedule:
     __schedule = []
     
+
     @classmethod
     def add(cls, stepObj):
         if isinstance(stepObj,Step):
@@ -143,6 +197,7 @@ class Schedule:
             raise Exception('only support schedule sub-classes')
     @classmethod
     def run(cls, ):
+        cls.startDocker('V1')                      
         for step in cls.__schedule:
             step.run()
     
@@ -160,7 +215,70 @@ class Schedule:
     @classmethod
     def getSchedule(cls,):
         return cls.__schedule
+   
+    
+    @classmethod
+    def _getContainerName(cls,version):
+        identity = Configure.getIdentity()
+        if identity is None:
+            identity = ''
+        else:
+            identity = '_' + identity
+        return 'hca_'+ version + identity
+    
+    @classmethod
+    def startDocker(cls, versions = None):        
+        if versions is None:
+            versions = Configure.getDockerVersions()
+        elif not isinstance(versions,list):
+            versions = [versions]
+        for version in versions:
+            try:
+                print(' '.join([
+                        'docker',
+                        'run',
+                        '-d',
+                        '-t',
+                        '--name=' + cls._getContainerName(version),
+                        '--privileged=true',
+                        '-v',Configure.getTmpDir() + ':' + Configure.getDockerPath(),
+                        Configure.getDockerVersion(version),
+                        '/bin/bash',
+                        ]))
+                subprocess.run([
+                        'docker',
+                        'run',
+                        '-d',
+                        '-t',
+                        '--name=' + cls._getContainerName(version),
+                        '--privileged=true',
+                        '-v',Configure.getTmpDir() + ':' + Configure.getDockerPath(),
+                        Configure.getDockerVersion(version),
+                        '/bin/bash',
+                        ],stdout = subprocess.PIPE, stderr = subprocess.PIPE)
+            except:
+                pass
         
+    @classmethod
+    def stopDocker(cls, versions = None):          
+        if versions is None:
+            versions = Configure.getDockerVersions()
+        elif not isinstance(versions,list):
+            versions = [versions]
+        for version in versions:
+            try:
+                subprocess.run([
+                        'docker',
+                        'rm', 
+                        '-f',
+                        cls._getContainerName(version),
+                        ]) 
+            except:
+                pass 
+    
+    @classmethod
+    def getDockerCMD(cls, cmdline, version):
+        return 'docker exec -it '+ cls._getContainerName(version) +' '+ cmdline
             
     
         
@@ -174,10 +292,13 @@ class StepBase:
         return objid
     
     def __init__(self,cmdParam,**kwargs):
-        self.inputs = {}    
+        self.inputs = {}
+        
         self.outputs = {}
         self.paramsIO = {}
         self.params = {}
+        self.__virtual = False
+        self.__virtualCount = -1
         self.unsetParams = ''
         self.funGroup = None
         self.__isFinished = False
@@ -186,11 +307,13 @@ class StepBase:
         self.__stepID = StepBase.regStepID()
         self.__inputSize = -1
         self.__upstreamSize = 1
+        self.tmpdirStack = []
         return 0
     
     def getStepID(self,):
         return self.__stepID
     
+   
     def getStepFolderName(self,):
         return 'step_' + str(self.getStepID()).zfill(2) + '_' + self.__class__.__name__
     
@@ -201,6 +324,7 @@ class StepBase:
         tmpdir = Configure.getTmpDir()
         if not os.path.exists(self.getStepFolerPath()):
             os.mkdir(self.getStepFolerPath())
+        #os.makedirs(os.path.join(Configure.getTmpDir(),self.getStepFolderName(),'.tmp',self.getStepFolerPath()))    
         Configure.setTmpDir(self.getStepFolerPath())
         self.impInitIO()
         Configure.setTmpDir(tmpdir)
@@ -276,7 +400,7 @@ class StepBase:
         if not os.path.exists(self.__logpath):
             raise Exception("can not write log when log file is not created")
         if not isinstance(strlines,list):
-            strlines = [strlines]        
+            strlines = [strlines]
         logfile = open(self.__logpath,'a')
         logfile.writelines([ '||' + s +'\n' for s in strlines])
         logfile.close()
@@ -284,8 +408,93 @@ class StepBase:
     def getCurTime(self,):
         return time.strftime("%Y-%m-%d %H:%M:%S",time.localtime(time.time()))
     
+    def linkRecursive(self,originPath,desPath):
+        #print(originPath)
+        #print('To')
+        #print(desPath)
+        if os.path.isfile(originPath):
+            subprocess.run(['rm','-rf',desPath])
+            subprocess.run(['ln',originPath,desPath])
+            return
+        elif os.path.isdir(originPath):
+            os.makedirs(desPath,exist_ok=True)
+            files = os.listdir(originPath)
+            for f in files:
+                self.linkRecursive(os.path.join(originPath,f),os.path.join(desPath,f))
+        else:
+            print(['originPath:',originPath,'is neither dir nor file'])
+            #raise Exception('originPath:',originPath,'is neither dir nor file')
+            
+                    
     
-    def run(self,):
+    def getIOtype(self,value):
+        if value is None:
+            return None
+        value = os.path.abspath(value)
+        for key in self.inputs.keys():
+            for path in self.convertToList(self.inputs[key]):
+                apath = os.path.abspath(path)
+                if apath.startswith(value):
+                    if os.path.isdir(value): 
+                        return 'inputDir'
+                    elif os.path.isfile(value):
+                        return 'inputFile'
+                    elif os.path.isdir(os.path.dirname(value)):
+                        return 'inputPrefix'
+        for key in self.outputs.keys():
+            for path in self.convertToList(self.outputs[key]):
+                apath = os.path.abspath(path)
+                if apath.startswith(value):                    
+                    if value == apath:
+                        return 'outputFile'
+        for key in self.outputs.keys():
+            for path in self.convertToList(self.outputs[key]):
+                apath = os.path.abspath(path)
+                if apath.startswith(value):                    
+                    if apath[0:(len(value)+1)] == os.path.sep:
+                        return 'outputDir'
+                    else:                        
+                        return 'outputPrefix'
+        return None
+    
+    def linkVirtualPaths(self,origin):
+        if not os.path.exists(origin):
+            raise Exception('origin path:',origin,'does not exist')
+        virDir = os.path.join(
+                Configure.getTmpDir(),
+                self.getStepFolderName(), 
+                '.tmp',
+                 os.path.dirname(origin)[1:])
+        virPath = os.path.join(
+                Configure.getTmpDir(),  
+                self.getStepFolderName(),
+                '.tmp',
+                 origin[1:])
+        os.makedirs(virDir,exist_ok=True)
+        #print(['ln','-f',origin,virPath])
+        subprocess.run(['ln','-f',origin,virPath])
+    
+    def linkRealPaths(self,des):
+        virDir = os.path.join(
+                Configure.getTmpDir(), 
+                self.getStepFolderName(),
+                '.tmp',
+                 os.path.dirname(des)[1:])
+        virPath = os.path.join(
+                Configure.getTmpDir(),  
+                self.getStepFolderName(),
+                '.tmp',
+                 des[1:])
+        os.makedirs(virDir,exist_ok=True)
+        #print(['ln','-f',virPath,des])
+        if os.path.exists(virPath):
+            subprocess.run(['ln','-f',virPath,des])
+        else:
+            raise Exception(virPath,des,'does not create succesfull')
+        
+                
+    
+    def run(self,):        
         self.checkInputFilePath()
         self.checkOutputFilePath(checkExist = False)
         if self.checkFinish():
@@ -302,16 +511,51 @@ class StepBase:
             lines = ['=======================================',
             self.getCurTime()]  
             self._writeLogLines(lines)
-            tmpdir = Configure.getTmpDir()            
-            Configure.setTmpDir(self.getStepFolerPath())
+            
+            tmpFolder = Configure.getTmpPath(os.path.join(self.getStepFolderName(),'.tmp'))
+            os.makedirs(tmpFolder,exist_ok=True)
+            print(os.path.join(tmpFolder,'*'))
+            subprocess.run(['rm','-rf',os.path.join(tmpFolder,'*')])
+            
+            if Configure.isDocker(): 
+                for key in self.getInputs():
+                    files = self.convertToList(self.inputs[key])
+                    if files[0] is None:
+                        continue
+                    for afile in files:
+                        self.linkVirtualPaths(afile)
+                self.__virtual = True        
+            self.push(os.path.join(Configure.getDockerPath(),self.getStepFolderName()))            
+           
+            
             if self.__multiRun :
                 self._multiRun()
+                if Configure.isDocker():
+                    self.callCmdline('V1', 'chmod 777 -R ' + Configure.getTmpDir(),shell = True, stdoutToLog = False)
+                else:
+                    pass#self.callCmdline('V1', 'chmod 777 -R ' + self.top(), shell = True, stdoutToLog = False)
             else:
                 if self.__inputSize == -1:
                     raise Exception('call self._setInputSize(your sample size) in impInitIO')
                 for i in range(self.__inputSize):
                     self._singleRun(i)
-            Configure.setTmpDir(tmpdir)
+                    if Configure.isDocker():
+                        self.callCmdline('V1', 'chmod 777 -R ' + Configure.getTmpDir(),shell = True, stdoutToLog = False)
+                    else:
+                        pass#self.callCmdline('V1', 'chmod 777 -R ' + self.top(), shell = True, stdoutToLog = False)                  
+            
+            self.pop()        
+            if Configure.isDocker():        
+                self.__virtual = False
+                for key in self.getOutputs():
+                    files = self.convertToList(self.outputs[key])                
+                    if files[0] is None:
+                        continue
+                    for afile in files:
+                        self.linkRealPaths(afile)
+
+            subprocess.run(['rm','-rf',os.path.join(tmpFolder,'*')])
+            
             if self.checkResult():
                 self.setFinish()
         lines = [self.getCurTime(),
@@ -436,26 +680,60 @@ class StepBase:
         return list(self.inputs.keys())
            
     def getInput(self, inputName):
-        return self.inputs[inputName]
+        if self.__virtual:
+            if isinstance(self.inputs[inputName],list):
+                #print([os.path.join(Configure.getDockerPath(),self.getStepFolderName(),'.tmp',s[1:]) for s in self.inputs[inputName]])
+                return [os.path.join(Configure.getDockerPath(),self.getStepFolderName(),'.tmp',s[1:]) for s in self.inputs[inputName]]
+            else:
+                #print(os.path.join(Configure.getDockerPath(),self.getStepFolderName(),'.tmp',self.inputs[inputName][1:]))
+                return os.path.join(Configure.getDockerPath(),self.getStepFolderName(),'.tmp',self.inputs[inputName][1:])
+        else:
+            return self.inputs[inputName]
     
-
+    def absolutePath(self,pathOrPathList):
+        if pathOrPathList is None:
+            return None
+        elif isinstance(pathOrPathList,list):
+            return [os.path.abspath(s) for s in pathOrPathList]
+        else:
+            return os.path.abspath(pathOrPathList)
 
     def setInput(self, inputName, inputValue):
-        self.inputs[inputName] = inputValue
-
-    
+        self.inputs[inputName] = self.absolutePath(inputValue)
+        if self.inputs[inputName] is not None:
+            if isinstance(self.inputs[inputName],list):
+                for s in self.inputs[inputName]:
+                    os.makedirs(os.path.dirname(os.path.join(Configure.getTmpDir(),'.tmp',s[1:])), exist_ok=True)                
+                    
+            else:
+                os.makedirs(os.path.dirname(os.path.join(Configure.getTmpDir(),'.tmp',self.inputs[inputName][1:])), exist_ok=True)
+                
     
     def getOutputs(self,):
         return list(self.outputs.keys())
     
     def getOutput(self,outputName):
-        return self.outputs[outputName]
+        if self.__virtual:
+            if isinstance(self.outputs[outputName],list):
+                return [os.path.join(Configure.getDockerPath(),self.getStepFolderName(),'.tmp',s[1:]) for s in self.outputs[outputName]]
+            else:
+                return os.path.join(Configure.getDockerPath(),self.getStepFolderName(),'.tmp',self.outputs[outputName][1:])
+        else:
+            return self.outputs[outputName]
     
 
     
     def setOutput(self, outputName, outputValue):
-        self.outputs[outputName] = outputValue
-    
+        self.outputs[outputName] = self.absolutePath(outputValue)
+        if self.outputs[outputName] is not None:
+            if isinstance(self.outputs[outputName],list):
+                for s in self.outputs[outputName]:
+                    os.makedirs(os.path.dirname(os.path.join(Configure.getTmpDir(),
+                                                             '.tmp',
+                                                             s[1:])), exist_ok=True) 
+            else:
+                os.makedirs(os.path.dirname(os.path.join(Configure.getTmpDir(),'.tmp',self.outputs[outputName][1:])), exist_ok=True)
+            
     def getUnsetParams(self,):
         return self.unsetParams
     
@@ -481,6 +759,12 @@ class StepBase:
         """
         Get input or output parameters set in __init__() or call()
         """
+        if paramName in self.paramsIO.keys():
+            if self.__virtual :
+                if isinstance(self.paramsIO[paramName],list):
+                    return [os.path.join(Configure.getDockerPath(),self.getStepFolderName(),'.tmp',s[1:]) for s in self.paramsIO[paramName]]
+                else:
+                    return os.path.join(Configure.getDockerPath(),self.getStepFolderName(),'.tmp',self.paramsIO[paramName][1:])
         return self.paramsIO[paramName]
     
     def setParamIO(self, paramName, paramValue):
@@ -493,9 +777,10 @@ class StepBase:
         else:
             if isinstance(paramValue,list):
                 self.paramsIO[paramName] = [os.path.abspath(s) for s in paramValue]
+            
             else:
                 self.paramsIO[paramName] = os.path.abspath(paramValue)
-            
+                        
             
     
     def getConfigVal(key):
@@ -509,6 +794,24 @@ class StepBase:
         
     def _setUpstreamSize(self,size):
         self.__upstreamSize = size
+    def _setVirtual(self, virtual = True):
+        self.__virtual = virtual
+    def push(self,newTmp):        
+        self.tmpdirStack.append(Configure.getTmpDir())
+        Configure.setTmpDir(newTmp)
+        return Configure.getTmpDir()
+    def pop(self,):
+        tpdir=self.tmpdirStack.pop()
+        Configure.setTmpDir(tpdir)
+        return tpdir
+        return 
+    def top(self,):
+        if len(self.tmpdirStack) == 0:
+            print('return here')
+            return None
+        else:
+            print('return here1')
+            return self.tmpdirStack[-1]
     
 class Step(StepBase):
     def __init__(self,cmdParam,**kwargs):
@@ -554,6 +857,9 @@ class Step(StepBase):
         inputName(str): the input file paths to be referenced
         it will set paths list of outputDir/outputPrefix.*.outputSuffix like paths for outputName
         """
+        suffixDot = '.'
+        if outputSuffix == '':
+            suffixDot =''
         inputList = self.getInput(inputName)
         if inputList is None:
             self.setOutput(outputName, None)
@@ -568,10 +874,10 @@ class Step(StepBase):
                     outputList.append(prefixs[i] + sep + outputSuffix)
             else:
                 if len(inputList) == 1:
-                    outputList.append(outputPrefix + '.' + outputSuffix)
+                    outputList.append(outputPrefix + suffixDot + outputSuffix)
                 else:
                     for i in range(len(inputList)):
-                        outputList.append(outputPrefix + sep + str(i) + '.' + outputSuffix)
+                        outputList.append(outputPrefix + sep + str(i) + suffixDot + outputSuffix)
             if outputDir is None:
                 self.setOutput(outputName,Configure.getTmpPath(outputList))
             else:        
@@ -628,14 +934,34 @@ class Step(StepBase):
             else:
                 self.setOutput(outputName,outputFilePath)
             
-    def callCmdline(self,cmdline,shell = False, stdoutToLog = True):
+    def callCmdline(self,dockerVersion,cmdline,shell = False, stdoutToLog = True, otherPrefix = None):
         """
         For developer:
             call the command line and write log 
         """
+        
         if not shell:
             cmdline = ' '.join(cmdline)
+            
+        if Configure.isDocker() and dockerVersion is not None:
+            cmdline = 'bash -c \"' + cmdline +'\"'            
+            if self.top() is not None:
+                
+                cur = Configure.getTmpDir()
+                self.pop()                
+                Schedule.startDocker(versions=dockerVersion)
+                self.push(cur)
+            else:                
+                Schedule.startDocker(versions=dockerVersion) 
+                
+            cmdline = Schedule.getDockerCMD(cmdline,dockerVersion)
+        
+        if otherPrefix is not None:
+            cmdline = cmdline + ' ' + otherPrefix
+        
+        
         print(cmdline)
+        
         try:
             if stdoutToLog:
                 result = subprocess.run(cmdline,shell=True,check=True,stdout = subprocess.PIPE, stderr = subprocess.PIPE )
@@ -681,11 +1007,12 @@ class Step(StepBase):
         inputName: the key name of inputs
         inputValue: string of directory or file path, or list of file paths  
         """
+        
         if inputValue is None:
-            self.inputs[inputName] = None
+            self.setInput(inputName, None)
         else:
             if isinstance(inputValue,list):
-                self.inputs[inputName] = inputValue
+                self.setInput(inputName, inputValue)
             else:
                 if os.path.isdir(inputValue):
                     filelist = os.listdir(inputValue)
@@ -693,9 +1020,12 @@ class Step(StepBase):
                     suffix = [s.split('.')[-1] for s in filelist]
                     if len(set(suffix)) != 1:
                         raise Exception('the suffix of files under path:',inputName,'is not the same, check the file format under the directory')
-                    self.inputs[inputName] = [os.path.join(inputValue,s) for s in filelist ]
+                    self.setInput(inputName, [os.path.join(inputValue,s) for s in filelist ])
                 else:
-                    self.inputs[inputName] = inputValue
+                    self.setInput(inputName, inputValue)
+                    if os.path.exists('/home/zhengwei/zuoye/step_00_AdapterRemoval/step_00_AdapterRemoval/'):
+                        raise Exception('7777777777777777777777777777777777777777')
+        
                     
     def setInputDirRecursion(self,inputValue):
         self.setInputDirRecursionFunc(inputValue,'')
@@ -723,7 +1053,7 @@ class Step(StepBase):
         the wraper of getInput(). if the input is the single string,
         it will wrap it will list. Otherwise it will return the input as it is.
         """
-        return self.convertToList(self.inputs[inputName])            
+        return self.convertToList(self.getInput(inputName))         
 
     def getInputDir(self, inputName):
         filePath = self.getInputList(inputName)
@@ -738,7 +1068,7 @@ class Step(StepBase):
         the wraper of getOutput(). if the output is the single string,
         it will wrap it will list. Otherwise it will return the output as it is.
         """
-        return self.convertToList(self.outputs[outputName])
+        return self.convertToList(self.getOutput(outputName))
 
     def getOutputDir(self, outputName):
         filePath = self.getOutputList(outputName)
@@ -860,5 +1190,9 @@ class Step(StepBase):
         if isReinitIO:
             self.initIO()
             
-            
+    def convertToRealPath(self, virtualPath): 
+        if Configure.isDocker():
+            return virtualPath[len(Configure.getDockerPath())+1:]
+        else:
+            return virtualPath
         
