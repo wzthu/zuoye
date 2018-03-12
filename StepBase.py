@@ -932,7 +932,7 @@ class Step(StepBase):
             else:
                 self.setOutput(outputName,outputFilePath)
             
-    def callCmdline(self,dockerVersion,cmdline,shell = False, stdoutToLog = True):
+    def callCmdline(self,dockerVersion,cmdline,shell = False, stdoutToLog = True, otherPrefix = None):
         """
         For developer:
             call the command line and write log 
@@ -954,7 +954,8 @@ class Step(StepBase):
                 
             cmdline = Schedule.getDockerCMD(cmdline,dockerVersion)
         
-        
+        if otherPrefix is not None:
+            cmdline = cmdline + ' ' + otherPrefix
         
         
         print(cmdline)
