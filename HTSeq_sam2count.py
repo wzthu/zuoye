@@ -30,6 +30,9 @@ class HTSeq_sam2count(Step):
         samInput1 = self.getParamIO('samInput1')
         gtfInput1 = self.getParamIO('gtfInput1')
         countOutputDir = self.getParamIO('countOutputDir')
+        if countOutputDir is None:
+            self.setParamIO('countOutputDir',Configure.getTmpDir())
+            
 
         #set all input files        
         self.setInputDirOrFile('samInput1',samInput1) 
@@ -57,7 +60,7 @@ class HTSeq_sam2count(Step):
                     countOutput[i]
                     ]
                     
-        result = self.callCmdline(cmdline)
+        result = self.callCmdline('V1', cmdline)
         # f = open(mapRsOutput[i],'wb')   
         # f.write(result.stderr)
             

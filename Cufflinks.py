@@ -12,7 +12,6 @@ class Cufflinks(Step):
 	def __init__(self,
 				 bamInput = None,
 				 gtfInput = None,
-				# fragBiasCorrectInput = None,
 				 outputDir = None,
 				 threads = None,
 				 ismultiReadCorrect = None,
@@ -27,8 +26,8 @@ class Cufflinks(Step):
 
 		self.setParamIO('bamInput',bamInput)
 		self.setParamIO('gtfInput',gtfInput)
-		#self.setParamIO('fragBiasCorrectInput',fragBiasCorrectInput)
 		self.setParamIO('outputDir',outputDir)
+		#self.setParamIO('fragBiasCorrectInput',fragBiasCorrectInput)
 		self.initIO()
 
 		self.setParam('ismultiReadCorrect',ismultiReadCorrect)
@@ -46,19 +45,42 @@ class Cufflinks(Step):
 		gtfInput = self.getParamIO('gtfInput')
 		outputDir = self.getParamIO('outputDir')
 		#fragBiasCorrectInput = self.getParamIO('fragBiasCorrectInput')
+		if outputDir is None:
+			self.setParamIO('outputDir',Configure.getTmpDir())
+
 
 		self.setInputDirOrFile('bamInput',bamInput)
-		# self.setInputDirOrFile('gtfInput',gtfInput)
-		#self.setInputDirOrFile('fragBiasCorrectInput',fragBiasCorrectInput)
 
-		#if fragBiasCorrectInput is None:
-		#	self.setParamIO('fragBiasCorrectInput',' ')
+		if gtfInput is None:
+			gtfInput=Configure.getConfig('')
+			self.setIput('gtfInput',gtfInput)
+			self.setParamIO('gtfInput',gtfInput)
+		else:
+			self.setInput('gtfInput',gtfInput)
 
-		self.setOutputDir1To1('outputDir',outputDir,'cufflinks','suffix','bamInput')
 		self.setOutput('assembliesOutput',os.path.join(Configure.getTmpDir(), 'assemblies.txt'))
+
 
 		if bamInput is not None:
 			self._setInputSize(len(self.getInputList('bamInput')))
+			genes_fpkm_tracking=list()
+			isoforms_fpkm_tracking=list()
+			skipped_gtf=list()
+			transcripts_gtf=list()
+			for i in range(len(self.getInputList('bamInput'))):
+				genes_fpkm_tracking.append(os.path.join(outputDir, 'cufflinks_'+str(i),'genes.fpkm_tracking'))
+				isoforms_fpkm_tracking.append(os.path.join(outputDir, 'cufflinks_'+str(i),'isoforms.fpkm_tracking'))
+				skipped_gtf.append(os.path.join(outputDir, 'cufflinks_'+str(i),'skipped.gtf'))
+				transcripts_gtf.append(os.path.join(outputDir, 'cufflinks_'+str(i),'transcripts.gtf'))
+			self.setOutput('genes_fpkm_tracking',genes_fpkm_tracking)
+			self.setOutput('isoforms_fpkm_tracking',isoforms_fpkm_tracking)
+			self.setOutput('skipped_gtf',skipped_gtf)
+			self.setOutput('transcripts_gtf',transcripts_gtf)
+		else:
+			self.setOutput('genes_fpkm_tracking',None)
+			self.setOutput('isoforms_fpkm_tracking',None)
+			self.setOutput('skipped_gtf',None)
+			self.setOutput('transcripts_gtf',None)
 
 	def call(self, *args):
 
@@ -70,7 +92,7 @@ class Cufflinks(Step):
 		bamInput = self.getInputList('bamInput')
 		gtfInput = self.getParamIO('gtfInput')
 		#fragBiasCorrectInput = self.getInputList('fragBiasCorrectInput')
-		outputDir = self.getOutputList('outputDir')
+		outputDir = self.getParamIO('outputDir')
 		print(os.path.join(Configure.getTmpDir(), 'assemblies.txt'))
 
 		cmdline = [
@@ -82,11 +104,12 @@ class Cufflinks(Step):
 				'-m',str(self.getParam('fragLenMean')),
 				'-s',str(self.getParam('fragLenStdDev')),
 				'-G',gtfInput,
-				'-o',outputDir[i],
+				'-o',os.path.join(outputDir,'cufflinks_'+str(i)),
 				bamInput[i],
 				';',
-				'echo', '"'+os.path.join(outputDir[i],'transcripts.gtf')+'" >>',
-				os.path.join(Configure.getTmpDir(), 'assemblies.txt')
+				# 'echo', '"'+self.convertToRealPath(os.path.join(outputDir,'cufflinks_'+str(i),'transcripts.gtf')).split('.tmp')[1]+'" >>',
+				'echo', '"'+os.path.join(outputDir,'cufflinks_'+str(i),'transcripts.gtf')+'" >>',
+				self.getOutput("assembliesOutput")
 				]
-		self.callCmdline(cmdline)
+		self.callCmdline('V1', cmdline)
 

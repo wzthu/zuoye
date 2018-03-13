@@ -13,7 +13,7 @@ class Cuffmerge(Step):
     def __init__(self,
                  faInput1 = None,  
                  gtfInput1 = None,  
-                 assembliesInput1 = None,
+                 assembliesInput = None,
                  threads = None,
                  gtfOutputDir = None, 
                  cmdParam = None, 
@@ -22,7 +22,7 @@ class Cuffmerge(Step):
         
         self.setParamIO('faInput1',faInput1)
         self.setParamIO('gtfInput1',gtfInput1)
-        self.setParamIO('assembliesInput1',assembliesInput1)
+        self.setParamIO('assembliesInput',assembliesInput)
         self.setParamIO('gtfOutputDir',gtfOutputDir)
 
        
@@ -35,36 +35,56 @@ class Cuffmerge(Step):
     def impInitIO(self,):        
         faInput1 = self.getParamIO('faInput1')
         gtfInput1 = self.getParamIO('gtfInput1')
-        assembliesInput1 = self.getParamIO('assembliesInput1')
+        assembliesInput = self.getParamIO('assembliesInput')
         gtfOutputDir = self.getParamIO('gtfOutputDir')
+        if gtfOutputDir is None:
+            self.setParamIO('gtfOutputDir',Configure.getTmpDir())
 
         #set all input files        
-        self.setInputDirOrFile('assembliesInput1',assembliesInput1) 
-       
-        self.setOutputDir1To1('gtfOutputDir', gtfOutputDir, None, 'gtf','assembliesInput1') 
+        self.setInputDirOrFile('assembliesInput',assembliesInput) 
         
-        if assembliesInput1 is not None:
-            self._setInputSize(len(self.getInputList('assembliesInput1')))
+        if faInput1 is None:
+            faInput1=Configure.getConfig('')
+            self.setIput('faInput1',faInput1)
+            self.setParamIO('faInput1',faInput1)
+        else:
+            self.setInput('faInput1',faInput1)
+
+        if gtfInput1 is None:
+            gtfInput1=Configure.getConfig('')
+            self.setIput('gtfInput1',gtfInput1)
+            self.setParamIO('gtfInput1',gtfInput1)
+        else:
+            self.setInput('gtfInput1',gtfInput1)
+
+        if assembliesInput is not None:
+            self._setInputSize(len(self.getInputList('assembliesInput')))
+            merged_gtf=list()
+            for i in range(len(self.getInputList('assembliesInput'))):
+                merged_gtf.append(os.path.join(gtfOutputDir, 'cuffmerge_'+str(i),'merged.gtf'))
+            self.setOutput('merged_gtf',merged_gtf)
+        else:
+            self.setOutput('merged_gtf',None)
         
     def call(self, *args):
         htseqUpstream = args[0]              
-        self.setParamIO('assembliesInput1',htseqUpstream.getOutput('assembliesOutput1'))
+        self.setParamIO('assembliesInput',htseqUpstream.getOutput('assembliesOutput'))
         # self.setParamIO('gtfInput1',htseqUpstream.getOutput('gtfOutput1'))
             
     def _singleRun(self, i):
         faInput1 = self.getParamIO('faInput1')
         gtfInput1 = self.getParamIO('gtfInput1')
-        assembliesInput1 = self.getInputList('assembliesInput1')
-        gtfOutputDir = self.getOutputList('gtfOutputDir')
-        cmdline = ['docker run --rm -v /home/hca/Docker/Common_data:/data hca:py2 cuffmerge',
+        assembliesInput = self.getInputList('assembliesInput')
+        gtfOutputDir = self.getParamIO('gtfOutputDir')
+        cmdline = ['cuffmerge',
                     '-g', gtfInput1,
                     '-s', faInput1,
-                    '-o', gtfOutputDir[i],
+                    '-o', os.path.join(gtfOutputDir, 'cuffmerge_'+str(i)),
                     '-p', str(self.getParam('threads')),
-                    assembliesInput1[i]
+                    assembliesInput[i]
                     ]
                     
-        result = self.callCmdline(cmdline)
+        result = self.callCmdline('V2', cmdline)
         # f = open(mapRsOutput[i],'wb')   
         # f.write(result.stderr)
         # 
