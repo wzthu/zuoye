@@ -37,6 +37,8 @@ class Cuffquant(Step):
 		self.setInputDirOrFile('bamInput',bamInput)
 
 		self.setOutputDir1To1('outputDir',outputDir,'cuffquant','suffix','bamInput')
+		self.setOutput('assembliesOutput',os.path.join(Configure.getTmpDir(), 'assembleOfAbundances.txt'))
+
 		if bamInput is not None:
 			self._setInputSize(len(self.getInputList('bamInput')))
 	def call(self, *args):
@@ -55,6 +57,9 @@ class Cuffquant(Step):
 				'-o',outputDir[i],
 				'-p',str(self.getParam('threads')),
 				gtfInput,
-				bamInput[i]
+				bamInput[i],
+				';',
+				'echo','"'+os.path.join(outputDir[i],'abundances.cxb') + '" >>',
+				os.path.join(Configure.getTmpDir(),'assembleOfAbundances.txt')
 				]
 		self.callCmdline(cmdline)

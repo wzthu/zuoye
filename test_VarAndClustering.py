@@ -8,11 +8,12 @@
 from VarAndClustering import VarAndClustering
 from StepBase import Configure,Schedule
 
-Configure.setRefDir('/home/wzhang/genome/hg19_bowtie2/')
+Configure.setRefDir('/home/hca/zhangwei1/hg19_bowtie2')
 Configure.setGenome('hg19')
+Configure.setIdentity('ATAC')
 
-a=VarAndClustering(bamInput='./minidata/atac/bam_sorted_rmdup',
-                   peakInput='./minidata/atac/BedForTest/top_peaks.bed',
+a=VarAndClustering(bamInput='/home/hca/zhangwei1/bam_sorted_rmdup',
+                   peakInput='./step_12_GenPeakWithFilter/MergedAllFiles_summits_filterd.bed',
                    threads=4,
                    genome='hg19')
 
