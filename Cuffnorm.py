@@ -48,13 +48,8 @@ class Cuffnorm(Step):
 		marker = ''
 		for lines in fd.readlines():
 			content = lines.split('/')
-			size = len(content)
-			tag = '/'
-			for i in range(size - 1):
-				tag = tag + content[i] + '/'
-			tag = tag + 'abundunces.cxb'
-			cxb = cxb + tag + ','
-			marker = marker + content[3] + ','
+			cxb = cxb + lines.strip() + ','
+			marker = marker + content[-2] + ','
 		cxb = cxb[:-1]
 		marker = marker[:-1]
 		self.setParamIO('cxbInput',cxb)
