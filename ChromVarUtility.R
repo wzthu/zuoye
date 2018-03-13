@@ -27,22 +27,28 @@ if(genomeidx == "hg19"){
     library(BSgenome.Hsapiens.UCSC.hg19)
     genome <- BSgenome.Hsapiens.UCSC.hg19
     motifs <- getJasparMotifs(species = "Homo sapiens")
+    # print("BSgenome.Hsapiens.UCSC.hg19")
 }else if(genomeidx == "hg38"){
     library(BSgenome.Hsapiens.UCSC.hg38)
     genome <- BSgenome.Hsapiens.UCSC.hg38
     motifs <- getJasparMotifs(species = "Homo sapiens")
+    # print("BSgenome.Hsapiens.UCSC.hg38")
 }else if(genomeidx == "mm9"){
     library(BSgenome.Mmusculus.UCSC.mm9)
     genome <- BSgenome.Mmusculus.UCSC.mm9
     motifs <- getJasparMotifs(species = "Mus musculus")
+    # print("BSgenome.Mmusculus.UCSC.mm9")
 }else if(genomeidx == "mm10"){
     library(BSgenome.Mmusculus.UCSC.mm10)
     genome <- BSgenome.Mmusculus.UCSC.mm10
     motifs <- getJasparMotifs(species = "Mus musculus")
+    # print("BSgenome.Mmusculus.UCSC.mm10")
 }
 
 # extract all bam files
 bamfile <- Sys.glob(file.path(bamDir, "*.bam"))
+print(bamDir)
+print(bamfile)
 
 # peak file
 peaks <- getPeaks(peakfile, sort_peaks = TRUE)
@@ -56,12 +62,12 @@ example_counts <- getCounts(bamfile, peaks, paired =  TRUE, by_rg = FALSE,
                             format = "bam", colData = colData)
 
 example_counts <- addGCBias(example_counts,
-                            genome = BSgenome.Hsapiens.UCSC.hg19)
+                            genome = genome)
 
 counts_filtered <- filterSamples(example_counts, min_depth = 1500, min_in_peaks = 0.15, shiny = FALSE)
 counts_filtered <- filterPeaks(counts_filtered)
 
-motif_ix <- matchMotifs(motifs, counts_filtered, genome = BSgenome.Hsapiens.UCSC.hg19)
+motif_ix <- matchMotifs(motifs, counts_filtered, genome = genome)
 
 # computing deviations
 dev <- computeDeviations(object = counts_filtered, annotations = motif_ix)

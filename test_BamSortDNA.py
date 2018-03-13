@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 
-from BamSortDNA import BamSort
+from BamSort import BamSort
 from StepBase import Configure,Schedule
 
-Configure.setRefDir('/home/wzhang/genome/hg19_bowtie2/')
+Configure.setRefDir('/home/hca/zhangwei1/hg19_bowtie2')
 Configure.setGenome('hg19')
+Configure.setIdentity('ATAC')
 
-test=BamSort(bamInput='./minidata/atac/BamForTest')
+test=BamSort(bamInput='./minidata/atac/BamForTest',
+             bamOutputDir='./bamOutputDir')
 
 Schedule.run()
 
