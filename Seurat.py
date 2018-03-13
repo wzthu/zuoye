@@ -5,6 +5,7 @@
 @date: 20180308
 """
 from StepBase import Step, Configure
+from Cellranger import Cellranger
 import os
 
 class Seurat(Step):
@@ -14,6 +15,7 @@ class Seurat(Step):
                  # genes=None,
                  inputdir = None,
                  rscript=None,
+                 datatype = None,
                  # matrix=None,
                  # densematrix = None,
                  cmdParam=None,
@@ -29,6 +31,7 @@ class Seurat(Step):
         self.setParamIO('inputdir', inputdir)
         self.setParamIO('outputdir', outputdir)
         self.setParamIO('rscript', rscript)
+        self.setParam('datatype', datatype)
 
         self.initIO()
         self._setMultiRun()
@@ -39,7 +42,9 @@ class Seurat(Step):
         # genes = self.getParamIO('genes')
         outputdir = self.getParamIO('outputdir')
         inputdir = self.getParamIO('inputdir')
+        rscript = self.getParamIO('rscript')
 
+        self.setInputDirOrFile('rscript', rscript)
         # if outputdir is None, os will error
         if outputdir is None:
            self.setParamIO('outputdir', Configure.getTmpDir())
@@ -61,7 +66,10 @@ class Seurat(Step):
         # the first object
         cellrangerUpstream = args[0]
         # set all required input parameters from upstream objects
-        self.setParamIO('inputdir', cellrangerUpstream.getOutput('finaldir'))
+        if isinstance(cellrangerUpstream, Cellranger):
+            datatype = '10x'
+            self.setParam('datatype', datatype)
+        self.setParamIO('inputdir', cellrangerUpstream.getParamIO('finaldir'))
         # self.setParamIO('genes', cellrangerUpstream.getOutput('genes'))
         # self.setParamIO('matrix', cellrangerUpstream.getOutput('matrix'))
 
@@ -73,26 +81,33 @@ class Seurat(Step):
         # genes = self.getParamIO('genes')
         # matrix = self.getParamIO('matrix')
         inputdir = self.getParamIO('inputdir')
-        rscript = self.getParam('rscript')
+        rscript = self.getParamIO('rscript')
+        datatype = self.getParam('datatype')
         # get output parameters
         outputdir = self.getParamIO('outputdir')
 
+        #
         # replace file path
-        inputdir = inputdir.replace('/home/cfeng', '/data')
-        # matrix = matrix.replace('/home/cfeng', '/data')
-        rscript = rscript.replace('/home/cfeng', '/data')
-        # barcodes = barcodes.replace('/home/cfeng', '/data')
-
-        outputdir = outputdir.replace('/home/cfeng', '/data')
-
-        cmdline = ['docker',
-                   'exec',
-                   '-it',
-                   'hca_fengchen',
-                   '/root/software/anaconda3/bin/Rscript',
-                   rscript,
-                   inputdir,
-                   outputdir]
-        print(cmdline)
-        self.callCmdline(cmdline)
+        # inputdir = inputdir.replace('/home/cfeng', '/data')
+        # # matrix = matrix.replace('/home/cfeng', '/data')
+        # rscript = rscript.replace('/home/cfeng', '/data')
+        # # barcodes = barcodes.replace('/home/cfeng', '/data')
+        #
+        # outputdir = outputdir.replace('/home/cfeng', '/data')
+        if datatype is ('10x' or '10X' or 'tenx' or 'Tenx' or 'TenX' or 'tenX'):
+            cmdline = ['Rscript',
+                       rscript,
+                       inputdir,
+                       #datatype,
+                       outputdir]
+            print(cmdline)
+            self.callCmdline(cmdline=cmdline, dockerVersion='V1')
+        else:
+            cmdline = ['Rscript',
+                       rscript,
+                       inputdir,
+                       # datatype,
+                       outputdir]
+            print(cmdline)
+            self.callCmdline(cmdline=cmdline, dockerVersion='V1')
 

@@ -1,35 +1,27 @@
-Args <- commandArgs()
-print(Args)
-
-# matrix <- Args[6]
-# barcodes <- Args[7]
-# genes <- Args[8]
-#projectname <- Args[3]
-input <- Args[6]
-output <- Args[7]
-if (!dir.exists(output))
-{
-	dir.create(output)
-}
-setwd(output)
+# setwd("C:/Users/Fackie/Desktop/HCA task/µÚ¶þÖÜ/filtered_gene_bc_matrices/hg19")
 
 library(Seurat)
 library(dplyr)
 library(Matrix)
 
-# celldata = Matrix::readMM(file = matrix)
-# cellname = read.table(file = barcodes, header = FALSE, colClasses = "character")[[1]]
-# genename = read.table(file = genes, header = FALSE, colClasses = "character")[[1]]
+# celldata = Matrix::readMM(file = 'matrix.mtx')
+# cellname = read.table(file = 'barcodes.tsv', header = FALSE, colClasses = "character")[[1]]
+# genename = read.table(file = 'genes.tsv', header = FALSE, colClasses = "character")[[1]]
 # rownames(celldata) = genename
 # colnames(celldata) = cellname
 
-#load data
+#load data(if datatype is 10X)
+celldata <- Read10X("F:\\2018\\Researchs\\chordoma\\hg19")
+#load data(if datatype is dense matrix)
+#input files should be 
+celldata <- read.table("~/Downloads/immune_control_expression_matrix.txt.gz", sep = ",")
 
-celldata = Read10X(data.dir = input)
 test = CreateSeuratObject(raw.data = celldata,project = "Frankie so tired")
+rm(celldata)
 
-#processing
-#mito.genes <- grep(pattern = "^MT-", x = rownames(x = test@data), value = TRUE)
+# processing
+# mitogenes portion(unnecessary)
+# mito.genes <- grep(pattern = "^MT-", x = rownames(x = test1@data), value = TRUE)
 # percent.mito <- Matrix::colSums(test@raw.data[mito.genes, ])/Matrix::colSums(test@raw.data)
 # test <- AddMetaData(object = test, metadata = percent.mito, col.name = "percent.mito")
 
@@ -41,27 +33,31 @@ dev.off()
 
 ##############################################################################################
 #file.create("geneplot.jpeg")
-jpeg(file="geneplot.jpeg")
+#jpeg(file="geneplot.jpeg")
 GenePlot(object = test, gene1 = "nUMI", gene2 = "nGene")
-dev.off()
+#GenePlot(object = test, gene1 = "nUMI", gene2 = "percent.mito")
+# GenePlot(object = test, gene1 = "nUMI", gene2 = "nGene")
+#dev.off()
 
-#
-test <- FilterCells(object = test, subset.names = c("nGene","nUMI"),
-                  low.thresholds = c(-Inf, -Inf), high.thresholds = c(5600,40000))
+humi <- quantile(test@meta.data$nUMI,0.95)
+hgene <- quantile(test@meta.data$nGene,0.95)
+lumi <- quantile(test@meta.data$nUMI,0.05)
+lgene <- quantile(test@meta.data$nGene,0.05)
+
+test <- FilterCells(object = test, subset.names = c("nGene","nUMI"), low.thresholds = c(lgene, lumi), high.thresholds = c(hgene,humi))
 
 
 test <- NormalizeData(object = test, normalization.method = "LogNormalize",scale.factor = 10000)
 
 ##############################################################################################
 #file.create("variableGenes.jpeg")
-jpeg(filename ="variableGenes.jpeg")
-test <- FindVariableGenes(object = test, mean.function = ExpMean, dispersion.function = LogVMR,
-                            x.low.cutoff = 0.05, x.high.cutoff = 3, y.cutoff = 0.5)
-dev.off()
+#jpeg(filename ="variableGenes.jpeg")
+test <- FindVariableGenes(object = test, mean.function = ExpMean, dispersion.function = LogVMR)
+#dev.off()
 
 
 test <- ScaleData(object = test,vars.to.regress = "nUMI")
-test <- RunPCA(object = test, pc.genes = test@var.genes)
+test <- RunPCA(object = test)
 
 ##############################################################################################
 #file.create("Elbowplot.jpeg")
@@ -77,9 +73,8 @@ test <- RunTSNE(object = test,dims.use = 1:10, perplexity =10, do.fast = TRUE)
 jpeg(file="TSNEplot.jpeg")
 TSNEPlot(object = test)
 dev.off()
-#
-# # FeaturePlot(test,features.plot = "S100B",cols.use = c("white","red"))
-# # cluster3.markers <- FindMarkers(object = test, ident.1 = 1, logfc.threshold = 0.8)
-# # print(x = head(x = cluster4.markers, n = 5))
 
- 
+# FeaturePlot(test,features.plot = "S100B",cols.use = c("white","red"))
+# cluster3.markers <- FindMarkers(object = test, ident.1 = 1, logfc.threshold = 0.8)
+# print(x = head(x = cluster4.markers, n = 5))
+

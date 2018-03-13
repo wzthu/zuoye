@@ -22,7 +22,7 @@ class Cellranger(Step):
         self.initIO()
 
         self.setParam('expectcells', expectcells)
-
+        #Configure.enableDocker(False)
         self._setMultiRun()
 
     def impInitIO(self,):        
@@ -49,13 +49,14 @@ class Cellranger(Step):
         if outputdir is None:
             self.setParamIO('outputdir', Configure.getTmpDir())
             outputdir = self.getParamIO('outputdir')
-            self.resultdir = 'Cellranger1'
+            self.resultdir = 'Cellranger'
         else:
             self.resultdir = ''
 
-        self.setOutputDirNTo1('finaldir', os.path.join(outputdir, self.resultdir, 'outs', 'filtered_gene_bc_matrices', 'hg19'), '', 'fastqInput')
-        # self.setOutputDirNTo1('genes', os.path.join(outputdir, 'outs', 'filtered_gene_bc_matrices', 'hg19', 'genes.tsv'), '', 'fastqInput')
-        # self.setOutputDirNTo1('matrix', os.path.join(outputdir, 'outs', 'filtered_gene_bc_matrices', 'hg19', 'matrix.mtx'), '', 'fastqInput')
+        self.setParamIO('finaldir', os.path.join(outputdir, self.resultdir, 'outs', 'filtered_gene_bc_matrices', 'hg19'))
+        self.setOutputDirNTo1('genes', os.path.join(outputdir, self.resultdir,'outs', 'filtered_gene_bc_matrices', 'hg19', 'genes.tsv'), '', 'fastqInput')
+        self.setOutputDirNTo1('matrix', os.path.join(outputdir, self.resultdir,'outs', 'filtered_gene_bc_matrices', 'hg19', 'matrix.mtx'), '', 'fastqInput')
+        self.setOutputDirNTo1('barcodes', os.path.join(outputdir,self.resultdir, 'outs', 'filtered_gene_bc_matrices', 'hg19', 'barcodes.tsv'), '', 'fastqInput')
 
     def call(self, *args):
         pass
@@ -76,49 +77,34 @@ class Cellranger(Step):
                 dir = outputdir.split('/')[-1]
                 if os.path.isdir(outputdir):
                     cmdline = ['rm -r', '%s' % outputdir]
-                    self.callCmdline(cmdline)
-                cmdline = ['srun', 'cellranger', 'count',
-                                 '--id=%s --expect-cells=%s --transcriptome=%s --fastqs=%s'
-                                 % (dir, str(expectcells), refile, fastqInput)]
+                    self.callCmdline(cmdline=cmdline, dockerVersion='V1',stdoutToLog=False)
+                cmdline = ['cellranger', 'count','--id=%s --expect-cells=%s --transcriptome=%s --fastqs=%s'
+                           % (dir, str(expectcells), refile, fastqInput)]
                 print(cmdline)
-                self.callCmdline(self.cmdline, stdoutToLog=False)
+                self.callCmdline(cmdline= cmdline, dockerVersion='V1', stdoutToLog=False)
             else:
                 # use default filepath
-                if os.path.isdir('%s/Cellranger' % outputdir):
-                    cmdline = ['rm -r', '%s/Cellranger' % outputdir]
-                    self.callCmdline(cmdline, stdoutToLog=False)
-
-                # run 10x cellranger
-                cmdline = ['srun', 'cellranger', 'count', '--id=Cellranger', '--expect-cells=%s --transcriptome=%s --fastqs=%s'
+                cmdline = ['cd', outputdir, '&&', 'rm -rf Cellranger', '&&', 'cellranger', 'count',
+                           '--id=Cellranger', '--expect-cells=%s --transcriptome=%s --fastqs=%s'
                            % (str(expectcells), refile, fastqInput)]
-                print(cmdline)
-                self.callCmdline(cmdline, stdoutToLog=False)
-                # move results file
-                cmdline = ['mv', 'Cellranger %s' % outputdir]
-                self.callCmdline(cmdline, stdoutToLog=False)
+                self.callCmdline(cmdline=cmdline, dockerVersion='V1', stdoutToLog=False)
+
         else:
             if self.resultdir is '':
                 # use given path
                 dir = outputdir.split('/')[-1]
                 if os.path.isdir(outputdir):
                     cmdline = ['rm -r', '%s' % outputdir]
-                    self.callCmdline(cmdline, stdoutToLog=False)
-                cmdline = ['srun', 'cellranger', 'count',
-                                 '--id=%s  --transcriptome=%s --fastqs=%s'
-                                 % (dir, refile, fastqInput)]
+                    self.callCmdline(cmdline=cmdline, stdoutToLog=False)
+                cmdline = ['cellranger', 'count', '--id=%s  --transcriptome=%s --fastqs=%s'
+                           % (dir, refile, fastqInput)]
                 print(cmdline)
-                self.callCmdline(cmdline, stdoutToLog=False)
+                self.callCmdline(cmdline=cmdline, dockerVersion='V1', stdoutToLog=False)
             else:
                 # use default filepath
-                if os.path.isdir('%s/Cellranger' % outputdir):
-                    cmdline = ['rm -r', '%s/Cellranger' % outputdir]
-                    self.callCmdline(cmdline, stdoutToLog=False)
-
+                # cd target dir
                 # run 10x cellranger
-                cmdline = ['srun', 'cellranger', 'count',
-                                 '--id=Cellranger', '--transcriptome=%s --fastqs=%s'
-                                 % (refile, fastqInput)]
-                self.callCmdline(cmdline, stdoutToLog=False)
-                # move results file
-                self.cmdline = ['mv', 'Cellranger %s' % outputdir]
-                self.callCmdline(cmdline, stdoutToLog=False)
+                cmdline = ['cd', outputdir,'&&','rm -rf Cellranger', '&&', 'cellranger', 'count',
+                           '--id=Cellranger', '--transcriptome=%s --fastqs=%s'
+                           % (refile, fastqInput)]
+                self.callCmdline(cmdline=cmdline, dockerVersion='V1', stdoutToLog=False)
