@@ -8,8 +8,12 @@
 from StepBase import Configure,Schedule
 from GenPeakWithFilter import GenPeakWithFilter
 
-a=GenPeakWithFilter(summitInput='./minidata/atac/BedForTest/output_summits.bed',
-                    blacklist='./minidata/atac/BedForTest/consensusBlacklist.bed',
+Configure.setRefDir('/home/hca/zhangwei1/hg19_bowtie2')
+Configure.setGenome('hg19')
+Configure.setIdentity('ATAC')
+
+a=GenPeakWithFilter(summitInput='./minidata/atac/others/output_summits.bed',
+                    blacklist='./minidata/atac/others/consensusBlacklist.bed',
                     topPeak=50000)
 
 Schedule.run()

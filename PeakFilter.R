@@ -4,7 +4,7 @@
 # need packages: rtracklayer
 
 Args <- commandArgs()
-User_bed_file <- Args[6]  # this is user's peak summit file from bowtie2
+User_bed_file <- Args[6]  # this is user's peak summit file from macs2
 blacklist_bed_file <- Args[7]  # this is blacklist file from UCSC or user
 output_bed_file <- Args[8]  # this is output file
 overlap_rate <- as.numeric(Args[9])  # this is overlap rate for discard peak

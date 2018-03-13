@@ -51,9 +51,9 @@ class RmChrOrMergeAllSample(Step):
         pass
 
     def _singleRun(self, i):
-        bedInput = self.getInputList('bedInput')
-        bedOutput = self.getOutputList('bedOutput')
-        mergedfilename = self.getOutputList('mergedfilename')[0]
+        bedInput = self.convertToRealPath(self.getInputList('bedInput'))
+        bedOutput = self.convertToRealPath(self.getOutputList('bedOutput'))
+        mergedfilename = self.convertToRealPath(self.getOutputList('mergedfilename')[0])
         chr_info = self.getParam('savedchr')
 
         if chr_info is None:  # only merge, without remove chromatin

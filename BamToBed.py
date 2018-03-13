@@ -55,44 +55,46 @@ class BamToBed(Step):
         self.setParamIO('bamInput', samUpstream.getOutput('bamOutput'))
 
     def _multiRun(self,):
-        bamInput = self.getInputList('bamInput')
-        bedOutput = self.getOutputList('bedOutput')
-
-        for i in range(len(bamInput)):
-            cmdline = [
-                "bedtools bamtobed -i", bamInput[i],
-                "|",
-                "awk \'BEGIN {OFS = \"\\t\"} ; {if ($6 == \"+\") print $1, $2",
-                self.getParam('FSShift'),  # "+ 4"
-                ", $3",
-                self.getParam('FSShift'),  # "+ 4"
-                ", $4, $5, $6; else print $1, $2",
-                self.getParam('RSShift'),  # "- 5"
-                ", $3",
-                self.getParam('RSShift'),  # "- 5"
-                ", $4, $5, $6}\' - >",
-                bedOutput[i]
-            ]
-            result = self.callCmdline(cmdline)
+        pass
+        # bamInput = self.getInputList('bamInput')
+        # bedOutput = self.getOutputList('bedOutput')
+        #
+        # for i in range(len(bamInput)):
+        #     cmdline = [
+        #         "bedtools bamtobed -i", bamInput[i],
+        #         "|",
+        #         "awk \'BEGIN {OFS = \"\\t\"} ; {if ($6 == \"+\") print $1, $2",
+        #         self.getParam('FSShift'),  # "+ 4"
+        #         ", $3",
+        #         self.getParam('FSShift'),  # "+ 4"
+        #         ", $4, $5, $6; else print $1, $2",
+        #         self.getParam('RSShift'),  # "- 5"
+        #         ", $3",
+        #         self.getParam('RSShift'),  # "- 5"
+        #         ", $4, $5, $6}\' - >",
+        #         bedOutput[i]
+        #     ]
+        #     result = self.callCmdline(cmdline)
 
     def _singleRun(self, i):
         bamInput = self.getInputList('bamInput')
         bedOutput = self.getOutputList('bedOutput')
+
         cmdline = [
             "bedtools bamtobed -i", bamInput[i],
             "|",
-            "awk \'BEGIN {OFS = \"\\t\"} ; {if ($6 == \"+\") print $1, $2",
+            "awk \'BEGIN {OFS = \\\"\\\\t\\\"} ; {if (\$6 == \\\"+\\\") print \$1, \$2",
             self.getParam('FSShift'),  # "+ 4"
-            ", $3",
+            ", \$3",
             self.getParam('FSShift'),  # "+ 4"
-            ", $4, $5, $6; else print $1, $2",
+            ", \$4, \$5, \$6; else print \$1, \$2",
             self.getParam('RSShift'),  # "- 5"
-            ", $3",
+            ", \$3",
             self.getParam('RSShift'),  # "- 5"
-            ", $4, $5, $6}\' - >",
+            ", \$4, \$5, \$6}\' - >",
             bedOutput[i]
         ]
-        result = self.callCmdline(cmdline)
+        result = self.callCmdline('V1', cmdline)
 
 
 
