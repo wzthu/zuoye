@@ -61,7 +61,7 @@ class Configure:
     
     @classmethod
     def setThreads(cls,val):
-        cls.__config['threads']
+        cls.__config['threads'] = val
     
     @classmethod
     def getThreads(cls,):
