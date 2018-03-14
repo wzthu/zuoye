@@ -7,21 +7,19 @@ designed for scATAC-seq
 
 """
 
-from StepBase import Step
+from StepBase import Step, Configure
 
 
 class RmDuplicates(Step):
     def __init__(self,
                  bamInput=None,
                  bamOutputDir=None,
-                 picard=None,  # your picard path
                  memory='-Xmx5g',
                  cmdParam=None,
                  **kwargs):
         super(Step, self).__init__(cmdParam, **kwargs)
 
         # set IO parameters
-        self.setParamIO('picard', picard)
         self.setParamIO('bamInput', bamInput)
         self.setParamIO('bamOutputDir', bamOutputDir)
 
@@ -39,6 +37,9 @@ class RmDuplicates(Step):
         # set all output files
         self.setOutputDir1To1('bamOutput', bamOutputDir, None, 'bam', 'bamInput')
         self.setOutputDir1To1('METRICS', bamOutputDir, None, 'picard_METRICS.txt', 'bamInput')
+
+        if bamOutputDir is None:
+            self.setParamIO('bamOutputDir', Configure.getTmpDir())
 
         if bamInput is not None:
             self._setInputSize(len(self.getInputList('bamInput')))
@@ -67,16 +68,12 @@ class RmDuplicates(Step):
         #     result = self.callCmdline(cmdline)
 
     def _singleRun(self, i):
-        picard = self.getParamIO('picard')
         bamInput = self.getInputList('bamInput')
         bamOutput = self.getOutputList('bamOutput')
         matrixOutput = self.getOutputList('METRICS')
         cmdline = [
-            'java', str(self.getParam('memory')), '-jar',
-            picard, 'MarkDuplicates REMOVE_DUPLICATES=true',
-            'INPUT=' + bamInput[i],
-            'OUTPUT=' + bamOutput[i],
-            'METRICS_FILE=' + matrixOutput[i]
+            'picard', str(self.getParam('memory')),
+            bamInput[i], bamOutput[i], matrixOutput[i]
         ]
         result = self.callCmdline('V1', cmdline)
 

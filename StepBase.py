@@ -475,17 +475,12 @@ class StepBase:
         subprocess.run(['ln','-f',origin,virPath])
     
     def linkRealPaths(self,des):
-        virDir = os.path.join(
-                Configure.getTmpDir(), 
-                self.getStepFolderName(),
-                '.tmp',
-                 os.path.dirname(des)[1:])
         virPath = os.path.join(
                 Configure.getTmpDir(),  
                 self.getStepFolderName(),
                 '.tmp',
                  des[1:])
-        os.makedirs(virDir,exist_ok=True)
+        os.makedirs(os.path.dirname(des),exist_ok=True)
         #print(['ln','-f',virPath,des])
         if os.path.exists(virPath):
             subprocess.run(['ln','-f',virPath,des])
@@ -810,7 +805,7 @@ class StepBase:
             print('return here')
             return None
         else:
-            print('return here1')
+            # print('return here1')
             return self.tmpdirStack[-1]
     
 class Step(StepBase):
@@ -998,7 +993,7 @@ class Step(StepBase):
             else:
                 self.setInput(inputName,os.path.join(inputDir,inputFileName))
                     
-    def setInputDirOrFile(self, inputName, inputValue):
+    def setInputDirOrFile(self, inputName, inputValue, checkSameSuffix=True):
         """
         For developer:
         when input parameter is a list or single string,
@@ -1018,7 +1013,7 @@ class Step(StepBase):
                     filelist = os.listdir(inputValue)
                     filelist.sort()
                     suffix = [s.split('.')[-1] for s in filelist]
-                    if len(set(suffix)) != 1:
+                    if checkSameSuffix and len(set(suffix)) != 1:
                         raise Exception('the suffix of files under path:',inputName,'is not the same, check the file format under the directory')
                     self.setInput(inputName, [os.path.join(inputValue,s) for s in filelist ])
                 else:

@@ -5,7 +5,7 @@
 
 """
 
-from StepBase import Step
+from StepBase import Step,Configure
 
 
 class SamToBam(Step):
@@ -20,7 +20,7 @@ class SamToBam(Step):
 
         # set IO parameters
         self.setParamIO('samInput', samInput)
-        self.setParamIO('bamOutputDir', bamOutputDir)
+        self.setParamIO('bamOutputDir',bamOutputDir)
 
         self.initIO()
 
@@ -30,6 +30,9 @@ class SamToBam(Step):
     def impInitIO(self):
         samInput = self.getParamIO('samInput')
         bamOutputDir = self.getParamIO('bamOutputDir')
+        if bamOutputDir is None:
+            self.setParamIO('bamOutputDir',Configure.getTmpDir())
+            
 
         # set all input files
         self.setInputDirOrFile('samInput', samInput)

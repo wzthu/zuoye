@@ -1,6 +1,6 @@
 
 # coding: utf-8
-from stepbase import Step,Configure,Schedule
+from StepBase import Step,Configure,Schedule
 import os
 
 class FastQC(Step):
@@ -17,7 +17,10 @@ class FastQC(Step):
 
         # set all input and output parameters
         self.setParamIO('fastqInput',fastqInput)
-        self.setParamIO('fastqcOutputDir',fastqcOutputDir)
+        if fastqcOutputDir == None:
+            self.setParamIO('fastqcOutputDir',Configure.getTmpDir())
+        else:
+            self.setParamIO('fastqcOutputDir',fastqcOutputDir)
 
         # call self.initIO()
         self.initIO()
@@ -79,4 +82,4 @@ class FastQC(Step):
                    '-o',fastqcOutput[i],
                    fastqInput[i]
                   ]
-        self.callCmdline(cmdline)
+        self.callCmdline('V1', cmdline)

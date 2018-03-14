@@ -94,6 +94,7 @@ class GraphAll(GraphMng):
                  'Tophat',
                  'Star',
                  'Cufflinks',
+                 'Cuffmerge',
                  'HTSeq',
                 # 10x涉及的类的名称
                  'Quantification10x',
@@ -115,6 +116,7 @@ class GraphAll(GraphMng):
                 ['Bamsort','Cufflinks'],
                 ['SamToBam','BamSort'],
                 ['BamSort','Cufflinks'],
+                ['Cufflinks','Cuffmerge'],
             
                 ['SRAToFastq','FastQC'],
                 ['SRAToFastq','Tophat'],
