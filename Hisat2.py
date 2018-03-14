@@ -18,8 +18,8 @@ class Hisat2(Step):
         #self.setParamIO('fastqInput1',fastqInput1)
         self.setParamIO('fastqInput1',fastqInput1)
         self.setParamIO('fastqInput2',fastqInput2)
-        self.setParamIO('samOutputDir',samOutputDir)
         self.setParamIO('ht2Idx',ht2Idx)
+        self.setParamIO('samOutputDir',samOutputDir)
 
 
 
@@ -43,16 +43,16 @@ class Hisat2(Step):
         fastqInput2 = self.getParamIO('fastqInput2')
         samOutputDir = self.getParamIO('samOutputDir')
         ht2Idx = self.getParamIO('ht2Idx')
+        if samOutputDir is None:
+            self.setParamIO('samOutputDir',Configure.getTmpDir())
 
-        print(ht2Idx)
+        # print(ht2Idx)
         #set all input files
         #self.setInputDirOrFile('fastqInput1',fastqInput1)
         self.setInputDirOrFile('fastqInput1',fastqInput1)
         self.setInputDirOrFile('fastqInput2',fastqInput2)
 
 
-        #some special input from __init__ or configure
-        #set 成input有问题
         if ht2Idx is None:
             self.setInput('ht2IdxFile', Configure.getConfig('ht2IdxFile'))
             self.setParamIO('ht2Idx', Configure.getConfig('ht2Indx'))
@@ -61,13 +61,8 @@ class Hisat2(Step):
             ht2IdxFiles = [ ht2Idx + s for s in suffix ]
             self.setInput('ht2IdxFiles', ht2IdxFiles)
 
-
-
-
         # create output file paths and set
         self.setOutputDir1To1('samOutput',samOutputDir,'hisat','sam','fastqInput1')
-
-
 
         # set how many sample are there
         if fastqInput1 is not None:
@@ -83,7 +78,6 @@ class Hisat2(Step):
             self.setParamIO('fastqInput1',Upstream.getOutput('fastqOutput1'))
             self.setParamIO('fastqInput2',Upstream.getOutput('fastqOutput2'))
 
-
     def _singleRun(self,i):
         # obtain all input and output dir list
         fastqInput1 = self.getInputList('fastqInput1')
@@ -92,14 +86,11 @@ class Hisat2(Step):
 
         ht2IdxFile = self.getParamIO('ht2Idx')
 
-
-
-        cmdline = ['hisat2',
+        cmdline = ['/root/software/hisat2-2.1.0/hisat2',
                   '-p',str(self.getParam('threads')),
                   '-x',ht2IdxFile,
                   '-1', fastqInput1[i],
                   '-2',fastqInput2[i],
                   '-S',samOutput[i]]
-        self.callCmdline(cmdline)
+        self.callCmdline('V1', cmdline)
 
-        print(cmdline)
