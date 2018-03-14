@@ -5,6 +5,8 @@ from SamToBam import SamToBam
 from BamSort import BamSort
 from Cufflinks import Cufflinks
 from Cuffmerge import Cuffmerge
+from Cuffquant import Cuffquant
+from Cuffnorm import Cuffnorm
 
 Configure.setIdentity('sqchen')
 
@@ -14,15 +16,12 @@ fastq_dump = FastqDump(sraInput1='./minidata/smartseq/sra')
 #Hisat2
 hisat = Hisat2(ht2Idx="./minidata/smartseq/hg19_index/genome")(fastq_dump)
 
-# Bam2Sam
 sam2bam =SamToBam(threads=16)(hisat)
 
-# #BamSort
 bamsort = BamSort()(sam2bam)
 
-# #Cufflinks
-cufflinks =Cufflinks(gtfInput='./minidata/smartseq/genome.gtf',threads=16)(bamsort)
+cuffquant = Cuffquant(gtfInput='./minidata/smartseq/genome.gtf',threads=16)(bamsort)
 
-cuffmerge=Cuffmerge(faInput1='./minidata/smartseq/hg19.fa',gtfInput1='./minidata/smartseq/genome.gtf',threads=16)(cufflinks)
+cuffnorm = Cuffnorm(gtfInput='./minidata/smartseq/genome.gtf',threads=16)(cuffquant)
 
 Schedule.run()
