@@ -36,11 +36,18 @@ class Cuffquant(Step):
 
 		self.setInputDirOrFile('bamInput',bamInput)
 
-		self.setOutputDir1To1('outputDir',outputDir,'cuffquant','suffix','bamInput')
+		#self.setOutputDir1To1('outputDir',outputDir,'cuffquant','suffix','bamInput')
 		self.setOutput('assembliesOutput',os.path.join(Configure.getTmpDir(), 'assembleOfAbundances.txt'))
 
 		if bamInput is not None:
 			self._setInputSize(len(self.getInputList('bamInput')))
+			abundances_cxb = list()
+			for i in range(len(self.getInputList('bamInput'))):
+				abundances_cxb.append(os.path.join(outputDir, 'cuffquant_' + str(i), 'abundances.cxb'))
+			self.setOutput('abundances_cxb',abundances_cxb)
+		else:
+			self.setOutput('abundances_cxb',None)
+
 	def call(self, *args):
 		bamUpstream = args[0]
 
@@ -49,17 +56,17 @@ class Cuffquant(Step):
 	def _singleRun(self,i):
 		bamInput = self.getInputList('bamInput')
 		gtfInput = self.getParamIO('gtfInput')
-		outputDir = self.getOutputList('outputDir')
+		outputDir = self.getParamIO('outputDir')
 		print(outputDir)
 
 		cmdline = [
 				'cuffquant',
-				'-o',outputDir[i],
+				'-o',os.path.join(outputDir,'cuffquant_' + str(i))
 				'-p',str(self.getParam('threads')),
 				gtfInput,
 				bamInput[i],
 				';',
-				'echo','"'+os.path.join(outputDir[i],'abundances.cxb') + '" >>',
-				os.path.join(Configure.getTmpDir(),'assembleOfAbundances.txt')
+				'echo','"'+os.path.join(outputDir,'cuffquant_'+str(i),'abundances.cxb') + '" >>',
+				self.getOutput("assembliesOutput")
 				]
 		self.callCmdline(cmdline)

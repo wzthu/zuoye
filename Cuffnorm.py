@@ -37,11 +37,45 @@ class Cuffnorm(Step):
 		markerInput = self.getParamIO('markerInput')
 		outputDir = self.getParamIO('outputDir')
 		self.setInputDirOrFile('cxbInput',cxbInput)
-		self.setOutputDir1To1('outputDir',outputDir,'Cuffnorm','suffix','cxbInput')
+		#self.setOutputDir1To1('outputDir',outputDir,'Cuffnorm','suffix','cxbInput')
 		if cxbInput is not None:
 			self._setInputSize(len(self.getInputList('cxbInput')))
+			isoforms_fpkm_tracking=list()
+			genes_fpkm_tracking=list()
+			cds_fpkm_tracking=list()
+			tss_groups_fpkm_tracking=list()	
+			isoforms_count_tracking=list()
+			genes_count_tracking=list()
+			cds_count_tracking=list()
+			tss_groups_count_tracking=list()
+			for i in range(len(self.getInputList('cxbInput'))):
+				isoforms_fpkm_tracking.append(os.path.join(outputDir,'cuffnorm_'+str(i),'isoforms_fpkm_tracking'))
+				genes_fpkm_tracking.append(os.path.join(outputDir, 'cuffnorm_'+str(i),'genes.fpkm_tracking'))
+				cds_fpkm_tracking.append(os.path.join(outputDir, 'cuffnorm_'+str(i),'cds.fpkm_tracking'))
+				tss_fpkm_tracking.append(os.path.join(outputDir, 'cuffnorm_'+str(i),'tss_groups.fpkm_tracking'))
+				isoforms_count_tracking.append(os.path.join(outputDir,'cuffnorm_'+str(i),'isoforms_count_tracking'))
+				genes_count_tracking.append(os.path.join(outputDir, 'cuffnorm_'+str(i),'genes.count_tracking'))
+				cds_count_tracking.append(os.path.join(outputDir, 'cuffnorm_'+str(i),'cds.count_tracking'))
+				tss_count_tracking.append(os.path.join(outputDir, 'cuffnorm_'+str(i),'tss_groups.count_tracking'))
+			self.setOutput('isoforms_fpkm_tracking',isoforms_fpkm_tracking)
+			self.setOutput('genes_fpkm_tracking',genes_fpkm_tracking)
+			self.setOutput('cds_fpkm_tracking',cds_fpkm_tracking)
+			self.setOutput('tss_groups_fpkm_tracking',tss_groups_fpkm_tracking)
+			self.setOutput('isoforms_count_tracking',isoforms_count_tracking)
+			self.setOutput('genes_count_tracking',genes_count_tracking)
+			self.setOutput('cds_count_tracking',cds_count_tracking)
+			self.setOutput('tss_groups_count_tracking',tss_groups_count_tracking)
+		else:
+			self.setOutput('isoforms_fpkm_tracking',None)
+			self.setOutput('genes_fpkm_tracking',None)
+			self.setOutput('cds_fpkm_tracking',None)
+			self.setOutput('tss_groups_fpkm_tracking',None)
+			self.setOutput('isoforms_count_tracking',None)
+			self.setOutput('genes_count_tracking',None)
+			self.setOutput('cds_count_tracking',None)
+			self.setOutput('tss_groups_count_tracking',None)
 
-	def call(self, *args):
+	  def call(self, *args):
 		cxbUpstream = args[0]
 		fd = open(cxbUpstream.getOutput('assembliesOutput'),'r')
 		cxb = ''
@@ -63,7 +97,7 @@ class Cuffnorm(Step):
 
 		cmdline = [
 				'Cuffnorm',
-				'-o',outputDir[i],
+				'-o',os.path.join(outputDir,'cuffnorm_'+str(i),cxbInput[i]),
 				'-p',str(self.getParam('threads')),
 				'-L',markerInput,
 				gtfInput,
