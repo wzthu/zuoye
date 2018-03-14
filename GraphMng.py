@@ -90,11 +90,12 @@ class GraphAll(GraphMng):
                  'Hisat2',
                  'SamToBam',
                  'Bamsort',
-                 'BamSort',
                  'Tophat',
                  'Star',
                  'Cufflinks',
                  'Cuffmerge',
+                 'Cuffquant',
+                 'Cuffnorm',
                  'HTSeq',
                 # 10x涉及的类的名称
                  'Quantification10x',
@@ -117,6 +118,8 @@ class GraphAll(GraphMng):
                 ['SamToBam','BamSort'],
                 ['BamSort','Cufflinks'],
                 ['Cufflinks','Cuffmerge'],
+                ['BamSort','Cuffquant'],
+                ['Cuffquant','Cuffnorm'],
             
                 ['SRAToFastq','FastQC'],
                 ['SRAToFastq','Tophat'],
