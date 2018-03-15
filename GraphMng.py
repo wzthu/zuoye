@@ -90,11 +90,13 @@ class GraphAll(GraphMng):
                  'Hisat2',
                  'SamToBam',
                  'Bamsort',
-                 'BamSort',
                  'Tophat',
                  'Star',
                  'Cufflinks',
                  'Cuffmerge',
+                 'Cuffquant',
+                 'Cuffnorm',
+                 'Cuffdiff',
                  'HTSeq',
                 # 10x涉及的类的名称
                  'Quantification10x',
@@ -117,6 +119,10 @@ class GraphAll(GraphMng):
                 ['SamToBam','BamSort'],
                 ['BamSort','Cufflinks'],
                 ['Cufflinks','Cuffmerge'],
+                ['BamSort','Cuffquant'],
+                ['Cuffquant','Cuffnorm'],
+                
+                ['Cuffmerge','Cuffdiff'],
             
                 ['SRAToFastq','FastQC'],
                 ['SRAToFastq','Tophat'],
@@ -156,7 +162,10 @@ class GraphAll(GraphMng):
                 ]
 
         edge2 = [['SortBam','MergeBamAlign'],
-                 ['GenPeakWithFilter', 'VarAndClustering']
+                 ['GenPeakWithFilter', 'VarAndClustering'],
+                 ['Cuffquant','Cuffdiff'],
+                 ['Cuffmerge','Cuffquant'],
+                 ['Cuffmerge','Cuffnorm']
                  ]
 
         super(GraphAll, self).__init__([edge1,edge2],[node1,[]])        
