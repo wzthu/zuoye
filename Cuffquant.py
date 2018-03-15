@@ -29,6 +29,8 @@ class Cuffquant(Step):
 			threads = Configure.getThreads()
 		self.setParam('threads',threads)
 
+		self._setUpstreamSize(2)
+
 	def impInitIO(self,):
 		bamInput = self.getParamIO('bamInput')
 		gtfInput = self.getParamIO('gtfInput')
@@ -36,11 +38,7 @@ class Cuffquant(Step):
 		if outputDir is None:
 			self.setParamIO('outputDir',Configure.getTmpDir())
 
-		if gtfInput is None:
-			gtfInput=Configure.getConfig('')
-			self.setIput('gtfInput',gtfInput)
-			self.setParamIO('gtfInput',gtfInput)
-		else:
+		if gtfInput is not None:	
 			self.setInput('gtfInput',gtfInput)
 
 		self.setInputDirOrFile('bamInput',bamInput)
@@ -59,8 +57,10 @@ class Cuffquant(Step):
 
 	def call(self, *args):
 		bamUpstream = args[0]
+		gtfUpstream = args[1]
 
 		self.setParamIO('bamInput',bamUpstream.getOutput('bamOutput'))
+		self.setParamIO('gtfInput',gtfUpstream.getOutput('merged_gtf'))
 
 	def _singleRun(self,i):
 		bamInput = self.getInputList('bamInput')
@@ -72,7 +72,7 @@ class Cuffquant(Step):
 				'cuffquant',
 				'-o',os.path.join(outputDir,'cuffquant_' + str(i)),
 				'-p',str(self.getParam('threads')),
-				gtfInput,
+				gtfInput[0],
 				bamInput[i]
 				]
 		self.callCmdline('V1',cmdline)
