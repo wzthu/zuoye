@@ -808,6 +808,7 @@ class StepBase:
             # print('return here1')
             return self.tmpdirStack[-1]
     
+    
 class Step(StepBase):
     def __init__(self,cmdParam,**kwargs):
         super(StepBase, self).__init__(cmdParam,**kwargs)
@@ -1202,4 +1203,22 @@ class Step(StepBase):
                 return os.path.join(self.top(),virtualPath.split('.tmp_for_docker')[1][1:])
         else:
             return virtualPath
+    
+    def getMarkdown(self,lang='EN'):
+        if self.checkFinish():
+            if lang == 'EN':
+                return self.getMarkdownEN()
+            elif lang == 'CN':
+                return self.getMarkdownCN()
+            else:
+                raise Exception('language',lang,'is not support yet!')
+        else:
+            raise Exception(self.getStepFolderName(),'is not finished')
+    
+    def getMarkdownEN():
+        raise Exception('getMarkdownEN must be overwrote')
+        
+    def getMarkdownCN():
+        raise Exception('getMarkdownCN must be overwrote')
+        
         
