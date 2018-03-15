@@ -1204,10 +1204,16 @@ class Step(StepBase):
         else:
             return virtualPath
     
-    def getEnglishMarkdown():
-        raise Exception('getEnglishMarkdown must be overwrote')
+    def getMarkdown(self,lang='EN'):
+        if lang == 'EN':
+            return self.getMarkdownEN()
+        elif lang == 'CN'
+            return self.getMarkdownCN()
+    
+    def getMarkdownEN():
+        raise Exception('getMarkdownEN must be overwrote')
         
-    def getChineseMarkdown():
-        raise Exception('getChineseMarkdown must be overwrote')
+    def getMarkdownCN():
+        raise Exception('getMarkdownCN must be overwrote')
         
         
