@@ -17,6 +17,7 @@ class Bowtie2(Step):
                  samOutputDir = None, 
                  mapRsOutputDir = None,
                  threads = None,
+                 isdovetail = True,
                  isNoDiscordant = True,
                  isNoUnal = True,
                  isNoMixed = True,
@@ -44,6 +45,7 @@ class Bowtie2(Step):
         self.setParam('isNoDiscordant', isNoDiscordant)
         self.setParam('isNoUnal', isNoUnal)
         self.setParam('isNoMixed', isNoMixed)
+        self.setParam('isdovetail', isdovetail)
         self.setParam('X', X)
         if threads is None:
             threads = Configure.getThreads()
@@ -117,19 +119,19 @@ class Bowtie2(Step):
         #combine the command line
         cmdline = [#'/root/software/bowtie2-2.3.4.1-linux-x86_64/bowtie2',
                 'bowtie2',
-                '-p',str(self.getParam('threads')),
+                '-p', str(self.getParam('threads')),
+                self.getBoolParamCmd('--dovetail ', 'isdovetail'),
                 self.getBoolParamCmd('--no-discordant ','isNoDiscordant'),
                 self.getBoolParamCmd('--no-unal ','isNoUnal'),
                 self.getBoolParamCmd('--no-mixed ','isNoMixed'),
                 '-X' , str(self.getParam('X')),
                 self.getUnsetParams(),
-                ' -x %s -1 %s -2 %s -S %s '%(
+                ' -x %s -q -1 %s -q -2 %s -S %s '%(
                     self.getParamIO('bt2Idx'),
                     #bt2IdxFiles[0],
                     fastqInput1[i],
                     fastqInput2[i],
                     samOutput[i]),
-                 
                 ]
         
         #run commandline           
