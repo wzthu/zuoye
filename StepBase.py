@@ -1207,7 +1207,7 @@ class Step(StepBase):
     def getMarkdown(self,lang='EN'):
         if lang == 'EN':
             return self.getMarkdownEN()
-        elif lang == 'CN'
+        elif lang == 'CN':
             return self.getMarkdownCN()
     
     def getMarkdownEN():
