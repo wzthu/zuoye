@@ -4,7 +4,7 @@ Created on 2018-3-10 09:24:38
 @author: Song Shaoming
 """
 
-from stepbase import Step,Configure
+from StepBase import Step,Configure
 import os
 
 class Cuffquant(Step):
@@ -29,32 +29,50 @@ class Cuffquant(Step):
 			threads = Configure.getThreads()
 		self.setParam('threads',threads)
 
+		self._setUpstreamSize(2)
+
 	def impInitIO(self,):
 		bamInput = self.getParamIO('bamInput')
 		gtfInput = self.getParamIO('gtfInput')
 		outputDir = self.getParamIO('outputDir')
+		if outputDir is None:
+			self.setParamIO('outputDir',Configure.getTmpDir())
+
+		if gtfInput is not None:	
+			self.setInput('gtfInput',gtfInput)
 
 		self.setInputDirOrFile('bamInput',bamInput)
 
-		self.setOutputDir1To1('outputDir',outputDir,'cuffquant','suffix','bamInput')
+		#self.setOutputDir1To1('outputDir',outputDir,'cuffquant','suffix','bamInput')
+		#self.setOutput('assembliesOutput',os.path.join(Configure.getTmpDir(), 'assembleOfAbundances.txt'))
+
 		if bamInput is not None:
 			self._setInputSize(len(self.getInputList('bamInput')))
+			abundances_cxb = list()
+			for i in range(len(self.getInputList('bamInput'))):
+				abundances_cxb.append(os.path.join(outputDir, 'cuffquant_' + str(i), 'abundances.cxb'))
+			self.setOutput('abundances_cxb',abundances_cxb)
+		else:
+			self.setOutput('abundances_cxb',None)
+
 	def call(self, *args):
 		bamUpstream = args[0]
+		gtfUpstream = args[1]
 
 		self.setParamIO('bamInput',bamUpstream.getOutput('bamOutput'))
+		self.setParamIO('gtfInput',gtfUpstream.getOutput('merged_gtf'))
 
 	def _singleRun(self,i):
 		bamInput = self.getInputList('bamInput')
 		gtfInput = self.getParamIO('gtfInput')
-		outputDir = self.getOutputList('outputDir')
+		outputDir = self.getParamIO('outputDir')
 		print(outputDir)
 
 		cmdline = [
 				'cuffquant',
-				'-o',outputDir[i],
+				'-o',os.path.join(outputDir,'cuffquant_' + str(i)),
 				'-p',str(self.getParam('threads')),
-				gtfInput,
+				gtfInput[0],
 				bamInput[i]
 				]
-		self.callCmdline(cmdline)
+		self.callCmdline('V1',cmdline)

@@ -61,7 +61,7 @@ class Configure:
     
     @classmethod
     def setThreads(cls,val):
-        cls.__config['threads']
+        cls.__config['threads'] = val
     
     @classmethod
     def getThreads(cls,):
@@ -324,7 +324,7 @@ class StepBase:
         tmpdir = Configure.getTmpDir()
         if not os.path.exists(self.getStepFolerPath()):
             os.mkdir(self.getStepFolerPath())
-        #os.makedirs(os.path.join(Configure.getTmpDir(),self.getStepFolderName(),'.tmp',self.getStepFolerPath()))    
+        #os.makedirs(os.path.join(Configure.getTmpDir(),self.getStepFolderName(),'.tmp_for_docker',self.getStepFolerPath()))    
         Configure.setTmpDir(self.getStepFolerPath())
         self.impInitIO()
         Configure.setTmpDir(tmpdir)
@@ -463,29 +463,24 @@ class StepBase:
         virDir = os.path.join(
                 Configure.getTmpDir(),
                 self.getStepFolderName(), 
-                '.tmp',
+                '.tmp_for_docker',
                  os.path.dirname(origin)[1:])
         virPath = os.path.join(
                 Configure.getTmpDir(),  
                 self.getStepFolderName(),
-                '.tmp',
+                '.tmp_for_docker',
                  origin[1:])
         os.makedirs(virDir,exist_ok=True)
         #print(['ln','-f',origin,virPath])
         subprocess.run(['ln','-f',origin,virPath])
     
     def linkRealPaths(self,des):
-        virDir = os.path.join(
-                Configure.getTmpDir(), 
-                self.getStepFolderName(),
-                '.tmp',
-                 os.path.dirname(des)[1:])
         virPath = os.path.join(
                 Configure.getTmpDir(),  
                 self.getStepFolderName(),
-                '.tmp',
+                '.tmp_for_docker',
                  des[1:])
-        os.makedirs(virDir,exist_ok=True)
+        os.makedirs(os.path.dirname(des),exist_ok=True)
         #print(['ln','-f',virPath,des])
         if os.path.exists(virPath):
             subprocess.run(['ln','-f',virPath,des])
@@ -512,7 +507,7 @@ class StepBase:
             self.getCurTime()]  
             self._writeLogLines(lines)
             
-            tmpFolder = Configure.getTmpPath(os.path.join(self.getStepFolderName(),'.tmp'))
+            tmpFolder = Configure.getTmpPath(os.path.join(self.getStepFolderName(),'.tmp_for_docker'))
             os.makedirs(tmpFolder,exist_ok=True)
             print(os.path.join(tmpFolder,'*'))
             subprocess.run(['rm','-rf',os.path.join(tmpFolder,'*')])
@@ -682,11 +677,11 @@ class StepBase:
     def getInput(self, inputName):
         if self.__virtual:
             if isinstance(self.inputs[inputName],list):
-                #print([os.path.join(Configure.getDockerPath(),self.getStepFolderName(),'.tmp',s[1:]) for s in self.inputs[inputName]])
-                return [os.path.join(Configure.getDockerPath(),self.getStepFolderName(),'.tmp',s[1:]) for s in self.inputs[inputName]]
+                #print([os.path.join(Configure.getDockerPath(),self.getStepFolderName(),'.tmp_for_docker',s[1:]) for s in self.inputs[inputName]])
+                return [os.path.join(Configure.getDockerPath(),self.getStepFolderName(),'.tmp_for_docker',s[1:]) for s in self.inputs[inputName]]
             else:
-                #print(os.path.join(Configure.getDockerPath(),self.getStepFolderName(),'.tmp',self.inputs[inputName][1:]))
-                return os.path.join(Configure.getDockerPath(),self.getStepFolderName(),'.tmp',self.inputs[inputName][1:])
+                #print(os.path.join(Configure.getDockerPath(),self.getStepFolderName(),'.tmp_for_docker',self.inputs[inputName][1:]))
+                return os.path.join(Configure.getDockerPath(),self.getStepFolderName(),'.tmp_for_docker',self.inputs[inputName][1:])
         else:
             return self.inputs[inputName]
     
@@ -703,10 +698,10 @@ class StepBase:
         if self.inputs[inputName] is not None:
             if isinstance(self.inputs[inputName],list):
                 for s in self.inputs[inputName]:
-                    os.makedirs(os.path.dirname(os.path.join(Configure.getTmpDir(),'.tmp',s[1:])), exist_ok=True)                
+                    os.makedirs(os.path.dirname(os.path.join(Configure.getTmpDir(),'.tmp_for_docker',s[1:])), exist_ok=True)                
                     
             else:
-                os.makedirs(os.path.dirname(os.path.join(Configure.getTmpDir(),'.tmp',self.inputs[inputName][1:])), exist_ok=True)
+                os.makedirs(os.path.dirname(os.path.join(Configure.getTmpDir(),'.tmp_for_docker',self.inputs[inputName][1:])), exist_ok=True)
                 
     
     def getOutputs(self,):
@@ -715,9 +710,9 @@ class StepBase:
     def getOutput(self,outputName):
         if self.__virtual:
             if isinstance(self.outputs[outputName],list):
-                return [os.path.join(Configure.getDockerPath(),self.getStepFolderName(),'.tmp',s[1:]) for s in self.outputs[outputName]]
+                return [os.path.join(Configure.getDockerPath(),self.getStepFolderName(),'.tmp_for_docker',s[1:]) for s in self.outputs[outputName]]
             else:
-                return os.path.join(Configure.getDockerPath(),self.getStepFolderName(),'.tmp',self.outputs[outputName][1:])
+                return os.path.join(Configure.getDockerPath(),self.getStepFolderName(),'.tmp_for_docker',self.outputs[outputName][1:])
         else:
             return self.outputs[outputName]
     
@@ -729,10 +724,10 @@ class StepBase:
             if isinstance(self.outputs[outputName],list):
                 for s in self.outputs[outputName]:
                     os.makedirs(os.path.dirname(os.path.join(Configure.getTmpDir(),
-                                                             '.tmp',
+                                                             '.tmp_for_docker',
                                                              s[1:])), exist_ok=True) 
             else:
-                os.makedirs(os.path.dirname(os.path.join(Configure.getTmpDir(),'.tmp',self.outputs[outputName][1:])), exist_ok=True)
+                os.makedirs(os.path.dirname(os.path.join(Configure.getTmpDir(),'.tmp_for_docker',self.outputs[outputName][1:])), exist_ok=True)
             
     def getUnsetParams(self,):
         return self.unsetParams
@@ -762,9 +757,9 @@ class StepBase:
         if paramName in self.paramsIO.keys():
             if self.__virtual :
                 if isinstance(self.paramsIO[paramName],list):
-                    return [os.path.join(Configure.getDockerPath(),self.getStepFolderName(),'.tmp',s[1:]) for s in self.paramsIO[paramName]]
+                    return [os.path.join(Configure.getDockerPath(),self.getStepFolderName(),'.tmp_for_docker',s[1:]) for s in self.paramsIO[paramName]]
                 else:
-                    return os.path.join(Configure.getDockerPath(),self.getStepFolderName(),'.tmp',self.paramsIO[paramName][1:])
+                    return os.path.join(Configure.getDockerPath(),self.getStepFolderName(),'.tmp_for_docker',self.paramsIO[paramName][1:])
         return self.paramsIO[paramName]
     
     def setParamIO(self, paramName, paramValue):
@@ -810,8 +805,9 @@ class StepBase:
             print('return here')
             return None
         else:
-            print('return here1')
+            # print('return here1')
             return self.tmpdirStack[-1]
+    
     
 class Step(StepBase):
     def __init__(self,cmdParam,**kwargs):
@@ -998,7 +994,7 @@ class Step(StepBase):
             else:
                 self.setInput(inputName,os.path.join(inputDir,inputFileName))
                     
-    def setInputDirOrFile(self, inputName, inputValue):
+    def setInputDirOrFile(self, inputName, inputValue, checkSameSuffix=True):
         """
         For developer:
         when input parameter is a list or single string,
@@ -1018,7 +1014,7 @@ class Step(StepBase):
                     filelist = os.listdir(inputValue)
                     filelist.sort()
                     suffix = [s.split('.')[-1] for s in filelist]
-                    if len(set(suffix)) != 1:
+                    if checkSameSuffix and len(set(suffix)) != 1:
                         raise Exception('the suffix of files under path:',inputName,'is not the same, check the file format under the directory')
                     self.setInput(inputName, [os.path.join(inputValue,s) for s in filelist ])
                 else:
@@ -1198,4 +1194,31 @@ class Step(StepBase):
                 return os.path.join(self.top(),virtualPath[len(Configure.getDockerPath())+1:])
         else:
             return virtualPath
+        
+    def convertToRealRealPath(self, virtualPath): 
+        if Configure.isDocker():
+            if isinstance(virtualPath,list):
+                return [os.path.join(self.top(),s.split('.tmp_for_docker')[1][1:]) for s in virtualPath]
+            else:   
+                return os.path.join(self.top(),virtualPath.split('.tmp_for_docker')[1][1:])
+        else:
+            return virtualPath
+    
+    def getMarkdown(self,lang='EN'):
+        if self.checkFinish():
+            if lang == 'EN':
+                return self.getMarkdownEN()
+            elif lang == 'CN':
+                return self.getMarkdownCN()
+            else:
+                raise Exception('language',lang,'is not support yet!')
+        else:
+            raise Exception(self.getStepFolderName(),'is not finished')
+    
+    def getMarkdownEN():
+        raise Exception('getMarkdownEN must be overwrote')
+        
+    def getMarkdownCN():
+        raise Exception('getMarkdownCN must be overwrote')
+        
         

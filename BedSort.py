@@ -45,16 +45,17 @@ class BedSort(Step):
         self.setParamIO('bedInput', samUpstream.getOutput('mergedfilename'))
 
     def _multiRun(self,):
-        bedInput = self.getInputList('bedInput')
-        bedOutput = self.getOutputList('bedOutput')
-        for i in range(len(bedInput)):
-            cmdline = [
-                'sortBed -i',
-                bedInput[i],
-                '>',
-                bedOutput[i]
-            ]
-            result = self.callCmdline(cmdline)
+        pass
+        # bedInput = self.getInputList('bedInput')
+        # bedOutput = self.getOutputList('bedOutput')
+        # for i in range(len(bedInput)):
+        #     cmdline = [
+        #         'sortBed -i',
+        #         bedInput[i],
+        #         '>',
+        #         bedOutput[i]
+        #     ]
+        #     result = self.callCmdline(cmdline)
 
     def _singleRun(self, i):
         bedInput = self.getInputList('bedInput')
@@ -65,5 +66,5 @@ class BedSort(Step):
             '>',
             bedOutput[i]
         ]
-        result = self.callCmdline(cmdline)
+        result = self.callCmdline('V1', cmdline)
 

@@ -94,6 +94,7 @@ class GraphAll(GraphMng):
                  'Tophat',
                  'Star',
                  'Cufflinks',
+                 'Cuffmerge',
                  'HTSeq',
                 # 10x涉及的类的名称
                  'Quantification10x',
@@ -115,6 +116,7 @@ class GraphAll(GraphMng):
                 ['Bamsort','Cufflinks'],
                 ['SamToBam','BamSort'],
                 ['BamSort','Cufflinks'],
+                ['Cufflinks','Cuffmerge'],
             
                 ['SRAToFastq','FastQC'],
                 ['SRAToFastq','Tophat'],
@@ -138,10 +140,10 @@ class GraphAll(GraphMng):
                 ['MergeBamAlign','TagGene'],
                 ['TagGene','DetectError'],
                 ['DetectError','DigitalExpression'],
-                #ATAC-seq
-                ['SRAToFastq','AdapterRemoval'],
-                ['AdapterRemoval','Bowtie2'],
-                ['Bowtie2','SamToBam'],
+                # ATAC-seq
+                ['SRAToFastq', 'AdapterRemoval'],
+                ['AdapterRemoval', 'Bowtie2'],
+                ['Bowtie2', 'SamToBam'],
                 ['SamToBam', 'BamSort'],
                 ['BamSort', 'RmDuplicates'],
                 ['RmDuplicates', 'BamToBed'],
@@ -149,13 +151,15 @@ class GraphAll(GraphMng):
                 ['BamToBed', 'RmChrOrMergeAllSample'],
                 ['RmChrOrMergeAllSample', 'MergeToFrag'],
                 ['RmChrOrMergeAllSample', 'BedSort'],
-                ['BedSort', 'GenPeakWithFilter'],
+                ['BedSort', 'PeakCalling'],
+                ['PeakCalling', 'GenPeakWithFilter'],
                 ['RmDuplicates', 'VarAndClustering'],
                 ]
 
-        edge2 = [['SortBam','MergeBamAlign'],
-                 ['GenPeakWithFilter', 'VarAndClustering']
-                 ]
+        edge2 = [
+                ['SortBam', 'MergeBamAlign'],
+                ['GenPeakWithFilter', 'VarAndClustering']
+                ]
 
         super(GraphAll, self).__init__([edge1,edge2],[node1,[]])        
         

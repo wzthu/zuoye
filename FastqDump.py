@@ -27,6 +27,8 @@ class FastqDump(Step):
     def impInitIO(self,):        
         sraInput1 = self.getParamIO('sraInput1')
         fastqOutputDir = self.getParamIO('fastqOutputDir')
+        if fastqOutputDir is None:
+            self.setParamIO('fastqOutputDir',Configure.getTmpDir())
 
         #set all input files        
         self.setInputDirOrFile('sraInput1',sraInput1) 
@@ -51,7 +53,7 @@ class FastqDump(Step):
                     '-O', fastqOutputDir
                     ]
                     
-        result = self.callCmdline(cmdline)
+        result = self.callCmdline('V1', cmdline)
         # f = open(mapRsOutput[i],'wb')   
         # f.write(result.stderr)
             

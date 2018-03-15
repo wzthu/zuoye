@@ -7,7 +7,7 @@ designed for scATAC-seq
 
 """
 
-from StepBase import Step
+from StepBase import Step,Configure
 
 
 class BamSort(Step):
@@ -21,7 +21,7 @@ class BamSort(Step):
 
         # set IO parameters
         self.setParamIO('bamInput', bamInput)
-        self.setParamIO('bamOutputDir', bamOutputDir)
+        self.setParamIO('bamOutputDir',bamOutputDir)
 
         self.initIO()
 
@@ -31,6 +31,8 @@ class BamSort(Step):
     def impInitIO(self):
         bamInput = self.getParamIO('bamInput')
         bamOutputDir = self.getParamIO('bamOutputDir')
+        if bamOutputDir is None:
+            self.setParamIO('bamOutputDir',Configure.getTmpDir())
 
         # set all input files
         self.setInputDirOrFile('bamInput', bamInput)

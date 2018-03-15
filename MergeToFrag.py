@@ -56,18 +56,16 @@ class MergeToFrag(Step):
 
 
     def _multiRun(self, ):
-        print("class MergeToFrag has no method multiRun.\n")
         pass
 
     def _singleRun(self, i):
-        bedInput = self.getInputList('bedInput')
-        bedOutput = self.getOutputList('bedOutput')
+        bedInput = self.convertToRealPath(self.getInputList('bedInput'))
+        bedOutput = self.convertToRealPath(self.getOutputList('bedOutput'))
 
         tmpfile1 = "file.tmp1.tmp"
         tmpfile2 = "file.tmp2.tmp"
         tmpfile3 = "file.tmp3.tmp"
 
-        # split
         f = open(r'%s' % bedInput[i], 'r')
         g = open(r'%s' % tmpfile1, 'w')
 
@@ -84,7 +82,7 @@ class MergeToFrag(Step):
             'sort -k1,1 -k4,4 -k7,7',
             tmpfile1, '>', tmpfile2
         ]
-        result = self.callCmdline(cmdline)
+        result = self.callCmdline(None, cmdline)
 
         # merge
         f = open(r'%s' % tmpfile2, 'r')
@@ -107,18 +105,18 @@ class MergeToFrag(Step):
             'sort -k1,1 -k2n,2',
             tmpfile3, '>', bedOutput[i]
         ]
-        result = self.callCmdline(cmdline)
+        result = self.callCmdline(None, cmdline)
 
         # delete tmp file
         cmdline = [
             'rm -f', tmpfile1
         ]
-        result = self.callCmdline(cmdline)
+        result = self.callCmdline(None, cmdline)
         cmdline = [
             'rm -f', tmpfile2
         ]
-        result = self.callCmdline(cmdline)
+        result = self.callCmdline(None, cmdline)
         cmdline = [
             'rm -f', tmpfile3
         ]
-        result = self.callCmdline(cmdline)
+        result = self.callCmdline(None, cmdline)
