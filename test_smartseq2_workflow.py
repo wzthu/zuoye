@@ -5,14 +5,16 @@ from SamToBam import SamToBam
 from BamSort import BamSort
 from Cufflinks import Cufflinks
 from Cuffmerge import Cuffmerge
+from Cuffquant import Cuffquant
+from Cuffdiff import Cuffdiff
 
-Configure.setIdentity('sqchen')
+Configure.setIdentity('songshaoming')
 
 #Fastq-dump
-fastq_dump = FastqDump(sraInput1='./minidata/smartseq/sra')
+fastq_dump = FastqDump(sraInput1='../../chenshengquan/zuoye/minidata/smartseq/sra')
 
 #Hisat2
-hisat = Hisat2(ht2Idx="./minidata/smartseq/hg19_index/genome")(fastq_dump)
+hisat = Hisat2(ht2Idx="../../chenshengquan/zuoye/minidata/smartseq/hg19_index/genome")(fastq_dump)
 
 # Bam2Sam
 sam2bam =SamToBam(threads=16)(hisat)
@@ -21,8 +23,12 @@ sam2bam =SamToBam(threads=16)(hisat)
 bamsort = BamSort()(sam2bam)
 
 # #Cufflinks
-cufflinks =Cufflinks(gtfInput='./minidata/smartseq/genome.gtf',threads=16)(bamsort)
+cufflinks =Cufflinks(gtfInput='../../chenshengquan/zuoye/minidata/smartseq/genome.gtf',threads=16)(bamsort)
 
-cuffmerge=Cuffmerge(faInput1='./minidata/smartseq/hg19.fa',gtfInput1='./minidata/smartseq/genome.gtf',threads=16)(cufflinks)
+cuffmerge=Cuffmerge(faInput1='../../chenshengquan/zuoye/minidata/smartseq/hg19.fa',gtfInput1='../../chenshengquan/zuoye/minidata/smartseq/genome.gtf',threads=16)(cufflinks)
+
+cuffquant = Cuffquant(threads=16)(bamsort,cuffmerge)
+
+cuffdiff = Cuffdiff(faInput='../../chenshengquan/zuoye/minidata/smartseq/hg19.fa',threads=16)(cuffmerge,cuffquant)
 
 Schedule.run()

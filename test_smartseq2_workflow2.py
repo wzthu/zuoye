@@ -20,8 +20,10 @@ sam2bam =SamToBam(threads=16)(hisat)
 
 bamsort = BamSort()(sam2bam)
 
-cuffquant = Cuffquant(gtfInput='./minidata/smartseq/genome.gtf',threads=16)(bamsort)
+cuffmerge=Cuffmerge(faInput1='../../chenshengquan/zuoye/minidata/smartseq/hg19.fa',gtfInput1='../../chenshengquan/zuoye/minidata/smartseq/genome.gtf',threads=16)(cufflinks)
 
-cuffnorm = Cuffnorm(gtfInput='./minidata/smartseq/genome.gtf',threads=16)(cuffquant)
+cuffquant = Cuffquant(threads=16)(bamsort,cuffmerge)
+
+cuffnorm = Cuffnorm(threads=16)(cuffquant,cuffmerge)
 
 Schedule.run()
