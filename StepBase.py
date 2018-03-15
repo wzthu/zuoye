@@ -1205,10 +1205,15 @@ class Step(StepBase):
             return virtualPath
     
     def getMarkdown(self,lang='EN'):
-        if lang == 'EN':
-            return self.getMarkdownEN()
-        elif lang == 'CN':
-            return self.getMarkdownCN()
+        if self.checkFinish():
+            if lang == 'EN':
+                return self.getMarkdownEN()
+            elif lang == 'CN':
+                return self.getMarkdownCN()
+            else:
+                raise Exception('language',lang,'is not support yet!')
+        else:
+            raise Exception(self.getStepFolderName(),'is not finished')
     
     def getMarkdownEN():
         raise Exception('getMarkdownEN must be overwrote')
