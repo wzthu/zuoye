@@ -43,8 +43,6 @@ class Cuffnorm(Step):
 
 
 		if gtfInput is not None:
-			self.setParamIO('gtfInput',gtfInput)
-		else:
 			self.setInput('gtfInput',gtfInput)
 			
 		if outputDir is None:
@@ -62,6 +60,14 @@ class Cuffnorm(Step):
 		genes_count_table=list()
 		cds_count_table=list()
 		tss_groups_count_table=list()
+
+		cds_attr_table=list()
+		genes_attr_table=list()
+		isoforms_attr_table=list()
+		tss_groups_attr_table=list()
+		run_info=list()
+		samples_table=list()
+
 		isoforms_fpkm_table.append(os.path.join(outputDir,'cuffnorm_'+str(0),'isoforms.fpkm_table'))
 		genes_fpkm_table.append(os.path.join(outputDir, 'cuffnorm_'+str(0),'genes.fpkm_table'))
 		cds_fpkm_table.append(os.path.join(outputDir, 'cuffnorm_'+str(0),'cds.fpkm_table'))
@@ -70,6 +76,14 @@ class Cuffnorm(Step):
 		genes_count_table.append(os.path.join(outputDir, 'cuffnorm_'+str(0),'genes.count_table'))
 		cds_count_table.append(os.path.join(outputDir, 'cuffnorm_'+str(0),'cds.count_table'))
 		tss_groups_count_table.append(os.path.join(outputDir, 'cuffnorm_'+str(0),'tss_groups.count_table'))
+		
+		isoforms_attr_table.append(os.path.join(outputDir,'cuffnorm_'+str(0),'isoforms.attr_table'))
+		genes_attr_table.append(os.path.join(outputDir, 'cuffnorm_'+str(0),'genes.attr_table'))
+		cds_attr_table.append(os.path.join(outputDir, 'cuffnorm_'+str(0),'cds.attr_table'))
+		tss_groups_attr_table.append(os.path.join(outputDir, 'cuffnorm_'+str(0),'tss_groups.attr_table'))
+		run_info.append(os.path.join(outputDir, 'cuffnorm_'+str(0),'run.info'))
+		samples_table.append(os.path.join(outputDir, 'cuffnorm_'+str(0),'samples.table'))
+
 		self.setOutput('isoforms_fpkm_table',isoforms_fpkm_table)
 		self.setOutput('genes_fpkm_table',genes_fpkm_table)
 		self.setOutput('cds_fpkm_table',cds_fpkm_table)
@@ -78,6 +92,13 @@ class Cuffnorm(Step):
 		self.setOutput('genes_count_table',genes_count_table)
 		self.setOutput('cds_count_table',cds_count_table)
 		self.setOutput('tss_groups_count_table',tss_groups_count_table)
+
+		self.setOutput('isoforms_attr_table',isoforms_attr_table)
+		self.setOutput('genes_attr_table',genes_attr_table)
+		self.setOutput('cds_attr_table',cds_attr_table)
+		self.setOutput('tss_groups_attr_table',tss_groups_attr_table)
+		self.setOutput('run_info',run_info)
+		self.setOutput('samples_table',samples_table)
 
 		self._setInputSize(1)
 	def call(self, *args):
