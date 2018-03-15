@@ -30,6 +30,7 @@ class Cuffnorm(Step):
 		if threads is None:
 			threads = Configure.getThreads()
 		self.setParam('threads',threads)
+		self._setUpstreamSize(2)
 
 	def impInitIO(self,):
 		gtfInput = self.getParamIO('gtfInput')
@@ -41,9 +42,7 @@ class Cuffnorm(Step):
 				self.setInput('cxbInput_%d'%i,item)
 
 
-		if gtfInput is None:
-			gtfInput=Configure.getConfig('')
-			self.setIput('gtfInput',gtfInput)
+		if gtfInput is not None:
 			self.setParamIO('gtfInput',gtfInput)
 		else:
 			self.setInput('gtfInput',gtfInput)
@@ -83,7 +82,9 @@ class Cuffnorm(Step):
 		self._setInputSize(1)
 	def call(self, *args):
 		cxbUpstream = args[0]
+		gtfUpstream = args[1]
 		cxb = cxbUpstream.getOutput('abundances_cxb')
+
 		#print('===================')
 		#print(cxb)		
 		marker = ''
@@ -94,6 +95,7 @@ class Cuffnorm(Step):
 		marker = marker[:-1]
 		self.setParamIO('cxbInput',cxb)
 		self.setParamIO('markerInput',marker)
+		self.setParamIO('gtfInput',gtfUpstream.getOutput('merged_gtf'))
 
 	def _singleRun(self,i):
 		gtfInput = self.getParamIO('gtfInput')
@@ -109,7 +111,7 @@ class Cuffnorm(Step):
 				'-o',os.path.join(outputDir,'cuffnorm_'+str(0)),
 				'-p',str(self.getParam('threads')),
 				'-L',markerInput,
-				gtfInput,
+				gtfInput[0],
 				cxbFin
 				]
 		self.callCmdline('V1',cmdline,stdoutToLog = True)
