@@ -328,9 +328,11 @@ class StepBase:
         if not os.path.exists(self.getStepFolerPath()):
             os.mkdir(self.getStepFolerPath())
         #os.makedirs(os.path.join(Configure.getTmpDir(),self.getStepFolderName(),'.tmp_for_docker',self.getStepFolerPath()))    
-        Configure.setTmpDir(self.getStepFolerPath())
+        self.push(self.getStepFolerPath())
+        #Configure.setTmpDir(self.getStepFolerPath())
         self.impInitIO()
-        Configure.setTmpDir(tmpdir)
+        self.pop()
+        #Configure.setTmpDir(tmpdir)
         self.checkRunnable()
         
     def impInitIO(self,):
@@ -523,7 +525,9 @@ class StepBase:
                     for afile in files:
                         self.linkVirtualPaths(afile)
                 self.__virtual = True        
-            self.push(os.path.join(Configure.getDockerPath(),self.getStepFolderName()))            
+                self.push(os.path.join(Configure.getDockerPath(),self.getStepFolderName()))            
+            else:
+                self.push(self.getStepFolerPath())
            
             
             if self.__multiRun :
@@ -543,7 +547,7 @@ class StepBase:
                         pass#self.callCmdline('V1', 'chmod 777 -R ' + self.top(), shell = True, stdoutToLog = False)                  
             
             self.pop()        
-            if Configure.isDocker():        
+            if Configure.isDocker():                 
                 self.__virtual = False
                 for key in self.getOutputs():
                     files = self.convertToList(self.outputs[key])                
@@ -551,6 +555,7 @@ class StepBase:
                         continue
                     for afile in files:
                         self.linkRealPaths(afile)
+
 
             subprocess.run(['rm','-rf',os.path.join(tmpFolder,'*')])
             
@@ -802,7 +807,7 @@ class StepBase:
         tpdir=self.tmpdirStack.pop()
         Configure.setTmpDir(tpdir)
         return tpdir
-        return 
+         
     def top(self,):
         if len(self.tmpdirStack) == 0:
             #print('return here')
@@ -1207,14 +1212,16 @@ class Step(StepBase):
         else:
             return virtualPath
     
-    def getMarkdown(self,lang='EN'):
+    def getMarkdown(self,lang='EN'):        
         if self.checkFinish():
+            self.push(self.getStepFolerPath())
             if lang == 'EN':
                 return self.getMarkdownEN()
             elif lang == 'CN':
                 return self.getMarkdownCN()
             else:
                 raise Exception('language',lang,'is not support yet!')
+            self.pop()
         else:
             raise Exception(self.getStepFolderName(),'is not finished')
     
