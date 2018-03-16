@@ -318,7 +318,10 @@ class StepBase:
         return 'step_' + str(self.getStepID()).zfill(2) + '_' + self.__class__.__name__
     
     def getStepFolerPath(self,):
-        return Configure.getTmpPath(self.getStepFolderName())
+        if self.top() is None:
+            return Configure.getTmpPath(self.getStepFolderName())
+        else:
+            return Configure.getTmpDir()
     
     def initIO(self,): 
         tmpdir = Configure.getTmpDir()
@@ -802,7 +805,7 @@ class StepBase:
         return 
     def top(self,):
         if len(self.tmpdirStack) == 0:
-            print('return here')
+            #print('return here')
             return None
         else:
             # print('return here1')
