@@ -27,6 +27,7 @@ class RmChrOrMergeAllSample(Step):
 
         self.initIO()
         self.setParam('savedchr', savedchr)
+        self._setMultiRun()
 
 
     def impInitIO(self):
@@ -48,9 +49,6 @@ class RmChrOrMergeAllSample(Step):
         self.setParamIO('bedInput', samUpstream.getOutput('bedOutput'))
 
     def _multiRun(self,):
-        pass
-
-    def _singleRun(self, i):
         bedInput = self.convertToRealPath(self.getInputList('bedInput'))
         bedOutput = self.convertToRealPath(self.getOutputList('bedOutput'))
         mergedfilename = self.convertToRealPath(self.getOutputList('mergedfilename')[0])
@@ -82,6 +80,9 @@ class RmChrOrMergeAllSample(Step):
                 g1.close()
                 f.close()
             g.close()
+
+    def _singleRun(self, i):
+        pass
 
 
 

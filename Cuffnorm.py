@@ -30,6 +30,7 @@ class Cuffnorm(Step):
 		if threads is None:
 			threads = Configure.getThreads()
 		self.setParam('threads',threads)
+		self._setUpstreamSize(2)
 
 	def impInitIO(self,):
 		gtfInput = self.getParamIO('gtfInput')
@@ -41,11 +42,7 @@ class Cuffnorm(Step):
 				self.setInput('cxbInput_%d'%i,item)
 
 
-		if gtfInput is None:
-			gtfInput=Configure.getConfig('')
-			self.setIput('gtfInput',gtfInput)
-			self.setParamIO('gtfInput',gtfInput)
-		else:
+		if gtfInput is not None:
 			self.setInput('gtfInput',gtfInput)
 			
 		if outputDir is None:
@@ -63,6 +60,14 @@ class Cuffnorm(Step):
 		genes_count_table=list()
 		cds_count_table=list()
 		tss_groups_count_table=list()
+
+		cds_attr_table=list()
+		genes_attr_table=list()
+		isoforms_attr_table=list()
+		tss_groups_attr_table=list()
+		run_info=list()
+		samples_table=list()
+
 		isoforms_fpkm_table.append(os.path.join(outputDir,'cuffnorm_'+str(0),'isoforms.fpkm_table'))
 		genes_fpkm_table.append(os.path.join(outputDir, 'cuffnorm_'+str(0),'genes.fpkm_table'))
 		cds_fpkm_table.append(os.path.join(outputDir, 'cuffnorm_'+str(0),'cds.fpkm_table'))
@@ -71,6 +76,14 @@ class Cuffnorm(Step):
 		genes_count_table.append(os.path.join(outputDir, 'cuffnorm_'+str(0),'genes.count_table'))
 		cds_count_table.append(os.path.join(outputDir, 'cuffnorm_'+str(0),'cds.count_table'))
 		tss_groups_count_table.append(os.path.join(outputDir, 'cuffnorm_'+str(0),'tss_groups.count_table'))
+		
+		isoforms_attr_table.append(os.path.join(outputDir,'cuffnorm_'+str(0),'isoforms.attr_table'))
+		genes_attr_table.append(os.path.join(outputDir, 'cuffnorm_'+str(0),'genes.attr_table'))
+		cds_attr_table.append(os.path.join(outputDir, 'cuffnorm_'+str(0),'cds.attr_table'))
+		tss_groups_attr_table.append(os.path.join(outputDir, 'cuffnorm_'+str(0),'tss_groups.attr_table'))
+		run_info.append(os.path.join(outputDir, 'cuffnorm_'+str(0),'run.info'))
+		samples_table.append(os.path.join(outputDir, 'cuffnorm_'+str(0),'samples.table'))
+
 		self.setOutput('isoforms_fpkm_table',isoforms_fpkm_table)
 		self.setOutput('genes_fpkm_table',genes_fpkm_table)
 		self.setOutput('cds_fpkm_table',cds_fpkm_table)
@@ -80,10 +93,19 @@ class Cuffnorm(Step):
 		self.setOutput('cds_count_table',cds_count_table)
 		self.setOutput('tss_groups_count_table',tss_groups_count_table)
 
+		self.setOutput('isoforms_attr_table',isoforms_attr_table)
+		self.setOutput('genes_attr_table',genes_attr_table)
+		self.setOutput('cds_attr_table',cds_attr_table)
+		self.setOutput('tss_groups_attr_table',tss_groups_attr_table)
+		self.setOutput('run_info',run_info)
+		self.setOutput('samples_table',samples_table)
+
 		self._setInputSize(1)
 	def call(self, *args):
 		cxbUpstream = args[0]
+		gtfUpstream = args[1]
 		cxb = cxbUpstream.getOutput('abundances_cxb')
+
 		#print('===================')
 		#print(cxb)		
 		marker = ''
@@ -94,6 +116,7 @@ class Cuffnorm(Step):
 		marker = marker[:-1]
 		self.setParamIO('cxbInput',cxb)
 		self.setParamIO('markerInput',marker)
+		self.setParamIO('gtfInput',gtfUpstream.getOutput('merged_gtf'))
 
 	def _singleRun(self,i):
 		gtfInput = self.getParamIO('gtfInput')
@@ -109,7 +132,7 @@ class Cuffnorm(Step):
 				'-o',os.path.join(outputDir,'cuffnorm_'+str(0)),
 				'-p',str(self.getParam('threads')),
 				'-L',markerInput,
-				gtfInput,
+				gtfInput[0],
 				cxbFin
 				]
 		self.callCmdline('V1',cmdline,stdoutToLog = True)
