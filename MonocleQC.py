@@ -101,3 +101,29 @@ class MonocleQC(Step):
         self.getParamIO('outputpath'))'''
         print(''.join(cmdline))
         self.callCmdline('V1',cmdline)
+
+    def getMarkdownEn(self,):
+        mdtext="""
+        ### Monocle QC Result
+        The Total_mRNAs~density Curve of all cells is shown below:
+        ```{{r setup, include=FALSE}}
+        knitr::opts_chunk$set(echo = TRUE)
+        ```
+        ### Monocle QC Result
+        ```{{r,eval=FALSE}}
+        #don't run
+        MonocleQC(matrixdata='', outputpath='') 
+        ```
+        ####The Total_mRNAs~density Curve of all cells is shown below:
+
+        ![]({density_Total_mRNAs})
+
+        ####The picture below shows how variability (dispersion) in a gene's expression depends on the average expression across cells:
+        ![]({meanexpression_disersionemprical})
+
+        ####The picture below shows the variance explained by each component:
+        ![]({PCvariance})
+
+        """.format(density_Total_mRNAs = self.getOutput('density_Total_mRNAs'),
+                   meanexpression_disersionemprical = self.getOutput('meanexpression_disersionemprical'),
+                   PCvariance = self.getOutput('PCvariance'))

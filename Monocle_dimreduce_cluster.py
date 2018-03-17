@@ -75,3 +75,18 @@ class Monocle_dimreduce_cluster(Step):
         			]
         print(''.join(cmdline))
         self.callCmdline('V1',cmdline)
+    def getMarkdownEn(self,):
+        mdtext="""
+        ```{{r setup, include=FALSE}}
+        knitr::opts_chunk$set(echo = TRUE)
+        ```
+        ### Monocle dimention reduction and clustering results
+
+        ```{r, eval=FALSE}
+        #don't run
+        Monocle_dimreduce_cluster(outputpath='outputresult')(MonocleQC_result)
+        ```
+        ####Select the number of principle components used in dimension reduction, monocle use T-SNE to project the high-dimentional points into a low-dimentional space. Density-peak cluster method is used in clustering.
+        ![]({densitypeak_cluster})
+
+        """.format(densitypeak_cluster = self.getOutput('densitypeak_cluster'))
