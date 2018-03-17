@@ -475,8 +475,9 @@ class StepBase:
                 self.getStepFolderName(),
                 '.tmp_for_docker',
                  origin[1:])
+        print(virDir)
         os.makedirs(virDir,exist_ok=True)
-        #print(['ln','-f',origin,virPath])
+        print(['ln','-f',origin,virPath])
         subprocess.run(['ln','-f',origin,virPath])
     
     def linkRealPaths(self,des):
@@ -550,10 +551,14 @@ class StepBase:
             if Configure.isDocker():                 
                 self.__virtual = False
                 for key in self.getOutputs():
-                    files = self.convertToList(self.outputs[key])                
+                    files = self.convertToList(self.outputs[key])
+                    print('1111111111111')
+                    print(files)
                     if files[0] is None:
                         continue
                     for afile in files:
+                        print(10000000000)
+                        print(afile)
                         self.linkRealPaths(afile)
 
 
