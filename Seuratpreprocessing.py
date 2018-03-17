@@ -110,3 +110,36 @@ class Seuratpreprocessing(Step):
         print(cmdline)
         self.callCmdline(cmdline=cmdline, dockerVersion='V1')
 
+    def getMarkdownEN(self):
+        rmd = '''
+---
+title: "Seuratpreprocessing"
+author: "Author:Frankie"
+output: html_document
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+`Preobject = Seuratpreprocessing(inputdir, outputdir, datatype=['10x','densemtx'], rscript)(upstream)`
+
+### Input: 
+1. Created from original data
+- inputdir : Path of Matrix directory(one dense matrix or sparse matrix per time).
+- outputdir: Path of all the analysis results
+- datatpe: Specify the inputdata type, such as '10x'
+- rscript : Path of alternative Rscript.
+2. From upstream object such as Seuratpreprocessing object
+- rscript : Path of alternative Rscript.
+
+### Output:
+- Seurat object saved in outputdir for downstream analysis
+- Violinplot and geneplot saved in outputdir for you to do filtering
+
+### Violinplot
+![]({vioimagepath})
+
+### Geneplot
+![]({geneimagepath})
+        '''.format(vioimagepath=self.getOutput('violinplot'), geneimagepath = self.getOutput('geneplot'))
+        return rmd
+

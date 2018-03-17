@@ -125,7 +125,7 @@ class GraphAll(GraphMng):
                 ['Star','HTSeq'],
                 #10x Genomeics
                 ['Cellranger','Seuratpreprocessing'],
-		['Seuratpreprocessing','Seuratrun'],
+		        ['Seuratpreprocessing','Seuratrun'],
                 ['Qualification10x','PCA'],
                 #drop-seq
                 ['FastqToBam','BamMerge'],
