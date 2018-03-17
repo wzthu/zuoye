@@ -12,7 +12,7 @@ class MonocleQC(Step):
                  matrixdata = None,
                  outputpath = None,
                  min_expression = 0.1,
-                 num_cells_expressed_threshold = 1,
+                 num_cells_expressed_threshold = 5,
                  TotalmRNAs = 1e6, 
                  mean_expression_threshold=0.1,
                  cmdParam=None,
@@ -76,7 +76,7 @@ class MonocleQC(Step):
         dropseqUpstream = args[0]      
         
         # set all required input parameters from upstream object
-        self.setParamIO('matrixdata',dropseqUpstream.getParamIO('dgeOutput'))
+        self.setParamIO('matrixdata',dropseqUpstream.getOutput('dgeOutput'))
         
     def _multiRun(self,):
         matrixdata = self.getInput('matrixdata')
