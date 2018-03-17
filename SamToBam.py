@@ -5,7 +5,7 @@
 
 """
 
-from StepBase import Step
+from StepBase import Step,Configure
 
 
 class SamToBam(Step):
@@ -20,7 +20,7 @@ class SamToBam(Step):
 
         # set IO parameters
         self.setParamIO('samInput', samInput)
-        self.setParamIO('bamOutputDir', bamOutputDir)
+        self.setParamIO('bamOutputDir',bamOutputDir)
 
         self.initIO()
 
@@ -30,6 +30,9 @@ class SamToBam(Step):
     def impInitIO(self):
         samInput = self.getParamIO('samInput')
         bamOutputDir = self.getParamIO('bamOutputDir')
+        if bamOutputDir is None:
+            self.setParamIO('bamOutputDir',Configure.getTmpDir())
+            
 
         # set all input files
         self.setInputDirOrFile('samInput', samInput)
@@ -46,15 +49,16 @@ class SamToBam(Step):
         self.setParamIO('samInput', samUpstream.getOutput('samOutput'))
 
     def _multiRun(self,):
-        samInput = self.getInputList('samInput')
-        bamOutput = self.getOutputList('bamOutput')
-        for i in range(len(samInput)):
-            cmdline = [
-                'samtools view -b -S',
-                '-@', str(self.getParam('threads')),
-                '-o', bamOutput[i], samInput[i]
-            ]
-            result = self.callCmdline(cmdline)
+        pass
+        # samInput = self.getInputList('samInput')
+        # bamOutput = self.getOutputList('bamOutput')
+        # for i in range(len(samInput)):
+        #     cmdline = [
+        #         'samtools view -b -S',
+        #         '-@', str(self.getParam('threads')),
+        #         '-o', bamOutput[i], samInput[i]
+        #     ]
+        #     result = self.callCmdline(cmdline)
 
     def _singleRun(self, i):
         samInput = self.getInputList('samInput')
@@ -66,7 +70,7 @@ class SamToBam(Step):
             '-o', bamOutput[i], samInput[i]
         ]
 
-        result = self.callCmdline(cmdline)
+        result = self.callCmdline('V1', cmdline)
 
 
 

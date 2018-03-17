@@ -7,7 +7,7 @@ designed for scATAC-seq
 
 """
 
-from StepBase import Step
+from StepBase import Step,Configure
 
 
 class BamSort(Step):
@@ -21,7 +21,7 @@ class BamSort(Step):
 
         # set IO parameters
         self.setParamIO('bamInput', bamInput)
-        self.setParamIO('bamOutputDir', bamOutputDir)
+        self.setParamIO('bamOutputDir',bamOutputDir)
 
         self.initIO()
 
@@ -31,6 +31,8 @@ class BamSort(Step):
     def impInitIO(self):
         bamInput = self.getParamIO('bamInput')
         bamOutputDir = self.getParamIO('bamOutputDir')
+        if bamOutputDir is None:
+            self.setParamIO('bamOutputDir',Configure.getTmpDir())
 
         # set all input files
         self.setInputDirOrFile('bamInput', bamInput)
@@ -47,16 +49,17 @@ class BamSort(Step):
         self.setParamIO('bamInput', samUpstream.getOutput('bamOutput'))
 
     def _multiRun(self,):
-        bamInput = self.getInputList('bamInput')
-        bamOutput = self.getOutputList('bamOutput')
-
-        for i in range(len(bamInput)):
-            cmdline = [
-                'samtools sort -O BAM',
-                '-@', str(self.getParam('threads')),
-                '-o', bamOutput[i], bamInput[i]
-            ]
-            result = self.callCmdline(cmdline)
+        pass
+        # bamInput = self.getInputList('bamInput')
+        # bamOutput = self.getOutputList('bamOutput')
+        #
+        # for i in range(len(bamInput)):
+        #     cmdline = [
+        #         'samtools sort -O BAM',
+        #         '-@', str(self.getParam('threads')),
+        #         '-o', bamOutput[i], bamInput[i]
+        #     ]
+        #     result = self.callCmdline(cmdline)
 
     def _singleRun(self, i):
         samInput = self.getInputList('bamInput')
@@ -68,7 +71,7 @@ class BamSort(Step):
             '-o', bamOutput[i], samInput[i]
         ]
 
-        result = self.callCmdline(cmdline)
+        result = self.callCmdline('V1', cmdline)
 
 
 

@@ -5,9 +5,7 @@
 @FileName: SRAToFastq1.py
 """
 
-
-from StepBase import Step,Configure
-import os
+from StepBase import Step, Configure
 
 
 class SRAToFastq(Step):
@@ -36,11 +34,14 @@ class SRAToFastq(Step):
         self.setInputDirOrFile('sraInput', sraInput)
         # set all output files
         self.setOutputDir1To1('fastqOutput1', fastqOutputDir, None, '_1.fastq', 'sraInput', '')
+        self.setOutputDir1To1('fastqOutput1_fqch', fastqOutputDir, None, '_1_fastqc.html', 'sraInput', '')
+        self.setOutputDir1To1('fastqOutput1_fqczip', fastqOutputDir, None, '_1_fastqc.zip', 'sraInput', '')
         self.setOutputDir1To1('fastqOutput2', fastqOutputDir, None, '_2.fastq', 'sraInput', '')
+        self.setOutputDir1To1('fastqOutput2_fqch', fastqOutputDir, None, '_2_fastqc.html', 'sraInput', '')
+        self.setOutputDir1To1('fastqOutput2_fqczip', fastqOutputDir, None, '_2_fastqc.zip', 'sraInput', '')
 
         if fastqOutputDir is None:
             self.setParamIO('fastqOutputDir', Configure.getTmpDir())
-
 
         if sraInput is not None:
             self._setInputSize(len(self.getInputList('sraInput')))
@@ -50,52 +51,55 @@ class SRAToFastq(Step):
         print("SRAToFastq has no upstream!!!\n")
 
     def _multiRun(self,):
-        sraInput = self.getInputList('sraInput')
-        fastqOutputDir = self.getParamIO('fastqOutputDir')
-        fastqOutput1 = self.getOutputList('fastqOutput1')
-        fastqOutput2 = self.getOutputList('fastqOutput2')
-
-        if self.getParam('fastqc'):  # do fastqc
-            for i in range(len(sraInput)):
-                cmdline1 = ['fastq-dump', '--split-3',
-                           sraInput[i],
-                           '-O', fastqOutputDir
-                           ]
-                result = self.callCmdline(cmdline1)
-
-                cmdline2 = ['fastqc', fastqOutput1[i], fastqOutput2[i]]
-                result = self.callCmdline(cmdline2)
-
-        else:  # do not do fastqc
-            for i in range(len(sraInput)):
-                cmdline1 = ['fastq-dump', '--split-3',
-                            sraInput[i],
-                            '-O', fastqOutputDir
-                            ]
-                result = self.callCmdline(cmdline1)
-
-
+        pass
+        # sraInput = self.getInputList('sraInput')
+        # fastqOutputDir = self.getParamIO('fastqOutputDir')
+        # fastqOutput1 = self.getOutputList('fastqOutput1')
+        # fastqOutput2 = self.getOutputList('fastqOutput2')
+        #
+        # if self.getParam('fastqc'):  # do fastqc
+        #     for i in range(len(sraInput)):
+        #         cmdline1 = ['fastq-dump', '--split-3',
+        #                    sraInput[i],
+        #                    '-O', fastqOutputDir
+        #                    ]
+        #         result = self.callCmdline(cmdline1)
+        #
+        #         cmdline2 = ['fastqc', fastqOutput1[i], fastqOutput2[i]]
+        #         result = self.callCmdline(cmdline2)
+        #
+        # else:  # do not do fastqc
+        #     for i in range(len(sraInput)):
+        #         cmdline1 = ['fastq-dump', '--split-3',
+        #                     sraInput[i],
+        #                     '-O', fastqOutputDir
+        #                     ]
+        #         result = self.callCmdline(cmdline1)
 
     def _singleRun(self, i):
         sraInput = self.getInputList('sraInput')
         fastqOutputDir = self.getParamIO('fastqOutputDir')
         fastqOutput1 = self.getOutputList('fastqOutput1')
+        fastqOutput1_fqch = self.getOutputList('fastqOutput1_fqch')
+        fastqOutput1_fqczip = self.getOutputList('fastqOutput1_fqczip')
         fastqOutput2 = self.getOutputList('fastqOutput2')
+        fastqOutput2_fqch = self.getOutputList('fastqOutput2_fqch')
+        fastqOutput2_fqczip = self.getOutputList('fastqOutput2_fqczip')
 
         if self.getParam('fastqc'):  # do fastqc
             cmdline1 = ['fastq-dump', '--split-3',
                         sraInput[i],
                         '-O', fastqOutputDir
                         ]
-            result = self.callCmdline(cmdline1)
+            result = self.callCmdline('V1', cmdline1)
 
             cmdline2 = ['fastqc', fastqOutput1[i], fastqOutput2[i]]
-            result = self.callCmdline(cmdline2)
+            result = self.callCmdline('V1', cmdline2)
         else:  # do not do fastqc
             cmdline1 = ['fastq-dump', '--split-3',
                         sraInput[i],
                         '-O', fastqOutputDir
                         ]
-            result = self.callCmdline(cmdline1)
+            result = self.callCmdline('V1', cmdline1)
 
 

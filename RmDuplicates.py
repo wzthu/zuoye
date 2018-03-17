@@ -7,14 +7,13 @@ designed for scATAC-seq
 
 """
 
-from StepBase import Step
+from StepBase import Step, Configure
 
 
 class RmDuplicates(Step):
     def __init__(self,
                  bamInput=None,
                  bamOutputDir=None,
-                 picard=None,  # your picard path
                  memory='-Xmx5g',
                  cmdParam=None,
                  **kwargs):
@@ -27,7 +26,6 @@ class RmDuplicates(Step):
         self.initIO()
 
         # set other parameters
-        self.setParam('picard', picard)
         self.setParam('memory', memory)
 
     def impInitIO(self):
@@ -40,6 +38,9 @@ class RmDuplicates(Step):
         self.setOutputDir1To1('bamOutput', bamOutputDir, None, 'bam', 'bamInput')
         self.setOutputDir1To1('METRICS', bamOutputDir, None, 'picard_METRICS.txt', 'bamInput')
 
+        if bamOutputDir is None:
+            self.setParamIO('bamOutputDir', Configure.getTmpDir())
+
         if bamInput is not None:
             self._setInputSize(len(self.getInputList('bamInput')))
 
@@ -50,32 +51,31 @@ class RmDuplicates(Step):
         self.setParamIO('bamInput', samUpstream.getOutput('bamOutput'))
 
     def _multiRun(self,):
-        bamInput = self.getInputList('bamInput')
-        bamOutput = self.getOutputList('bamOutput')
-        matrixOutput = self.getOutputList('METRICS')
-
-        for i in range(len(bamInput)):
-            cmdline = [
-                'java', str(self.getParam('memory')), '-jar',
-                str(self.getParam('picard')), 'MarkDuplicates REMOVE_DUPLICATES=true',
-                'INPUT=' + bamInput[i],
-                'OUTPUT=' + bamOutput[i],
-                'METRICS_FILE=' + matrixOutput[i]
-            ]
-            result = self.callCmdline(cmdline)
+        pass
+        # picard = self.getParamIO('picard')
+        # bamInput = self.getInputList('bamInput')
+        # bamOutput = self.getOutputList('bamOutput')
+        # matrixOutput = self.getOutputList('METRICS')
+        #
+        # for i in range(len(bamInput)):
+        #     cmdline = [
+        #         'java', str(self.getParam('memory')), '-jar',
+        #         picard, 'MarkDuplicates REMOVE_DUPLICATES=true',
+        #         'INPUT=' + bamInput[i],
+        #         'OUTPUT=' + bamOutput[i],
+        #         'METRICS_FILE=' + matrixOutput[i]
+        #     ]
+        #     result = self.callCmdline(cmdline)
 
     def _singleRun(self, i):
         bamInput = self.getInputList('bamInput')
         bamOutput = self.getOutputList('bamOutput')
         matrixOutput = self.getOutputList('METRICS')
         cmdline = [
-            'java', str(self.getParam('memory')), '-jar',
-            str(self.getParam('picard')), 'MarkDuplicates REMOVE_DUPLICATES=true',
-            'INPUT=' + bamInput[i],
-            'OUTPUT=' + bamOutput[i],
-            'METRICS_FILE=' + matrixOutput[i]
+            'picard', str(self.getParam('memory')),
+            bamInput[i], bamOutput[i], matrixOutput[i]
         ]
-        result = self.callCmdline(cmdline)
+        result = self.callCmdline('V1', cmdline)
 
 
 

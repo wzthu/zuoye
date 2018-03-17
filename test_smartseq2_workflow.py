@@ -2,32 +2,33 @@ from StepBase import Schedule,Configure
 from FastqDump import FastqDump
 from Hisat2 import Hisat2
 from SamToBam import SamToBam
-from BamSortRNA import Bamsort
+from BamSort import BamSort
 from Cufflinks import Cufflinks
+from Cuffmerge import Cuffmerge
+from Cuffquant import Cuffquant
+from Cuffdiff import Cuffdiff
 
+Configure.setIdentity('songshaoming')
 
 #Fastq-dump
-fastq_dump = FastqDump(sraInput1='../bam', fastqOutputDir='./')
-print(fastq_dump.outputs)
+fastq_dump = FastqDump(sraInput1='../../chenshengquan/zuoye/minidata/smartseq/sra')
 
 #Hisat2
-hisat = Hisat2(ht2Idx="../../yinqijin/hg19_index/genome",
-               samOutputDir="../smartseq2_hisat_result")(fastq_dump)
-print (hisat.outputs)
+hisat = Hisat2(ht2Idx="../../chenshengquan/zuoye/minidata/smartseq/hg19_index/genome")(fastq_dump)
 
 # Bam2Sam
-Configure.setRefDir('../../yinqijin/hg19_bowtie2/')
-Configure.setGenome('hg19')
-sam2bam =SamToBam(threads=5)(hisat)
-print (sam2bam.outputs)
+sam2bam =SamToBam(threads=16)(hisat)
 
-#BamSort
-bamsort = Bamsort()(sam2bam)
-print (bamsort.outputs)
+# #BamSort
+bamsort = BamSort()(sam2bam)
 
-#Cufflinks
-# cufflinks =Cufflinks(bamInput = '/data/sqchen/zuoye/step_03_Bamsort/sorted.0.bam',gtfInput='/data/sqchen/genome.gtf',outputDir='../smartseq2_cufflinks_result')
-cufflinks =Cufflinks(gtfInput='../../yinqijin/genome.gtf',outputDir='../smartseq2_cufflinks_result')(bamsort)
-print (cufflinks.outputs)
+# #Cufflinks
+cufflinks =Cufflinks(gtfInput='../../chenshengquan/zuoye/minidata/smartseq/genome.gtf',threads=16)(bamsort)
+
+cuffmerge=Cuffmerge(faInput1='../../chenshengquan/zuoye/minidata/smartseq/hg19.fa',gtfInput1='../../chenshengquan/zuoye/minidata/smartseq/genome.gtf',threads=16)(cufflinks)
+
+cuffquant = Cuffquant(threads=16)(bamsort,cuffmerge)
+
+cuffdiff = Cuffdiff(faInput='../../chenshengquan/zuoye/minidata/smartseq/hg19.fa',threads=16)(cuffmerge,cuffquant)
 
 Schedule.run()
