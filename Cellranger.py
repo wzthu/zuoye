@@ -8,6 +8,21 @@ from StepBase import Step, Configure
 import os
 
 class Cellranger(Step):
+    """
+        Cellranger is a Step to count 10X raw data to UMI counts.
+        See __init__ to initialize this step.
+        > Cellranger(): __init__  parameters
+            fastqInput: str or str list
+                a directory contain all of fastq files, for example: /home/data/fastqs
+            outputdir: str
+                outputdir path of all the cellranger results, default: ~/step_00_Cellranger/
+            refile: str
+                cellranger transcriptome file path, for example: /home/data/refdata-cellranger-hg19_and_mm10-1.2.0
+            expectcells: int
+                the expect number of cells
+            cmdParam: str or list of string
+                current unsupported
+        """
     def __init__(self,
                  outputdir = None,
                  fastqInput = None,

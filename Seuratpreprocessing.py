@@ -9,6 +9,25 @@ from Cellranger import Cellranger
 import os
 
 class Seuratpreprocessing(Step):
+    """
+        Seuratpreprocessing is a Step to preprocess reads matrix to Seurat object.
+        See __init__ to initialize this step.
+        > Seuratpreprocessing(): __init__  parameters
+            inputdir: str or str list
+                a directory contain all of matrix files, for example: /home/data/matrix
+            outputdir: str
+                outputdir path of all the results, default: ~/step_01_Seuratpreprocessing/
+            rscript: str
+                rscript file path, for example: /home/data/Seuratpreprocessing.R
+            datatype: str
+                datatype of input files, for example: '10x'
+            cmdParam: str or list of string
+                current unsupported
+         > Seuratpreprocessing()(): __call__ parameters
+            Available upstream objects combinations:
+            (Celllranger)
+            (to be added)
+        """
     def __init__(self,
                  outputdir=None,
                  # barcodes=None,

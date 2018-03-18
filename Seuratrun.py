@@ -9,6 +9,23 @@ from Cellranger import Cellranger
 import os
 
 class Seuratrun(Step):
+    """
+        Seuratrun is a Step to tackle with Seurat object and finish Seurat analysis.
+        See __init__ to initialize this step.
+        > Seuratpreprocessing(): __init__  parameters
+            inputdir: str or str list
+                a directory contain seurat object, for example: /home/data/Seuratpreprocessing
+            outputdir: str
+                outputdir path of all the results, default: ~/step_02_Seuratrun/
+            rscript: str
+                rscript file path, for example: /home/data/Seuratrun.R
+            cmdParam: str or list of string
+                current unsupported
+         > Seuratrun()(): __call__ parameters
+            Available upstream objects combinations:
+            (Seuratpreprocessing)
+            (to be added)
+        """
     def __init__(self,
                  outputdir=None,
                  # barcodes=None,
