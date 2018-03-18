@@ -37,7 +37,7 @@ class BamSort(Step):
         # set all input files
         self.setInputDirOrFile('bamInput', bamInput)
         # set all output files
-        self.setOutputDir1To1('bamOutput', bamOutputDir, None, 'bam', 'bamInput')
+        self.setOutputDir1To1('bamOutput', bamOutputDir, 'bamsort', 'bam', 'bamInput')
 
         if bamInput is not None:
             self._setInputSize(len(self.getInputList('bamInput')))
