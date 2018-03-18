@@ -143,6 +143,7 @@ class GraphAll(GraphMng):
                 ['TagGene','DetectError'],
                 ['DetectError','DigitalExpression'],
                 ['DigitalExpression','MonocleQC'],
+                ['DigitalExpression', 'EasyTreat'],
                 ['MonocleQC','Monocle_dimreduce_cluster'],
                 # ATAC-seq
                 ['SRAToFastq', 'AdapterRemoval'],
