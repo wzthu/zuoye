@@ -59,7 +59,8 @@ class Monocle_dimreduce_cluster(Step):
         MonocleQCupstream = args[0]      
         
         # set all required input parameters from upstream object
-        self.setParamIO('imageRdata',MonocleQCupstream.getParamIO('MonocleQCimage'))
+        self.setParamIO('imageRdata',MonocleQCupstream.getOutput('MonocleQCimage'))
+        #print(MonocleQCupstream.getOutput('MonocleQCimage'))
         
     def _multiRun(self,):
         imageRdata = self.getInput('imageRdata')
@@ -67,10 +68,25 @@ class Monocle_dimreduce_cluster(Step):
         cluster_num = self.getParam('cluster_num')
         cmdline = ['Rscript',
                     '/data/Monocle_dimreduce_cluster.R',
-        			imageRdata,
+        			imageRdata[0],
                     str(num_PCA),
                     str(cluster_num),
                     self.getParamIO('outputpath')
         			]
         print(''.join(cmdline))
         self.callCmdline('V1',cmdline)
+    def getMarkdownEn(self,):
+        mdtext="""
+        ```{{r setup, include=FALSE}}
+        knitr::opts_chunk$set(echo = TRUE)
+        ```
+        ### Monocle dimention reduction and clustering results
+
+        ```{r, eval=FALSE}
+        #don't run
+        Monocle_dimreduce_cluster(outputpath='outputresult')(MonocleQC_result)
+        ```
+        ####Select the number of principle components used in dimension reduction, monocle use T-SNE to project the high-dimentional points into a low-dimentional space. Density-peak cluster method is used in clustering.
+        ![]({densitypeak_cluster})
+
+        """.format(densitypeak_cluster = self.getOutput('densitypeak_cluster'))
