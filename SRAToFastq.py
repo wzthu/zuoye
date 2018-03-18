@@ -34,7 +34,11 @@ class SRAToFastq(Step):
         self.setInputDirOrFile('sraInput', sraInput)
         # set all output files
         self.setOutputDir1To1('fastqOutput1', fastqOutputDir, None, '_1.fastq', 'sraInput', '')
+        self.setOutputDir1To1('fastqOutput1_fqch', fastqOutputDir, None, '_1_fastqc.html', 'sraInput', '')
+        self.setOutputDir1To1('fastqOutput1_fqczip', fastqOutputDir, None, '_1_fastqc.zip', 'sraInput', '')
         self.setOutputDir1To1('fastqOutput2', fastqOutputDir, None, '_2.fastq', 'sraInput', '')
+        self.setOutputDir1To1('fastqOutput2_fqch', fastqOutputDir, None, '_2_fastqc.html', 'sraInput', '')
+        self.setOutputDir1To1('fastqOutput2_fqczip', fastqOutputDir, None, '_2_fastqc.zip', 'sraInput', '')
 
         if fastqOutputDir is None:
             self.setParamIO('fastqOutputDir', Configure.getTmpDir())
@@ -76,7 +80,11 @@ class SRAToFastq(Step):
         sraInput = self.getInputList('sraInput')
         fastqOutputDir = self.getParamIO('fastqOutputDir')
         fastqOutput1 = self.getOutputList('fastqOutput1')
+        fastqOutput1_fqch = self.getOutputList('fastqOutput1_fqch')
+        fastqOutput1_fqczip = self.getOutputList('fastqOutput1_fqczip')
         fastqOutput2 = self.getOutputList('fastqOutput2')
+        fastqOutput2_fqch = self.getOutputList('fastqOutput2_fqch')
+        fastqOutput2_fqczip = self.getOutputList('fastqOutput2_fqczip')
 
         if self.getParam('fastqc'):  # do fastqc
             cmdline1 = ['fastq-dump', '--split-3',
