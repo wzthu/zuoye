@@ -13,33 +13,7 @@ class Bowtie2(Step):
     """
     Bowtie2 is a Step to align ATAC-seq reads to reference genome.
     See __init__ to initialize this step.
-    Available upstream objects combinations:
-        (AdapterRemoval)
-        (SRAToFastq)
-        #如果有两个输入，写成(类名1，类名2)，以此类推
-    
-    """
-    def __init__(self,
-                 fastqInput1 = None, 
-                 fastqInput2 = None, 
-                 bt2Idx = None,                 
-                 samOutputDir = None, 
-                 mapRsOutputDir = None,
-                 threads = None,
-                 isdovetail = True,
-                 isNoDiscordant = True,
-                 isNoUnal = True,
-                 isNoMixed = True,
-                 X = 2000,
-                 cmdParam = None, 
-                 **kwargs):
-        super(Step, self).__init__(cmdParam,**kwargs)
-        """
-        called by 'Bowtie()'
-        __init__(): Initialize the class with inputs, outputs and other parameters.
-        Setting all parameter is the main target of this function.
-        
-        > Parameters
+    > Parameters
         fastqInput1: str or str list
             mate 1 fastq file path(s) or a directory contain all of fastq files 
         fastqInput2: str or str list
@@ -65,10 +39,32 @@ class Bowtie2(Step):
         X: int
             The maximum fragment length for valid paired-end alignments.
         cmdParam: str or list of string
-            current unsupported
-        
-        
-        
+            current unsupported    
+    Available upstream objects combinations:
+        (AdapterRemoval)
+        (SRAToFastq)
+        #如果有两个输入，写成(类名1，类名2)，以此类推
+    
+    """
+    def __init__(self,
+                 fastqInput1 = None, 
+                 fastqInput2 = None, 
+                 bt2Idx = None,                 
+                 samOutputDir = None, 
+                 mapRsOutputDir = None,
+                 threads = None,
+                 isdovetail = True,
+                 isNoDiscordant = True,
+                 isNoUnal = True,
+                 isNoMixed = True,
+                 X = 2000,
+                 cmdParam = None, 
+                 **kwargs):
+        super(Step, self).__init__(cmdParam,**kwargs)
+        """
+        called by 'Bowtie()'
+        __init__(): Initialize the class with inputs, outputs and other parameters.
+        Setting all parameter is the main target of this function.        
         """
         
         # set all input and output parameters
