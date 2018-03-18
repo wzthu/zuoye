@@ -207,5 +207,15 @@ class Bowtie2(Step):
         f = open(self.convertToRealPath(mapRsOutput[i]),'wb')   
         f.write(result.stdout)
         f.write(result.stderr)
-            
+        
+    def getMarkdownEN(self,):
+        a = """
+## Bowtie2 mapping result
+Bowtie2 mapping result is shown below:
+```{{r, echo=FALSE}}
+f<-file("{mapRs}")
+readLines(f)
+```
+        """.format(mapRs=self.getOutput("mapRsOutput")[0])
+        return a
         
