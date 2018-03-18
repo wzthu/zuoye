@@ -8,8 +8,8 @@ class MergeBamAlign(Step):
     def __init__(self,
                  unmappedBamInput = None,
                  alignedBamInput = None,
-                 bamOutputDir = None,
-                 refSequence = None,
+                 bamOutput = None,
+                 refInputDir = None,
                  secondAlign = False,
                  pairedRun = False,
                  cmdParam = None,
@@ -18,27 +18,34 @@ class MergeBamAlign(Step):
 
         self.setParamIO('unmappedBamInput', unmappedBamInput)
         self.setParamIO('alignedBamInput', alignedBamInput)
-        self.setParamIO('bamOutputDir', bamOutputDir)
-        self.setParamIO('refSequence', refSequence)
+        self.setParamIO('bamOutput', bamOutput)
+        self.setParamIO('refInputDir', refInputDir)
+        self.setParam('secondAlign', secondAlign)
+        self.setParam('pairedRun', pairedRun)
 
         self.initIO()
 
-        self.setParam('secondAlign', secondAlign)
-        self.setParam('pairedRun', pairedRun)
 
     def impInitIO(self,):
         unmappedBamInput = self.getParamIO('unmappedBamInput')
         alignedBamInput = self.getParamIO('alignedBamInput')
-        bamOutputDir = self.getParamIO('bamOutputDir')
-        refSequence = self.getParamIO('refSequence')
-        
+        bamOutput = self.getParamIO('bamOutput')
+        refInputDir = self.getParamIO('refInputDir')
+
         self.setInputDirOrFile('unmappedBamInput', unmappedBamInput)
         self.setInputDirOrFile('alignedBamInput', alignedBamInput)
-        self.setInputDirOrFile('refSequence', refSequence)
-        self.setOutputDirNTo1('bamOutput', os.path.join(bamOutputDir, 'merged.bam'), '', 'unmappedBamInput')
+        self.setInputDirOrFile('refSeqInput', os.path.join(refInputDir, 'genome.fa'))
+        self.setInputDirOrFile('refDictInput', os.path.join(refInputDir, 'genome.dict'))
+        self.setOutputDirNTo1('bamOutput', bamOutput, 'merged.bam', 'unmappedBamInput')
+
+        self._setUpstreamSize(2)
 
         if unmappedBamInput is not None:
             self._setInputSize(len(self.getInputList('unmappedBamInput')))
+
+        if bamOutput is None:
+            self.setParamIO('bamOutput', Configure.getTmpPath('merged.bam'))
+
 
     def call(self, *args):
         unmappedBamUpstream = args[0]
@@ -51,15 +58,20 @@ class MergeBamAlign(Step):
         unmappedBamInput = self.getInputList('unmappedBamInput')
         alignedBamInput = self.getInputList('alignedBamInput')
         bamOutput = self.getOutputList('bamOutput')
-        refSequence = self.getInputList('refSequence')
-        
+        refSeqInput = self.getInputList('refSeqInput')
+
         secondAlign = self.getParam('secondAlign')
         pairedRun = self.getParam('pairedRun')
 
         cmdline = [
-                'java -Xmx4g -jar ../../dropseq/Drop-seq_tools-1.13/jar/lib/picard-2.10.3.jar MergeBamAlignment',
-                'UNMAPPED_BAM=%s'%(unmappedBamInput[i]), 'ALIGNED_BAM=%s'%(alignedBamInput[i]), 'OUTPUT=%s'%(bamOutput[i]),
-                'REFERENCE_SEQUENCE=%s'%(refSequence[i]), 'INCLUDE_SECONDARY_ALIGNMENTS=%s'%(str(secondAlign)),
-                'PAIRED_RUN=%s'%(str(pairedRun))
+                'picardMBA %s %s %s %s %s %s %s'%('Xmx4g', unmappedBamInput[i], alignedBamInput[i], bamOutput[i], refSeqInput[i],
+                str(secondAlign), str(pairedRun))
         ]
-        self.callCmdline(cmdline)
+        self.callCmdline('V1', cmdline)
+
+    def getMarkdownEN(self,):
+        mdtext="""
+        ## MergeBamAlign Result
+        Merge unaligned bam and sorted bam.
+        """
+        return None

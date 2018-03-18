@@ -12,25 +12,27 @@ import os
 class BamToFastq(Step):
     def __init__(self,
                  bamInput = None,
-                 fastqOutputDir = None,
+                 fastqOutput = None,
                  cmdParam = None,
                  **kwargs):
         super(Step, self).__init__(cmdParam, **kwargs)
 
         self.setParamIO('bamInput', bamInput)
-        self.setParamIO('fastqOutputDir', fastqOutputDir)
+        self.setParamIO('fastqOutput', fastqOutput)
 
         self.initIO()
 
     def impInitIO(self,):
         bamInput = self.getParamIO('bamInput')
-        fastqOutputDir = self.getParamIO('fastqOutputDir')
+        fastqOutput = self.getParamIO('fastqOutput')
 
         self.setInputDirOrFile('bamInput', bamInput)
-        self.setOutputDirNTo1('fastqOutput', os.path.join(fastqOutputDir, 'unaligned_mc_tagged_polyA_filtered.fastq'), '', 'bamInput')
+        self.setOutputDirNTo1('fastqOutput', fastqOutput, 'unaligned_mc_tagged_polyA_filtered.fastq', 'bamInput')
 
         if bamInput is not None:
             self._setInputSize(len(self.getInputList('bamInput')))
+        if fastqOutput is None:
+            self.setParamIO('fastqOutput', Configure.getTmpPath('unaligned_mc_tagged_polyA_filtered.fastq'))
 
     def call(self, *args):
         bamUpstream = args[0]
@@ -41,7 +43,13 @@ class BamToFastq(Step):
         fastqOutput = self.getOutputList('fastqOutput')
 
         cmdline = [
-                'java -Xmx4g -jar ../../dropseq/Drop-seq_tools-1.13/jar/lib/picard-2.10.3.jar SamToFastq',
-                'INPUT=%s'%(bamInput[i]), 'FASTQ=%s'%(fastqOutput[i])
+                'picardBTF %s %s %s'%('Xmx4g', bamInput[i], fastqOutput[i])
         ]
-        self.callCmdline(cmdline)
+        self.callCmdline('V1', cmdline)
+
+    def getMarkdownEN(self,):
+        mdtext="""
+        ## BamToFastq Result
+        BamToFastq
+        """
+        return None

@@ -3,7 +3,10 @@ from StepBase import Configure,Schedule
 
 import os
 
-tg = TagGene(bamInput='./minidata/dropseq/tmp/merged.bam', bamOutputDir='./minidata/dropseq/tmp/',
-                gtfInput = '../../dropseq/refdata-cellranger-hg19_and_mm10-2.1.0/genes/genes.gtf',
+#Configure.enableDocker(False)
+Configure.setIdentity('cyliu')
+
+tg = TagGene(bamInput='./step_00_MergeBamAlign/merged.bam',
+                gtfInput = '../ref/refdata-cellranger-hg19_and_mm10-2.1.0/genes/genes.gtf',
                 tag='GE')
 Schedule.run()

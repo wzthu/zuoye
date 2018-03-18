@@ -6,6 +6,7 @@
 """
 
 from StepBase import Step,Configure
+import os
 
 
 class SamToBam(Step):
@@ -37,7 +38,7 @@ class SamToBam(Step):
         # set all input files
         self.setInputDirOrFile('samInput', samInput)
         # set all output files
-        self.setOutputDir1To1('bamOutput', bamOutputDir, None, 'bam', 'samInput')
+        self.setOutputDir1To1('bamOutput', bamOutputDir, 'sam2bam', 'bam', 'samInput')
 
         if samInput is not None:
             self._setInputSize(len(self.getInputList('samInput')))
@@ -71,6 +72,19 @@ class SamToBam(Step):
         ]
 
         result = self.callCmdline('V1', cmdline)
+        f = open(self.convertToRealPath(os.path.join(Configure.getTmpDir(),'stdout.txt')),'wb')   
+        f.write(result.stdout)
+        f.close()
+            
+    def getMarkdownEN(self,):
+        mdtext = """
+### sam2bam Result
+The sam2bam result is shown below:
+```{{r, echo=FALSE}}
+con <- file("{mapRs}", "r", blocking = FALSE)
+readLines(con)
+```
+Total map reads means that total number of reads mapped to genome
+        """.format(mapRs = os.path.join(Configure.getTmpDir(),'stdout.txt'))
 
-
-
+        return mdtext

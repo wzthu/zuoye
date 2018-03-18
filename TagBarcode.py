@@ -12,8 +12,8 @@ import os
 class TagBarcode(Step):
     def __init__(self,
                  bamInput = None,
-                 bamOutputDir = None,
-                 sumOutputDir = None,
+                 bamOutput = None,
+                 sumOutput = None,
                  baseStart = 1,
                  baseEnd = 12,
                  baseQuality = 10,
@@ -26,8 +26,8 @@ class TagBarcode(Step):
         super(Step, self).__init__(cmdParam, **kwargs)
 
         self.setParamIO('bamInput', bamInput)
-        self.setParamIO('bamOutputDir', bamOutputDir)
-        self.setParamIO('sumOutputDir', sumOutputDir)
+        self.setParamIO('bamOutput', bamOutput)
+        self.setParamIO('sumOutput', sumOutput)
 
         self.setParam('baseStart', baseStart)
         self.setParam('baseEnd', baseEnd)
@@ -35,21 +35,31 @@ class TagBarcode(Step):
         self.setParam('barcodedRead', barcodedRead)
         self.setParam('discardRead', discardRead)
         self.setParam('tagName', tagName)
+        if tagName == 'XC':
+            self.setParam('tagType', 'Cell')
+        else:
+            self.setParam('tagType', 'UMI')
         self.setParam('numBaseBelowQuality', numBaseBelowQuality)
         self.initIO()
 
     def impInitIO(self,):
         bamInput = self.getParamIO('bamInput')
-        bamOutputDir = self.getParamIO('bamOutputDir')
-        sumOutputDir = self.getParamIO('sumOutputDir')
-        tagName = self.getParam('tagName')        
+        bamOutput = self.getParamIO('bamOutput')
+        sumOutput = self.getParamIO('sumOutput')
+        tagName = self.getParam('tagName')
         #print(tagName)
         self.setInputDirOrFile('bamInput', bamInput)
-        self.setOutputDirNTo1('bamOutput', os.path.join(bamOutputDir, 'unalign_tagged_%s'%(tagName), 'bam'), '', 'bamInput')
-        self.setOutputDirNTo1('sumOutput', os.path.join(sumOutputDir, 'unalign_tagged_%s.bam_summary'%(tagName), 'txt'), '', 'bamInput')
+        self.setOutputDirNTo1('bamOutput', bamOutput, 'unalign_tagged_%s.bam'%(tagName), 'bamInput')
+        self.setOutputDirNTo1('sumOutput', sumOutput, 'unalign_tagged_%s.bam_summary.txt'%(tagName), 'bamInput')
 
         if bamInput is not None:
             self._setInputSize(len(self.getInputList('bamInput')))
+
+        if bamOutput is None:
+            self.setParamIO('bamOutput', Configure.getTmpPath('unalign_tagged_%s.bam'%(tagName)))
+        if sumOutput is None:
+            self.setParamIO('sumOutput', Configure.getTmpPath('unalign_tagged_%s.bam_summary.txt'%(tagName)))
+
 
     def call(self, *args):
         bamUpstream = args[0]
@@ -69,10 +79,22 @@ class TagBarcode(Step):
         numBaseBelowQuality = self.getParam('numBaseBelowQuality')
 
         cmdline = [
-                '../../dropseq/Drop-seq_tools-1.13/TagBamWithReadSequenceExtended',
+                #'/root/software/Drop-seq_tools-1.13/
+                'TagBamWithReadSequenceExtended',
                 'INPUT=%s'%(bamInput[i]), 'OUTPUT=%s'%(bamOutput[i]), 'SUMMARY=%s'%(sumOutput[i]),
                 'BASE_RANGE=%d-%d'%(baseStart, baseEnd), 'BASE_QUALITY=%d'%(baseQuality),
                 'BARCODED_READ=%d'%(barcodedRead), 'DISCARD_READ=%s'%(str(discardRead)),
                 'TAG_NAME=%s'%(tagName), 'NUM_BASES_BELOW_QUALITY=%d'%(numBaseBelowQuality)
                 ]
-        self.callCmdline(cmdline)
+        self.callCmdline('V1', cmdline)
+
+    def getMarkdownEN(self,):
+        mdtext="""
+## Tag {tagType} Barcode Result
+The {tagType} barcode's quality report is as follow:
+```{{r echo=FALSE}}
+read.table('{sumOutput}', header=TRUE)
+```
+
+        """.format(tagType=self.getParam("tagType"), sumOutput=self.getOutput('sumOutput'))
+        return mdtext

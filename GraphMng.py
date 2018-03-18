@@ -105,7 +105,9 @@ class GraphAll(GraphMng):
                  'Bowtie2',
                  'SamToBam',
                  'BamToSam',
-                 'DuplicateRemoval'                 
+                 'DuplicateRemoval',
+                 'MonocleQC',
+                 'Monocle_dimreduce_cluster'                 
                 ]
         
         edge1 = [
@@ -141,6 +143,9 @@ class GraphAll(GraphMng):
                 ['MergeBamAlign','TagGene'],
                 ['TagGene','DetectError'],
                 ['DetectError','DigitalExpression'],
+                ['DigitalExpression','MonocleQC'],
+                ['DigitalExpression', 'EasyTreat'],
+                ['MonocleQC','Monocle_dimreduce_cluster'],
                 # ATAC-seq
                 ['SRAToFastq', 'AdapterRemoval'],
                 ['AdapterRemoval', 'Bowtie2'],

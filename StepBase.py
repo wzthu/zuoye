@@ -324,7 +324,6 @@ class StepBase:
             return Configure.getTmpDir()
     
     def initIO(self,): 
-        tmpdir = Configure.getTmpDir()
         if not os.path.exists(self.getStepFolerPath()):
             os.mkdir(self.getStepFolerPath())
         #os.makedirs(os.path.join(Configure.getTmpDir(),self.getStepFolderName(),'.tmp_for_docker',self.getStepFolerPath()))    
