@@ -13,7 +13,7 @@ class Bowtie2(Step):
     """
     Bowtie2 is a Step to align ATAC-seq reads to reference genome.
     See __init__ to initialize this step.
-    > Parameters
+    > Bowtie2(): __init__  parameters
         fastqInput1: str or str list
             mate 1 fastq file path(s) or a directory contain all of fastq files 
         fastqInput2: str or str list
@@ -40,6 +40,7 @@ class Bowtie2(Step):
             The maximum fragment length for valid paired-end alignments.
         cmdParam: str or list of string
             current unsupported    
+    > Bowtie2()(): __call__ parameters
     Available upstream objects combinations:
         (AdapterRemoval)
         (SRAToFastq)
@@ -64,7 +65,34 @@ class Bowtie2(Step):
         """
         called by 'Bowtie()'
         __init__(): Initialize the class with inputs, outputs and other parameters.
-        Setting all parameter is the main target of this function.        
+        Setting all parameter is the main target of this function. 
+        > Parameters
+        fastqInput1: str or str list
+            mate 1 fastq file path(s) or a directory contain all of fastq files 
+        fastqInput2: str or str list
+            mate 2 fastq file path(s) or a directory contain all of fastq files
+        bt2Idx: str
+            bowtie 2 index prefix, for example: /home/data/hg19
+        samOutputDir: str
+            the output directory of samfiles
+        mapRsOutputDir:str
+            the mapping result storage directory 
+        threads: int
+            the threads number will be used
+        isdovetail: bool
+            If the mates “dovetail”, that is if one mate alignment extends past 
+            the beginning of the other such that the wrong mate begins upstream, 
+            consider that to be concordant. 
+        isNoUnal: bool    
+            By default, Bowtie2 do not looks for discordant alignments 
+            if it cannot find any concordant alignments.
+        isNoMixed: bool
+            By default, when bowtie2 cannot find a concordant or discordant alignment for a pair, 
+            it then do not tries to find alignments for the individual mates. This option disables that behavior.
+        X: int
+            The maximum fragment length for valid paired-end alignments.
+        cmdParam: str or list of string
+            current unsupported    
         """
         
         # set all input and output parameters
