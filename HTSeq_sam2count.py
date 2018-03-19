@@ -60,8 +60,21 @@ class HTSeq_sam2count(Step):
                     countOutput[i]
                     ]
                     
-        result = self.callCmdline('V1', cmdline)
-        # f = open(mapRsOutput[i],'wb')   
-        # f.write(result.stderr)
-            
         
+        result = self.callCmdline('V1', cmdline)
+        f = open(self.convertToRealPath(os.path.join(Configure.getTmpDir(),'stdout.txt')),'wb')   
+        f.write(result.stdout)
+        f.close()
+            
+    def getMarkdownEN(self,):
+        mdtext = """
+### HTSeq Result
+The HTSeq result is shown below:
+```{{r, echo=FALSE}}
+con <- file("{mapRs}", "r", blocking = FALSE)
+readLines(con)
+```
+Total map reads means that total number of reads mapped to genome
+        """.format(mapRs = os.path.join(Configure.getTmpDir(),'stdout.txt'))
+
+        return mdtext
