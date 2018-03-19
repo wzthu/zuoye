@@ -1169,8 +1169,7 @@ class Report(Step):
             os.mkdir(self.getStepFolerPath())
 
         self.setOutput('reportHTML', os.path.join(self.getStepFolerPath(),'report.html'))
-            
-            
+          
             
             
     def __call__(self,*args):
@@ -1276,7 +1275,7 @@ knitr::opts_chunk$set(echo = TRUE)
                     mkd = mkd.replace(aoutpath,os.path.join('./links',aoutpath[1:]))
         inkeys = step.getInputs()
         for akey in inkeys:
-            inpaths = step.getIputList(akey)            
+            inpaths = step.getInputList(akey)            
             for ainpath in inpaths:
                 if ainpath in mkd:
                     des_ainpath = os.path.join(folderPath,ainpath[1:])
@@ -1295,6 +1294,9 @@ class Schedule:
     @classmethod
     def add(cls, stepObj):
         if isinstance(stepObj,Step):
+            for astep in cls.__schedule:
+                if stepObj.getStepID() == astep.getStepID():
+                    raise Exception('the stepObj is exist in the schedule list')
             cls.__schedule.append(stepObj)
         else:
             raise Exception('only support schedule sub-classes')
