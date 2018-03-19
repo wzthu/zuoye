@@ -63,7 +63,7 @@ class Hisat2(Step):
             self.setInput('ht2IdxFiles', ht2IdxFiles)
 
         # create output file paths and set
-        self.setOutputDir1To1('samOutput',samOutputDir,'hisat','sam','fastqInput1')
+        self.setOutputDir1To1('samOutput',samOutputDir,None,'sam','fastqInput1')
 
         # set how many sample are there
         if fastqInput1 is not None:

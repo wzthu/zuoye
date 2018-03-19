@@ -97,4 +97,8 @@ class BamToBed(Step):
         result = self.callCmdline('V1', cmdline)
 
 
-
+    def getMarkdownEN(self, ):
+        mdtext = """
+All Bam files has been converted to Bed files!
+                """
+        return mdtext

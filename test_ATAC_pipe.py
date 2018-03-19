@@ -19,7 +19,7 @@ Configure.setRefDir('/data8t_1/hca/ref/hg19_bowtie2')
 Configure.setGenome('hg19')
 Configure.setIdentity('ATAC')
 
-stf = SRAToFastq(sraInput='/data8t_1/scATAC/GM12878')
+stf = SRAToFastq(sraInput='/home/hca/zhangwei_data/GM12878')
 
 # print("SRAToFastq output:")
 # print(stf.getOutput('fastqOutput1'))

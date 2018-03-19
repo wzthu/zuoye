@@ -83,3 +83,25 @@ class VarAndClustering(Step):
         ]
         result = self.callCmdline('V1', cmdline)
 
+    def getMarkdownEN(self, ):
+        varOutput = self.getOutputList('var.tiff')
+        clustringOutput = self.getOutputList('clustring.tiff')
+
+        print(varOutput)
+        print(clustringOutput)
+        mdtext = """
+## Variation and Clustering Result
+
+The following is variation and clustering plots.
+```{{r eval=TRUE, echo=FALSE, warning=FALSE, message=FALSE}}
+var_path <- "{varOutput}"
+clu_path <- "{clustringOutput}"
+```
+Variation Plot
+![](`r var_path`)
+
+Clustering Plot
+![](`r clu_path`)
+
+                """.format(varOutput=varOutput[0], clustringOutput=clustringOutput[0])
+        return mdtext
