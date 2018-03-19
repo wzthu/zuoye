@@ -1,10 +1,13 @@
 from Cellranger import Cellranger
-from Seurat import Seurat
+from Seuratpreprocessing import Seuratpreprocessing
+from Seuratrun import Seuratrun
 from StepBase import Configure, Schedule
 
+Configure.setIdentity('fengchen')
 
-test = Cellranger(fastqInput = '/home/cfeng/data/test/',  refile = '/home/cfeng/data/refdata-cellranger-hg19_and_mm10-1.2.0', expectcells=100)
-test2 = Seurat(rscript = '/home/cfeng/test_celranger/Seurat.R')(test)
+test = Cellranger(fastqInput = '/home/hca/fengchen/data/10Xdata/test/',  refile = '/home/hca/fengchen/data/10Xdata/refdata-cellranger-hg19_and_mm10-1.2.0', expectcells=100)
+test2 = Seuratpreprocessing(rscript = '/home/hca/fengchen/zuoye/Seuratpreprocessing.R')(test)
+test3 = Seuratrun(rscript='/home/hca/fengchen/zuoye/Seuratrun.R')(test2)
 Schedule.run()
 
 print('')

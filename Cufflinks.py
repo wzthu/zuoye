@@ -59,8 +59,8 @@ class Cufflinks(Step):
 			self.setInput('gtfInput',gtfInput)
 
 		self.setOutput('assembliesOutput',os.path.join(Configure.getTmpDir(), 'assemblies.txt'))
-
-
+		self.setOutput('stdOutput', os.path.join(Configure.getTmpDir(),'stdout.txt'))
+		
 		if bamInput is not None:
 			self._setInputSize(len(self.getInputList('bamInput')))
 			genes_fpkm_tracking=list()
@@ -113,7 +113,7 @@ class Cufflinks(Step):
 				]
 
 		result = self.callCmdline('V1', cmdline)
-		f = open(self.convertToRealPath(os.path.join(Configure.getTmpDir(),'stdout.txt')),'wb')
+		f = open(self.convertToRealPath(self.getOutput('stdOutput')),'ab+')
 		f.write(result.stdout)
 		f.close()
 
@@ -126,5 +126,5 @@ con <- file("{mapRs}", "r", blocking = FALSE)
 readLines(con)
 ```
 Total map reads means that total number of reads mapped to genome
-        """.format(mapRs = os.path.join(Configure.getTmpDir(),'stdout.txt'))
+        """.format(mapRs = self.getOutput('stdOutput'))
 		return mdtext

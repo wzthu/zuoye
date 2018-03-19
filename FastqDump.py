@@ -33,7 +33,7 @@ class FastqDump(Step):
         #set all input files        
         self.setInputDirOrFile('sraInput1',sraInput1) 
         # fastqOutputDir = self.getParamIO('fastqOutputDir')
-        # self.setOutput('logOutput', os.path.join(fastqOutputDir,'stdout.txt'))
+        self.setOutput('stdOutput', os.path.join(Configure.getTmpDir(),'stdout.txt'))
        
         # self.setOutputDir1To1('fastqOutputDir', fastqOutputDir,'fastqDump','fastq','sraInput1',sep='_') 
         self.setOutputDir1To1('fastqOutput1', fastqOutputDir, None, '1.fastq','sraInput1',sep='_') 
@@ -56,7 +56,7 @@ class FastqDump(Step):
                     ]
                     
         result = self.callCmdline('V1', cmdline)
-        f = open(self.convertToRealPath(os.path.join(Configure.getTmpDir(),'stdout.txt')),'wb')   
+        f = open(self.convertToRealPath(self.getOutput('stdOutput')),'ab+')
         f.write(result.stdout)
         f.close()
             
@@ -69,6 +69,6 @@ con <- file("{mapRs}", "r", blocking = FALSE)
 readLines(con)
 ```
 Total map reads means that total number of reads mapped to genome
-        """.format(mapRs = os.path.join(Configure.getTmpDir(),'stdout.txt'))
+        """.format(mapRs = self.getOutput('stdOutput'))
 
         return mdtext

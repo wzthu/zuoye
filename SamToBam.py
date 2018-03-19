@@ -34,6 +34,7 @@ class SamToBam(Step):
         if bamOutputDir is None:
             self.setParamIO('bamOutputDir',Configure.getTmpDir())
             
+        self.setOutput('stdOutput', os.path.join(Configure.getTmpDir(),'stdout.txt'))
 
         # set all input files
         self.setInputDirOrFile('samInput', samInput)
@@ -72,12 +73,11 @@ class SamToBam(Step):
         ]
 
         result = self.callCmdline('V1', cmdline)
-        f = open(self.convertToRealPath(os.path.join(Configure.getTmpDir(),'stdout.txt')),'wb')   
+        f = open(self.convertToRealPath(self.getOutput('stdOutput')),'ab+')
         f.write(result.stdout)
         f.close()
             
     def getMarkdownEN(self,):
         # this function do not need any report!
         mdtext = """"""
-
         return mdtext
