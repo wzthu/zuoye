@@ -120,3 +120,12 @@ class MergeToFrag(Step):
             'rm -f', tmpfile3
         ]
         result = self.callCmdline(None, cmdline)
+
+    def getMarkdownEN(self, ):
+        mdtext = """
+## Merge Reads to DNA Fragments Result
+
+Reads has been merged to fragments!
+
+                """
+        return mdtext

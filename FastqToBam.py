@@ -41,6 +41,9 @@ class FastqToBam(Step):
         if fastqInput1 is not None:
             self._setInputSize(len(self.getInputList('fastqInput1')))
 
+        if bamOutputDir is None:
+            self.setParamIO('bamOutputDir', Configure.getTmpDir())
+
     def call(self, *args):
         fastqUpstream = args[0]
         self.setParamIO('fastqInput1', fastqUpstream.getOutput('fastqOutput1'))
@@ -51,6 +54,13 @@ class FastqToBam(Step):
         fastqInput2 = self.getInputList('fastqInput2')
         bamOutput = self.getOutputList('bamOutput')
         #mapRsOutput = self.getOutputList('mapRsOutput')
-        cmdline = ['java -jar ../../dropseq/Drop-seq_tools-1.13/jar/lib/picard-2.10.3.jar FastqToSam',
-                  'F1=%s F2=%s O=%s SM=for_tool_testing'%(fastqInput1[i], fastqInput2[i], bamOutput[i])]
-        self.callCmdline(cmdline)
+        cmdline = ['picardFTB %s %s %s %s'%('Xmx4g',fastqInput1[i], fastqInput2[i], bamOutput[i])]
+        self.callCmdline('V1', cmdline)
+
+    def getMarkdownEN(self,):
+        mdtext = """
+## FastqToBam Result
+Totally input {num} samples (paired fastq files).
+\r\n
+        """.format(num = len(self.getInputList('fastqInput1')))
+        return mdtext

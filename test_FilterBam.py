@@ -3,5 +3,8 @@ from StepBase import Configure, Schedule
 
 import os
 
-fb = FilterBam(bamInput = './minidata/dropseq/tmp/unalign_tagged_XM.bam', bamOutputDir = './minidata/dropseq/tmp', tagReject = 'XQ')
+#Configure.enableDocker(False)
+Configure.setIdentity('cyliu')
+
+fb = FilterBam(bamInput = './step_00_TagBarcode/unalign_tagged_XM.bam', tagReject = 'XQ')
 Schedule.run()

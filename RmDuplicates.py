@@ -72,10 +72,14 @@ class RmDuplicates(Step):
         bamOutput = self.getOutputList('bamOutput')
         matrixOutput = self.getOutputList('METRICS')
         cmdline = [
-            'picard', str(self.getParam('memory')),
+            'picardRM', str(self.getParam('memory')),
             bamInput[i], bamOutput[i], matrixOutput[i]
         ]
         result = self.callCmdline('V1', cmdline)
 
-
-
+    def getMarkdownEN(self, ):
+        mdtext = """
+## Remove Duplicates Result
+Duplicates has been removed using pacard!
+                """
+        return mdtext

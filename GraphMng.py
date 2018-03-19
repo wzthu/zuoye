@@ -95,6 +95,9 @@ class GraphAll(GraphMng):
                  'Star',
                  'Cufflinks',
                  'Cuffmerge',
+                 'Cuffquant',
+                 'Cuffnorm',
+                 'Cuffdiff',
                  'HTSeq',
                 # 10x涉及的类的名称
                  'Quantification10x',
@@ -105,7 +108,9 @@ class GraphAll(GraphMng):
                  'Bowtie2',
                  'SamToBam',
                  'BamToSam',
-                 'DuplicateRemoval'                 
+                 'DuplicateRemoval',
+                 'MonocleQC',
+                 'Monocle_dimreduce_cluster'                 
                 ]
         
         edge1 = [
@@ -117,6 +122,10 @@ class GraphAll(GraphMng):
                 ['SamToBam','BamSort'],
                 ['BamSort','Cufflinks'],
                 ['Cufflinks','Cuffmerge'],
+                ['BamSort','Cuffquant'],
+                ['Cuffquant','Cuffnorm'],
+                ['Cuffmerge','Cuffdiff'],
+                
             
                 ['SRAToFastq','FastQC'],
                 ['SRAToFastq','Tophat'],
@@ -140,6 +149,9 @@ class GraphAll(GraphMng):
                 ['MergeBamAlign','TagGene'],
                 ['TagGene','DetectError'],
                 ['DetectError','DigitalExpression'],
+                ['DigitalExpression','MonocleQC'],
+                ['DigitalExpression', 'EasyTreat'],
+                ['MonocleQC','Monocle_dimreduce_cluster'],
                 # ATAC-seq
                 ['SRAToFastq', 'AdapterRemoval'],
                 ['AdapterRemoval', 'Bowtie2'],
@@ -158,7 +170,10 @@ class GraphAll(GraphMng):
 
         edge2 = [
                 ['SortBam', 'MergeBamAlign'],
-                ['GenPeakWithFilter', 'VarAndClustering']
+                ['GenPeakWithFilter', 'VarAndClustering'],
+                ['Cuffmerge','Cuffquant'],
+                ['Cuffmerge','Cuffnorm'],
+                ['Cuffquant','Cuffdiff']
                 ]
 
         super(GraphAll, self).__init__([edge1,edge2],[node1,[]])        

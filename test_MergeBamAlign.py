@@ -3,7 +3,10 @@ from StepBase import Configure,Schedule
 
 import os
 
-mba = MergeBamAlign(unmappedBamInput='./minidata/dropseq/tmp/unaligned_mc_tagged_polyA_filtered.bam', alignedBamInput='./minidata/dropseq/tmp/aligned.sorted.bam',
-                bamOutputDir='./minidata/dropseq/tmp', refSequence='../../dropseq/refdata-cellranger-hg19_and_mm10-2.1.0/fasta/genome.fa',
-                secondAlign=False, pairedRun=False)
+#Configure.enableDocker(False)
+Configure.setIdentity('cyliu')
+
+mba = MergeBamAlign(unmappedBamInput='./step_00_TrimPolyA/unaligned_mc_tagged_polyA_filtered.bam', alignedBamInput='./step_00_SortBam/aligned.sorted.bam',
+                    refInputDir='../ref/refdata-cellranger-hg19_and_mm10-2.1.0/fasta/',
+                    secondAlign=False, pairedRun=False)
 Schedule.run()
