@@ -10,7 +10,7 @@ from hashlib import md5
 from GraphMng import GraphAll,GraphATACgl
 import time
 import subprocess
-
+import re
 
 
 
@@ -1284,7 +1284,7 @@ knitr::opts_chunk$set(echo = TRUE)
                     subprocess.run('ln -f '+ ainpath +' '+ des_ainpath, shell=True, check=True)                        
                     self.setInput(ainpath,des_ainpath)
                     mkd = mkd.replace(ainpath,os.path.join('./links',ainpath[1:]))
-        return mkd
+        return re.sub('(\./links)+','./links',mkd)
 
         
 class Schedule:

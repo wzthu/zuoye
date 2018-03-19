@@ -38,7 +38,7 @@ class SamToBam(Step):
         # set all input files
         self.setInputDirOrFile('samInput', samInput)
         # set all output files
-        self.setOutputDir1To1('bamOutput', bamOutputDir, 'sam2bam', 'bam', 'samInput')
+        self.setOutputDir1To1('bamOutput', bamOutputDir, None, 'bam', 'samInput')
 
         if samInput is not None:
             self._setInputSize(len(self.getInputList('samInput')))
