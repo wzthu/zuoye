@@ -2,6 +2,7 @@
 
 from StepBase import Step,Configure,Schedule
 from FastqDump import FastqDump
+import os
 class Hisat2(Step):
 
     def  __init__(self,
@@ -45,6 +46,7 @@ class Hisat2(Step):
         ht2Idx = self.getParamIO('ht2Idx')
         if samOutputDir is None:
             self.setParamIO('samOutputDir',Configure.getTmpDir())
+        self.setOutput('stdOutput', os.path.join(Configure.getTmpDir(),'stdout.txt'))
 
         # print(ht2Idx)
         #set all input files
@@ -62,7 +64,7 @@ class Hisat2(Step):
             self.setInput('ht2IdxFiles', ht2IdxFiles)
 
         # create output file paths and set
-        self.setOutputDir1To1('samOutput',samOutputDir,'hisat','sam','fastqInput1')
+        self.setOutputDir1To1('samOutput',samOutputDir,None,'sam','fastqInput1')
 
         # set how many sample are there
         if fastqInput1 is not None:
@@ -92,5 +94,21 @@ class Hisat2(Step):
                   '-1', fastqInput1[i],
                   '-2',fastqInput2[i],
                   '-S',samOutput[i]]
-        self.callCmdline('V1', cmdline)
 
+        result = self.callCmdline('V1', cmdline)
+        f = open(self.convertToRealPath(self.getOutput('stdOutput')),'ab+')
+        f.write(result.stdout)
+        f.close()
+            
+    def getMarkdownEN(self,):
+        mdtext = """
+### hisat Result
+The hisat result is shown below:
+```{{r, echo=FALSE}}
+con <- file("{mapRs}", "r", blocking = FALSE)
+readLines(con)
+```
+Total map reads means that total number of reads mapped to genome
+        """.format(mapRs = self.getOutput('stdOutput'))
+
+        return mdtext

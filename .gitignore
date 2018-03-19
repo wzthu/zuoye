@@ -104,5 +104,23 @@ ENV/
 # mkdocs documentation
 /site
 
+# TempFile
+__pycache__
+*ipynb
+
 # mypy
 .mypy_cache/
+minidata/smartseq/hg19_index/genome.8.ht2
+minidata/atac/SamForTest/SRR1779703_2.sam
+minidata/smartseq/hg19_index/genome.1.ht2
+*.ht2
+*.gtf
+*.sam
+*.bed
+*.sra
+minidata/smartseq/accepted_hits.bam
+minidata/atac/SamForTest/SRR1779703_1.sam
+minidata/smartseq/hg19.fa
+minidata/atac/SamForTest/SRR1779703_1.sam
+minidata/smartseq/hg19_index/make_hg19.sh
+minidata/atac/SamForTest/SRR1779703_1.sam

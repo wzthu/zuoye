@@ -12,14 +12,14 @@ import os
 class FilterBam(Step):
     def __init__(self,
                  bamInput = None,
-                 bamOutputDir = None,
+                 bamOutput = None,
                  tagReject = None,
                  cmdParam = None,
                  **kwargs):
         super(Step, self).__init__(cmdParam, **kwargs)
 
         self.setParamIO('bamInput', bamInput)
-        self.setParamIO('bamOutputDir', bamOutputDir)
+        self.setParamIO('bamOutput', bamOutput)
 
         self.initIO()
 
@@ -27,13 +27,16 @@ class FilterBam(Step):
 
     def impInitIO(self,):
         bamInput = self.getParamIO('bamInput')
-        bamOutputDir = self.getParamIO('bamOutputDir')
+        bamOutput = self.getParamIO('bamOutput')
 
         self.setInputDirOrFile('bamInput', bamInput)
-        self.setOutputDirNTo1('bamOutput', os.path.join(bamOutputDir, 'unalign_tagged_filterd.bam'), '', 'bamInput')
+        self.setOutputDirNTo1('bamOutput', bamOutput, 'unalign_tagged_filterd.bam', 'bamInput')
 
         if bamInput is not None:
             self._setInputSize(len(self.getInputList('bamInput')))
+
+        if bamOutput is None:
+            self.setParamIO('bamOutput', Configure.getTmpPath('unalign_tagged_filterd.bam'))
 
     def call(self, *args):
         bamUpstream = args[0]
@@ -46,8 +49,14 @@ class FilterBam(Step):
         tagReject = self.getParam('tagReject')
 
         cmdline = [
-                '../../dropseq/Drop-seq_tools-1.13/FilterBAM', 'INPUT=%s'%(bamInput[i]),
+                'FilterBAM', 'INPUT=%s'%(bamInput[i]),
                 'OUTPUT=%s'%(bamOutput[i]), 'TAG_REJECT=%s'%(tagReject)
                 ]
-        self.callCmdline(cmdline)
-        
+        self.callCmdline('V1', cmdline)
+
+    def getMarkdownEN(self,):
+        mdtext="""
+        ## FilterBam Result
+        Discard reads of low quality.
+        """
+        return ""

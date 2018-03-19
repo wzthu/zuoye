@@ -48,6 +48,7 @@ class Cuffnorm(Step):
 		if outputDir is None:
 			self.setParamIO('outputDir',Configure.getTmpDir())
 
+		self.setOutput('stdOutput', os.path.join(Configure.getTmpDir(),'stdout.txt'))
 		outputDir = self.getParamIO('outputDir')
 		# self.setParamIO('cxbInput',cxbInput)
 
@@ -135,4 +136,21 @@ class Cuffnorm(Step):
 				gtfInput[0],
 				cxbFin
 				]
-		self.callCmdline('V1',cmdline,stdoutToLog = True)
+
+		result = self.callCmdline('V1', cmdline)
+		f = open(self.convertToRealPath(self.getOutput('stdOutput')),'ab+')
+		f.write(result.stdout)
+		f.close()
+
+	def getMarkdownEN(self,):
+		mdtext = """
+### cuffnorm Result
+The cuffnorm result is shown below:
+```{{r, echo=FALSE}}
+con <- file("{mapRs}", "r", blocking = FALSE)
+readLines(con)
+```
+Total map reads means that total number of reads mapped to genome
+""".format(mapRs = self.getOutput('stdOutput'))
+
+		return mdtext

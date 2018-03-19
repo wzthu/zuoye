@@ -12,27 +12,30 @@ import os
 class SortBam(Step):
     def __init__(self,
                  bamInput = None,
-                 bamOutputDir = None,
+                 bamOutput = None,
                  sortOrder = None,
                  cmdParam = None,
                  **kwargs):
         super(Step, self).__init__(cmdParam, **kwargs)
 
         self.setParamIO('bamInput', bamInput)
-        self.setParamIO('bamOutputDir', bamOutputDir)
+        self.setParamIO('bamOutput', bamOutput)
+        self.setParam('sortOrder', sortOrder)
+
         self.initIO()
 
-        self.setParam('sortOrder', sortOrder)
 
     def impInitIO(self,):
         bamInput = self.getParamIO('bamInput')
-        bamOutputDir = self.getParamIO('bamOutputDir')
+        bamOutput = self.getParamIO('bamOutput')
 
         self.setInputDirOrFile('bamInput', bamInput)
-        self.setOutputDirNTo1('bamOutput', os.path.join(bamOutputDir, 'aligned.sorted.bam'), '', 'bamInput')
+        self.setOutputDirNTo1('bamOutput', bamOutput, 'aligned.sorted.bam', 'bamInput')
 
         if bamInput is not None:
             self._setInputSize(len(self.getInputList('bamInput')))
+        if bamOutput is None:
+            self.setParamIO('bamOutput', Configure.getTmpPath('aligned.sorted.bam'))
 
     def call(self, *args):
         bamUpstream = args[0]
@@ -45,7 +48,13 @@ class SortBam(Step):
         sortOrder = self.getParam('sortOrder')
 
         cmdline = [
-                'java -Xmx4g -jar ../../dropseq/Drop-seq_tools-1.13/jar/lib/picard-2.10.3.jar SortSam',
-                'I=%s'%(bamInput[i]), 'O=%s'%(bamOutput[i]), 'SO=%s'%(sortOrder)
+                'picardSB %s %s %s %s'%('Xmx4g', bamInput[i], bamOutput[i], sortOrder)
         ]
-        self.callCmdline(cmdline)
+        self.callCmdline('V1', cmdline)
+
+    def getMarkdownEN(self,):
+        mdtext="""
+        ## SortBam Result
+        Sort bam file as query order.
+        """
+        return ""

@@ -39,7 +39,7 @@ class Cuffmerge(Step):
         gtfOutputDir = self.getParamIO('gtfOutputDir')
         if gtfOutputDir is None:
             self.setParamIO('gtfOutputDir',Configure.getTmpDir())
-
+        self.setOutput('stdOutput', os.path.join(Configure.getTmpDir(),'stdout.txt'))
         #set all input files        
         self.setInputDirOrFile('assembliesInput',assembliesInput) 
         
@@ -85,9 +85,21 @@ class Cuffmerge(Step):
                     ]
                     
         result = self.callCmdline('V2', cmdline)
-        # f = open(mapRsOutput[i],'wb')   
-        # f.write(result.stderr)
-        # 
-        # docker run --rm -v /home/hca/Docker/Common_data:/data hca:py2 cuffmerge -g /data/sqchen/genome.gtf -s /data/sqchen/hg19.fa -o /data/sqchen -p 8 /data/sqchen/assemblies.txt
+        f = open(self.convertToRealPath(self.getOutput('stdOutput')),'ab+')
+        f.write(result.stdout)
+        f.close()
+            
+    def getMarkdownEN(self,):
+        mdtext = """
+### cuffmerge Result
+The cuffmerge result is shown below:
+```{{r, echo=FALSE}}
+con <- file("{mapRs}", "r", blocking = FALSE)
+readLines(con)
+```
+Total map reads means that total number of reads mapped to genome
+        """.format(mapRs = self.getOutput('stdOutput'))
+
+        return mdtext
             
         

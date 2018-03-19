@@ -59,8 +59,8 @@ class Cufflinks(Step):
 			self.setInput('gtfInput',gtfInput)
 
 		self.setOutput('assembliesOutput',os.path.join(Configure.getTmpDir(), 'assemblies.txt'))
-
-
+		self.setOutput('stdOutput', os.path.join(Configure.getTmpDir(),'stdout.txt'))
+		
 		if bamInput is not None:
 			self._setInputSize(len(self.getInputList('bamInput')))
 			genes_fpkm_tracking=list()
@@ -111,5 +111,20 @@ class Cufflinks(Step):
 				'echo', '"'+os.path.join(outputDir,'cufflinks_'+str(i),'transcripts.gtf')+'" >>',
 				self.getOutput("assembliesOutput")
 				]
-		self.callCmdline('V1', cmdline)
 
+		result = self.callCmdline('V1', cmdline)
+		f = open(self.convertToRealPath(self.getOutput('stdOutput')),'ab+')
+		f.write(result.stdout)
+		f.close()
+
+	def getMarkdownEN(self,):
+		mdtext = """
+### cufflinks Result
+The cufflinks result is shown below:
+```{{r, echo=FALSE}}
+con <- file("{mapRs}", "r", blocking = FALSE)
+readLines(con)
+```
+Total map reads means that total number of reads mapped to genome
+        """.format(mapRs = self.getOutput('stdOutput'))
+		return mdtext

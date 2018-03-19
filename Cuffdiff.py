@@ -58,6 +58,7 @@ class Cuffdiff(Step):
 			
 		if outputDir is None:
 			self.setParamIO('outputDir',Configure.getTmpDir())
+		self.setOutput('stdOutput', os.path.join(Configure.getTmpDir(),'stdout.txt'))
 
 		outputDir = self.getParamIO('outputDir')
 
@@ -71,7 +72,7 @@ class Cuffdiff(Step):
 		genes_count_tracking=list()
 		genes_fpkm_tracking=list()
 		genes_read_group_tracking=list()
-		isoform_exp_diff-list()
+		isoform_exp_diff=list()
 		isoforms_count_tracking=list()
 		isoforms_fpkm_tracking=list()
 		isoforms_read_group_tracking=list()
@@ -177,4 +178,20 @@ class Cuffdiff(Step):
 				gtfInput[0],
 				cxbFin
 				]
-		self.callCmdline('V1',cmdline,stdoutToLog = True)	
+		result = self.callCmdline('V1', cmdline)
+		f = open(self.convertToRealPath(self.getOutput('stdOutput')),'ab+')
+		f.write(result.stdout)
+		f.close()
+
+	def getMarkdownEN(self,):
+		mdtext = """
+### cuffdiff Result
+The cuffdiff result is shown below:
+```{{r, echo=FALSE}}
+con <- file("{mapRs}", "r", blocking = FALSE)
+readLines(con)
+```
+Total map reads means that total number of reads mapped to genome
+""".format(mapRs = self.getOutput('stdOutput'))
+
+		return mdtext

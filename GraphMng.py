@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 """
 Created on Fri Mar  2 19:22:29 2018
 @author: WeiZheng
@@ -95,6 +95,9 @@ class GraphAll(GraphMng):
                  'Star',
                  'Cufflinks',
                  'Cuffmerge',
+                 'Cuffquant',
+                 'Cuffnorm',
+                 'Cuffdiff',
                  'HTSeq',
                 # 10x涉及的类的名称
                  'Quantification10x',
@@ -119,6 +122,10 @@ class GraphAll(GraphMng):
                 ['SamToBam','BamSort'],
                 ['BamSort','Cufflinks'],
                 ['Cufflinks','Cuffmerge'],
+                ['BamSort','Cuffquant'],
+                ['Cuffquant','Cuffnorm'],
+                ['Cuffmerge','Cuffdiff'],
+                
             
                 ['SRAToFastq','FastQC'],
                 ['SRAToFastq','Tophat'],
@@ -126,7 +133,8 @@ class GraphAll(GraphMng):
                 ['Tophat','Cufflinks'],
                 ['Star','HTSeq'],
                 #10x Genomeics
-                ['Cellranger','Seurat'],
+                ['Cellranger','Seuratpreprocessing'],
+		        ['Seuratpreprocessing','Seuratrun'],
                 ['Qualification10x','PCA'],
                 #drop-seq
                 ['FastqToBam','BamMerge'],
@@ -143,6 +151,7 @@ class GraphAll(GraphMng):
                 ['TagGene','DetectError'],
                 ['DetectError','DigitalExpression'],
                 ['DigitalExpression','MonocleQC'],
+                ['DigitalExpression', 'EasyTreat'],
                 ['MonocleQC','Monocle_dimreduce_cluster'],
                 # ATAC-seq
                 ['SRAToFastq', 'AdapterRemoval'],
@@ -162,7 +171,10 @@ class GraphAll(GraphMng):
 
         edge2 = [
                 ['SortBam', 'MergeBamAlign'],
-                ['GenPeakWithFilter', 'VarAndClustering']
+                ['GenPeakWithFilter', 'VarAndClustering'],
+                ['Cuffmerge','Cuffquant'],
+                ['Cuffmerge','Cuffnorm'],
+                ['Cuffquant','Cuffdiff']
                 ]
 
         super(GraphAll, self).__init__([edge1,edge2],[node1,[]])        

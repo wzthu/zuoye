@@ -6,9 +6,9 @@ import os
 class DetectError(Step):
     def __init__(self,
                  bamInput = None,
-                 bamOutputDir = None,
-                 statsOutputDir = None,
-                 sumOutputDir = None,
+                 bamOutput = None,
+                 statsOutput = None,
+                 sumOutput = None,
                  numCells = 1000,
                  primerSeqence = None,
                  cmdParam = None,
@@ -16,9 +16,9 @@ class DetectError(Step):
         super(Step, self).__init__(cmdParam, **kwargs)
 
         self.setParamIO('bamInput', bamInput)
-        self.setParamIO('bamOutputDir', bamOutputDir)
-        self.setParamIO('statsOutputDir', statsOutputDir)
-        self.setParamIO('sumOutputDir', sumOutputDir)
+        self.setParamIO('bamOutput', bamOutput)
+        self.setParamIO('statsOutput', statsOutput)
+        self.setParamIO('sumOutput', sumOutput)
 
         self.initIO()
 
@@ -27,16 +27,22 @@ class DetectError(Step):
 
     def impInitIO(self,):
         bamInput = self.getParamIO('bamInput')
-        bamOutputDir = self.getParamIO('bamOutputDir')
-        statsOutputDir = self.getParamIO('statsOutputDir')
-        sumOutputDir = self.getParamIO('sumOutputDir')
+        bamOutput = self.getParamIO('bamOutput')
+        statsOutput = self.getParamIO('statsOutput')
+        sumOutput = self.getParamIO('sumOutput')
 
         self.setInputDirOrFile('bamInput', bamInput)
-        self.setOutputDirNTo1('bamOutput', os.path.join(bamOutputDir, 'out_gene_exon_tagged.bam'), '', 'bamInput')
-        self.setOutputDirNTo1('statsOutput', os.path.join(statsOutputDir, 'synthesis_stats.txt'), '', 'bamInput')
-        self.setOutputDirNTo1('sumOutput', os.path.join(sumOutputDir, 'synthesis_stats.summary.txt'), '', 'bamInput')
+        self.setOutputDirNTo1('bamOutput', bamOutput, 'out_gene_exon_tagged.bam', 'bamInput')
+        self.setOutputDirNTo1('statsOutput', statsOutput, 'synthesis_stats.txt', 'bamInput')
+        self.setOutputDirNTo1('sumOutput', sumOutput, 'synthesis_stats.summary.txt', 'bamInput')
         if bamInput is not None:
             self._setInputSize(len(self.getInputList('bamInput')))
+        if bamOutput is None:
+            self.setParamIO('bamOutput', Configure.getTmpPath('out_gene_exon_tagged.bam'))
+        if statsOutput is None:
+            self.setParamIO('statsOutput', Configure.getTmpPath('synthesis_stats.txt'))
+        if sumOutput is None:
+            self.setParamIO('sumOutput', Configure.getTmpPath('synthesis_stats.summary.txt'))
 
     def call(self, *args):
         bamUpstream = args[0]
@@ -52,9 +58,26 @@ class DetectError(Step):
         primerSeqence = self.getParam('primerSeqence')
 
         cmdline = [
-                '../../dropseq/Drop-seq_tools-1.13/DetectBeadSynthesisErrors',
+                'DetectBeadSynthesisErrors',
                 'I=%s'%(bamInput[i]), 'O=%s'%(bamOutput[i]), 'OUTPUT_STATS=%s'%(statsOutput[i]),
                 'SUMMARY=%s'%(sumOutput[i]), 'NUM_BARCODES=%d'%(4*numCells),
                 'PRIMER_SEQUENCE=%s'%(primerSeqence)
         ]
-        self.callCmdline(cmdline)
+        self.callCmdline('V1', cmdline)
+
+    def getMarkdownEN(self,):
+        mdtext="""
+## DetectError Result
+Synthesis status summary report is shown below:
+```{{r echo=FALSE}}
+deSum <- file('{sumOutput}', 'r', blocking=FALSE)
+lines <- readLines(deSum)
+i <- 1
+while(lines[i]=="" || strsplit(lines[i], split="\t")[[1]][1] != "NUM_BEADS"){{ i <- i + 1 }}
+strlist <- strsplit(lines[(i):(i+1)], split="\t")
+strmtx <- do.call(rbind, strlist)
+data.frame(Info=strmtx[1,], Count=as.integer(strmtx[2,]))
+```
+
+        """.format(sumOutput=self.getOutput('sumOutput'))
+        return mdtext
