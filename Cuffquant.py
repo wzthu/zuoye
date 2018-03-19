@@ -75,4 +75,19 @@ class Cuffquant(Step):
 				gtfInput[0],
 				bamInput[i]
 				]
-		self.callCmdline('V1',cmdline)
+		result = self.callCmdline('V1', cmdline)
+		f = open(self.convertToRealPath(os.path.join(Configure.getTmpDir(),'stdout.txt')),'wb')   
+		f.write(result.stdout)
+		f.close()
+
+	def getMarkdownEN(self,):
+		mdtext = """
+### cuffquant Result
+The cuffquant result is shown below:
+```{{r, echo=FALSE}}
+con <- file("{mapRs}", "r", blocking = FALSE)
+readLines(con)
+```
+Total map reads means that total number of reads mapped to genome
+""".format(mapRs = os.path.join(Configure.getTmpDir(),'stdout.txt'))
+		return mdtext

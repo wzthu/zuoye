@@ -10,6 +10,43 @@ import subprocess
 import os
 
 class Bowtie2(Step):
+    """
+    Bowtie2 is a Step to align ATAC-seq reads to reference genome.
+    See __init__ to initialize this step.
+    > Bowtie2(): __init__  parameters
+        fastqInput1: str or str list
+            mate 1 fastq file path(s) or a directory contain all of fastq files 
+        fastqInput2: str or str list
+            mate 2 fastq file path(s) or a directory contain all of fastq files
+        bt2Idx: str
+            bowtie 2 index prefix, for example: /home/data/hg19
+        samOutputDir: str
+            the output directory of samfiles
+        mapRsOutputDir:str
+            the mapping result storage directory 
+        threads: int
+            the threads number will be used
+        isdovetail: bool
+            If the mates “dovetail”, that is if one mate alignment extends past 
+            the beginning of the other such that the wrong mate begins upstream, 
+            consider that to be concordant. 
+        isNoUnal: bool    
+            By default, Bowtie2 do not looks for discordant alignments 
+            if it cannot find any concordant alignments.
+        isNoMixed: bool
+            By default, when bowtie2 cannot find a concordant or discordant alignment for a pair, 
+            it then do not tries to find alignments for the individual mates. This option disables that behavior.
+        X: int
+            The maximum fragment length for valid paired-end alignments.
+        cmdParam: str or list of string
+            current unsupported    
+    > Bowtie2()(): __call__ parameters
+    Available upstream objects combinations:
+        (AdapterRemoval)
+        (SRAToFastq)
+        #如果有两个输入，写成(类名1，类名2)，以此类推
+    
+    """
     def __init__(self,
                  fastqInput1 = None, 
                  fastqInput2 = None, 
@@ -28,7 +65,34 @@ class Bowtie2(Step):
         """
         called by 'Bowtie()'
         __init__(): Initialize the class with inputs, outputs and other parameters.
-        Setting all parameter is the main target of this function.
+        Setting all parameter is the main target of this function. 
+        > Parameters
+        fastqInput1: str or str list
+            mate 1 fastq file path(s) or a directory contain all of fastq files 
+        fastqInput2: str or str list
+            mate 2 fastq file path(s) or a directory contain all of fastq files
+        bt2Idx: str
+            bowtie 2 index prefix, for example: /home/data/hg19
+        samOutputDir: str
+            the output directory of samfiles
+        mapRsOutputDir:str
+            the mapping result storage directory 
+        threads: int
+            the threads number will be used
+        isdovetail: bool
+            If the mates “dovetail”, that is if one mate alignment extends past 
+            the beginning of the other such that the wrong mate begins upstream, 
+            consider that to be concordant. 
+        isNoUnal: bool    
+            By default, Bowtie2 do not looks for discordant alignments 
+            if it cannot find any concordant alignments.
+        isNoMixed: bool
+            By default, when bowtie2 cannot find a concordant or discordant alignment for a pair, 
+            it then do not tries to find alignments for the individual mates. This option disables that behavior.
+        X: int
+            The maximum fragment length for valid paired-end alignments.
+        cmdParam: str or list of string
+            current unsupported    
         """
         
         # set all input and output parameters
@@ -92,6 +156,7 @@ class Bowtie2(Step):
     def call(self, *args):
         """
         called by Bowtie2()(upstreamObj)
+
         """
         # the first object
         fastqUpstream = args[0]      
@@ -142,5 +207,47 @@ class Bowtie2(Step):
         f = open(self.convertToRealPath(mapRsOutput[i]),'wb')   
         f.write(result.stdout)
         f.write(result.stderr)
-            
         
+    def getMarkdownEN(self,):
+        a = """
+## Bowtie2 mapping result
+Bowtie2 mapping result is shown below:
+```{{r, echo=FALSE}}
+f<-file("{mapRs}")
+readLines(f)
+```
+        """.format(mapRs=self.getOutput("mapRsOutput")[0])
+        return a
+        
+    def getMarkdownEN(self,):
+        mdtext ="""
+## Bowtie2 Mapping Result
+```{{r eval=TRUE, echo=FALSE, warning=FALSE, message=FALSE}}
+lines <- readLines("{logfile}")
+bowtie_line <- 3
+mapping_rate <- c()
+
+for(i in seq(lines)){{
+    if(grepl(pattern = "overall alignment rate", x = lines[i], fixed = TRUE)){{
+        tmp_line <- strsplit(x = lines[i], split = "\\\\\\\\r|\\\\\\\\n|\\\\s")
+        tmp_line <- unlist(lapply(tmp_line, function(x){{x[!x ==""]}}))
+        idx <- which(tmp_line == "overall") - 1
+        mapping_rate <- c(mapping_rate, tmp_line[idx])
+    }}
+}}
+mapping_rate <- as.numeric(sub("%", "", mapping_rate, fixed=TRUE))
+idx1 <- which(mapping_rate < 30)
+idx2 <- which((mapping_rate >= 30) & (mapping_rate <= 70))
+idx3 <- which(mapping_rate > 70)
+per1 <- length(idx1)/length(mapping_rate)
+per2 <- length(idx2)/length(mapping_rate)
+per3 <- length(idx3)/length(mapping_rate)
+```
+There are  `r per1` sample mapping rate is less than 30%.
+There are  `r per2` sample mapping rate is between 30% ~ 70%.
+There are  `r per3` sample mapping rate is more than 70%.
+
+        """.format(logfile=self.getLogPath())
+        return mdtext
+
+
