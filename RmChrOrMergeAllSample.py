@@ -84,6 +84,21 @@ class RmChrOrMergeAllSample(Step):
     def _singleRun(self, i):
         pass
 
+    def getMarkdownEN(self, ):
+        chr_info = self.getParam('savedchr')
+        schr = ", ".join([i for i in chr_info])
 
+
+        mdtext = """
+## Remove Chromatin or Merge all Sample Result
+```{{r eval=TRUE, echo=FALSE, warning=FALSE, message=FALSE}}
+savechr = "{savechr}"
+```
+These chromatin is remained: `r savechr`.
+
+Other chromatin has been removed!
+
+                """.format(savechr=schr)
+        return mdtext
 
 
