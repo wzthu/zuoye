@@ -1274,6 +1274,17 @@ knitr::opts_chunk$set(echo = TRUE)
                     subprocess.run('ln -f '+ aoutpath +' '+ des_aoutpath, shell=True, check=True)                        
                     self.setInput(aoutpath,des_aoutpath)
                     mkd = mkd.replace(aoutpath,os.path.join('./links',aoutpath[1:]))
+        inkeys = step.getInputs()
+        for akey in inkeys:
+            inpaths = step.getIputList(akey)            
+            for ainpath in inpaths:
+                if ainpath in mkd:
+                    des_ainpath = os.path.join(folderPath,ainpath[1:])
+                    print(des_ainpath)
+                    os.makedirs(os.path.dirname(des_ainpath), exist_ok=True)
+                    subprocess.run('ln -f '+ ainpath +' '+ des_ainpath, shell=True, check=True)                        
+                    self.setInput(ainpath,des_ainpath)
+                    mkd = mkd.replace(ainpath,os.path.join('./links',ainpath[1:]))
         return mkd
 
         
