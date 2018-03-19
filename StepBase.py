@@ -10,7 +10,7 @@ from hashlib import md5
 from GraphMng import GraphAll,GraphATACgl
 import time
 import subprocess
-
+import re
 
 
 
@@ -1169,8 +1169,7 @@ class Report(Step):
             os.mkdir(self.getStepFolerPath())
 
         self.setOutput('reportHTML', os.path.join(self.getStepFolerPath(),'report.html'))
-            
-            
+          
             
             
     def __call__(self,*args):
@@ -1274,7 +1273,18 @@ knitr::opts_chunk$set(echo = TRUE)
                     subprocess.run('ln -f '+ aoutpath +' '+ des_aoutpath, shell=True, check=True)                        
                     self.setInput(aoutpath,des_aoutpath)
                     mkd = mkd.replace(aoutpath,os.path.join('./links',aoutpath[1:]))
-        return mkd
+        inkeys = step.getInputs()
+        for akey in inkeys:
+            inpaths = step.getInputList(akey)            
+            for ainpath in inpaths:
+                if ainpath in mkd:
+                    des_ainpath = os.path.join(folderPath,ainpath[1:])
+                    print(des_ainpath)
+                    os.makedirs(os.path.dirname(des_ainpath), exist_ok=True)
+                    subprocess.run('ln -f '+ ainpath +' '+ des_ainpath, shell=True, check=True)                        
+                    self.setInput(ainpath,des_ainpath)
+                    mkd = mkd.replace(ainpath,os.path.join('./links',ainpath[1:]))
+        return re.sub('(\./links)+','./links',mkd)
 
         
 class Schedule:
@@ -1284,6 +1294,9 @@ class Schedule:
     @classmethod
     def add(cls, stepObj):
         if isinstance(stepObj,Step):
+            for astep in cls.__schedule:
+                if stepObj.getStepID() == astep.getStepID():
+                    raise Exception('the stepObj is exist in the schedule list')
             cls.__schedule.append(stepObj)
         else:
             raise Exception('only support schedule sub-classes')
