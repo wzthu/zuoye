@@ -8,7 +8,7 @@ from Cuffmerge import Cuffmerge
 from Cuffquant import Cuffquant
 from Cuffnorm import Cuffnorm
 
-Configure.setIdentity('songshaoming')
+Configure.setIdentity('sqchen')
 
 #Fastq-dump
 fastq_dump = FastqDump(sraInput1='../../chenshengquan/zuoye/minidata/smartseq/sra')
@@ -29,3 +29,12 @@ cuffquant = Cuffquant(threads=16)(bamsort,cuffmerge)
 cuffnorm = Cuffnorm(threads=16)(cuffquant,cuffmerge)
 
 Schedule.run()
+
+print(fastq_dump.getMarkdownEN())
+print(hisat.getMarkdownEN())
+print(sam2bam.getMarkdownEN())
+print(bamsort.getMarkdownEN())
+print(cufflinks.getMarkdownEN())
+print(cuffmerge.getMarkdownEN())
+print(cuffquant.getMarkdownEN())
+print(cuffnorm.getMarkdownEN())

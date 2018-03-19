@@ -32,6 +32,8 @@ class FastqDump(Step):
 
         #set all input files        
         self.setInputDirOrFile('sraInput1',sraInput1) 
+        # fastqOutputDir = self.getParamIO('fastqOutputDir')
+        # self.setOutput('logOutput', os.path.join(fastqOutputDir,'stdout.txt'))
        
         # self.setOutputDir1To1('fastqOutputDir', fastqOutputDir,'fastqDump','fastq','sraInput1',sep='_') 
         self.setOutputDir1To1('fastqOutput1', fastqOutputDir, None, '1.fastq','sraInput1',sep='_') 
@@ -54,7 +56,19 @@ class FastqDump(Step):
                     ]
                     
         result = self.callCmdline('V1', cmdline)
-        # f = open(mapRsOutput[i],'wb')   
-        # f.write(result.stderr)
+        f = open(self.convertToRealPath(os.path.join(Configure.getTmpDir(),'stdout.txt')),'wb')   
+        f.write(result.stdout)
+        f.close()
             
-        
+    def getMarkdownEN(self,):
+        mdtext = """
+### FastqDump Result
+The FastqDump result is shown below:
+```{{r, echo=FALSE}}
+con <- file("{mapRs}", "r", blocking = FALSE)
+readLines(con)
+```
+Total map reads means that total number of reads mapped to genome
+        """.format(mapRs = os.path.join(Configure.getTmpDir(),'stdout.txt'))
+
+        return mdtext

@@ -1,4 +1,4 @@
-from SortBam import SortBam
+from EasyTreat import EasyTreat
 from StepBase import Configure,Schedule
 
 import os
@@ -6,5 +6,5 @@ import os
 #Configure.enableDocker(False)
 Configure.setIdentity('cyliu')
 
-sb = SortBam(bamInput='./step_00_StarAlign/starAligned.out.sam', sortOrder = 'queryname')
+pt = EasyTreat(dgeInput='./step_13_DigitalExpression/out_gene_exon_tagged.dge.txt.gz')
 Schedule.run()

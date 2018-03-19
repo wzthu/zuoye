@@ -149,9 +149,13 @@ class Configure:
         if not folderPath.startswith(cls.getDockerPath()):
             Configure.checkFolderPath(folderPath)
         cls.__config['tmpdir'] = folderPath
+        #print('setTmpDir')
+        #print(folderPath)
         
     @classmethod
     def getTmpDir(cls,):
+        #print('getTmpDir')
+        #print(cls.__config['tmpdir'] )
         return cls.__config['tmpdir'] 
     
     @classmethod
@@ -185,101 +189,6 @@ class Configure:
         else:
             return cls.__config['regpipe'][pipeName]
     
-class Schedule:
-    __schedule = []
-    
-
-    @classmethod
-    def add(cls, stepObj):
-        if isinstance(stepObj,Step):
-            cls.__schedule.append(stepObj)
-        else:
-            raise Exception('only support schedule sub-classes')
-    @classmethod
-    def run(cls, ):
-        cls.startDocker('V1')                      
-        for step in cls.__schedule:
-            step.run()
-    
-    @classmethod
-    def remove(cls,step):       
-        if isinstance(step,Step):
-            stepid = -1
-            stepid = step.getStepID()
-            for i in range(len(cls.__schedule)):
-                if stepid == cls.__schedule[i].getStepID:
-                    del(cls.__schedule[i])
-        elif isinstance(step,int):
-            del(cls.__schedule[step])
-            
-    @classmethod
-    def getSchedule(cls,):
-        return cls.__schedule
-   
-    
-    @classmethod
-    def _getContainerName(cls,version):
-        identity = Configure.getIdentity()
-        if identity is None:
-            identity = ''
-        else:
-            identity = '_' + identity
-        return 'hca_'+ version + identity
-    
-    @classmethod
-    def startDocker(cls, versions = None):        
-        if versions is None:
-            versions = Configure.getDockerVersions()
-        elif not isinstance(versions,list):
-            versions = [versions]
-        for version in versions:
-            try:
-                print(' '.join([
-                        'docker',
-                        'run',
-                        '-d',
-                        '-t',
-                        '--name=' + cls._getContainerName(version),
-                        '--privileged=true',
-                        '-v',Configure.getTmpDir() + ':' + Configure.getDockerPath(),
-                        Configure.getDockerVersion(version),
-                        '/bin/bash',
-                        ]))
-                subprocess.run([
-                        'docker',
-                        'run',
-                        '-d',
-                        '-t',
-                        '--name=' + cls._getContainerName(version),
-                        '--privileged=true',
-                        '-v',Configure.getTmpDir() + ':' + Configure.getDockerPath(),
-                        Configure.getDockerVersion(version),
-                        '/bin/bash',
-                        ],stdout = subprocess.PIPE, stderr = subprocess.PIPE)
-            except:
-                pass
-        
-    @classmethod
-    def stopDocker(cls, versions = None):          
-        if versions is None:
-            versions = Configure.getDockerVersions()
-        elif not isinstance(versions,list):
-            versions = [versions]
-        for version in versions:
-            try:
-                subprocess.run([
-                        'docker',
-                        'rm', 
-                        '-f',
-                        cls._getContainerName(version),
-                        ]) 
-            except:
-                pass 
-    
-    @classmethod
-    def getDockerCMD(cls, cmdline, version):
-        return 'docker exec -it '+ cls._getContainerName(version) +' '+ cmdline
-            
     
         
 
@@ -324,7 +233,6 @@ class StepBase:
             return Configure.getTmpDir()
     
     def initIO(self,): 
-        tmpdir = Configure.getTmpDir()
         if not os.path.exists(self.getStepFolerPath()):
             os.mkdir(self.getStepFolerPath())
         #os.makedirs(os.path.join(Configure.getTmpDir(),self.getStepFolderName(),'.tmp_for_docker',self.getStepFolerPath()))    
@@ -401,14 +309,19 @@ class StepBase:
     def getLogPath(self,):
         return os.path.join(self.getStepFolerPath(),self.getLogName())
     
-    def _writeLogLines(self,strlines):
+    def _writeLogLines(self,strlines,b=False):
         if not os.path.exists(self.__logpath):
             raise Exception("can not write log when log file is not created")
         if not isinstance(strlines,list):
             strlines = [strlines]
-        logfile = open(self.__logpath,'a')
-        logfile.writelines([ '||' + s +'\n' for s in strlines])
-        logfile.close()
+        if b:
+            logfile = open(self.__logpath,'ab')
+            logfile.write(strlines[0])
+            logfile.close()
+        else:
+            logfile = open(self.__logpath,'a')
+            logfile.writelines([ '||' + s +'\n' for s in strlines])
+            logfile.close()
     
     def getCurTime(self,):
         return time.strftime("%Y-%m-%d %H:%M:%S",time.localtime(time.time()))
@@ -816,6 +729,12 @@ class StepBase:
             # print('return here1')
             return self.tmpdirStack[-1]
     
+    def _setLogPath(self,path):
+        self.__logpath = path
+    
+    def _getLogPath(self,):
+        return self.__logpath
+    
     
 class Step(StepBase):
     def __init__(self,cmdParam,**kwargs):
@@ -969,8 +888,8 @@ class Step(StepBase):
         try:
             if stdoutToLog:
                 result = subprocess.run(cmdline,shell=True,check=True,stdout = subprocess.PIPE, stderr = subprocess.PIPE )
-                self._writeLogLines(str(result.stdout))
-                self._writeLogLines(str(result.stderr))
+                self._writeLogLines(result.stdout,b = True)
+                self._writeLogLines(result.stderr,b = True)
                 return result
             else:
                 result = subprocess.run(cmdline,shell=True,check=True) 
@@ -1216,19 +1135,248 @@ class Step(StepBase):
         if self.checkFinish():
             self.push(self.getStepFolerPath())
             if lang == 'EN':
+                self.pop()
                 return self.getMarkdownEN()
             elif lang == 'CN':
+                self.pop()
                 return self.getMarkdownCN()
             else:
+                self.pop()
                 raise Exception('language',lang,'is not support yet!')
-            self.pop()
+            
         else:
             raise Exception(self.getStepFolderName(),'is not finished')
     
-    def getMarkdownEN():
+    def getMarkdownEN(self,):
         raise Exception('getMarkdownEN must be overwrote')
         
-    def getMarkdownCN():
+    def getMarkdownCN(self,):
         raise Exception('getMarkdownCN must be overwrote')
         
+   
+        
+
+class Report(Step):
+    def __init__(self, steps = None, **kwargs):
+        super(Step, self).__init__(cmdParam = [],**kwargs)
+        self.setParam('steps',steps)
+        self._setMultiRun()
+        
+        self.initIO()
+    
+    def initIO(self,):
+        if not os.path.exists(self.getStepFolerPath()):
+            os.mkdir(self.getStepFolerPath())
+
+        self.setOutput('reportHTML', os.path.join(self.getStepFolerPath(),'report.html'))
+            
+            
+            
+            
+    def __call__(self,*args):
+        if len(args)==0 or len(args) >1:
+            raise Exception('only support one Step object or a list of Step object')
+        steps = args[0]
+        if isinstance(steps,list):
+            for i in range(len(steps)):
+                if not isinstance(steps[i],Step):
+                    raise Exception('only Step subclasses are supported')
+        elif not isinstance(steps,Step):
+            raise Exception('only Step subclasses or Step subclasses list are supported')
+        
+        self.setParam('steps',steps)
+        self.initIO()
+
+    def run(self,):
+        steps = self.getParam('steps')
+        rfile = open(os.path.join(self.getStepFolerPath(),'render.R'),'w')        
+        rscript = """
+library(rmarkdown)
+render('report.Rmd', output_dir = '{des}')
+        """.format(des = os.path.join(Configure.getDockerPath(),self.getStepFolderName()))        
+        rfile.write(rscript)
+        rfile.close()
+
+        
+        rmdfile = open(os.path.join(self.getStepFolerPath(),'report.Rmd'),'w')
+        mkdhead = """
+---
+title: "Report"
+author: "thu-au-bioinfo"
+date: "`r Sys.Date()`"
+output: 
+    html_document:
+        df_print: paged
+        toc: true
+        toc_float: true
+        number_sections: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Quality Control
+
+"""        
+        mkdlist = [mkdhead]
+        for step in steps:
+            mkdlist.append(self._preProcessStep(step))
+            mkdlist.append('\n')
+        rmdfile.writelines(mkdlist)
+        rmdfile.close()
+        
+        
+
+        self.checkInputFilePath()
+        self.checkOutputFilePath(checkExist = False)
+        if self.checkFinish():
+            lines = ['=======================================',
+            self.getCurTime()]
+            self._writeLogLines(lines)
+            print("Finished nothing to do")
+            self.loadResult()
+        else: 
+            logpath = self.getLogPath()
+            logFile = open(logpath,'w')
+            logFile.close()
+            self._setLogPath(logpath)
+            lines = ['=======================================',
+            self.getCurTime()]  
+            self._writeLogLines(lines)
+            shellscript = 'cd {workingPath} && xvfb-run Rscript render.R'.format(workingPath = os.path.join(Configure.getDockerPath(),self.getStepFolderName()))
+            self.callCmdline('V1',shellscript,shell=True)
+            
+            
+            if self.checkResult():
+                self.setFinish()
+        lines = [self.getCurTime(),
+                '=======================================']
+        self._writeLogLines(lines)
+        return True
+
+
+
+                    
+    def _preProcessStep(self,step):  
+        path = self.getStepFolerPath()
+        folderPath = os.path.join(path,'links')
+        os.makedirs(folderPath, exist_ok=True)
+        mkd = step.getMarkdown()
+        outkeys = step.getOutputs()
+        for akey in outkeys:
+            outpaths = step.getOutputList(akey)            
+            for aoutpath in outpaths:
+                if aoutpath in mkd:
+                    des_aoutpath = os.path.join(folderPath,aoutpath[1:])
+                    print(des_aoutpath)
+                    os.makedirs(os.path.dirname(des_aoutpath), exist_ok=True)
+                    subprocess.run('ln -f '+ aoutpath +' '+ des_aoutpath, shell=True, check=True)                        
+                    self.setInput(aoutpath,des_aoutpath)
+                    mkd = mkd.replace(aoutpath,os.path.join('./links',aoutpath[1:]))
+        return mkd
+
+        
+class Schedule:
+    __schedule = []
+    __report = None
+
+    @classmethod
+    def add(cls, stepObj):
+        if isinstance(stepObj,Step):
+            cls.__schedule.append(stepObj)
+        else:
+            raise Exception('only support schedule sub-classes')
+    @classmethod
+    def run(cls, report=True):
+        cls.startDocker('V1')                      
+        for step in cls.__schedule:
+            step.run()
+        if report: 
+            if cls.__report is None:
+                cls.__report = Report(cls.__schedule)
+            else:
+                cls.__report(cls.__schedule)
+            cls.__report.run()
+            
+    
+    @classmethod
+    def remove(cls,step):       
+        if isinstance(step,Step):
+            stepid = -1
+            stepid = step.getStepID()
+            for i in range(len(cls.__schedule)):
+                if stepid == cls.__schedule[i].getStepID:
+                    del(cls.__schedule[i])
+        elif isinstance(step,int):
+            del(cls.__schedule[step])
+            
+    @classmethod
+    def getSchedule(cls,):
+        return cls.__schedule
+   
+    
+    @classmethod
+    def _getContainerName(cls,version):
+        identity = Configure.getIdentity()
+        if identity is None:
+            identity = ''
+        else:
+            identity = '_' + identity
+        return 'hca_'+ version + identity
+    
+    @classmethod
+    def startDocker(cls, versions = None):        
+        if versions is None:
+            versions = Configure.getDockerVersions()
+        elif not isinstance(versions,list):
+            versions = [versions]
+        for version in versions:
+            try:
+                print(' '.join([
+                        'docker',
+                        'run',
+                        '-d',
+                        '-t',
+                        '--name=' + cls._getContainerName(version),
+                        '--privileged=true',
+                        '-v',Configure.getTmpDir() + ':' + Configure.getDockerPath(),
+                        Configure.getDockerVersion(version),
+                        '/bin/bash',
+                        ]))
+                subprocess.run([
+                        'docker',
+                        'run',
+                        '-d',
+                        '-t',
+                        '--name=' + cls._getContainerName(version),
+                        '--privileged=true',
+                        '-v',Configure.getTmpDir() + ':' + Configure.getDockerPath(),
+                        Configure.getDockerVersion(version),
+                        '/bin/bash',
+                        ],stdout = subprocess.PIPE, stderr = subprocess.PIPE)
+            except:
+                pass
+        
+    @classmethod
+    def stopDocker(cls, versions = None):          
+        if versions is None:
+            versions = Configure.getDockerVersions()
+        elif not isinstance(versions,list):
+            versions = [versions]
+        for version in versions:
+            try:
+                subprocess.run([
+                        'docker',
+                        'rm', 
+                        '-f',
+                        cls._getContainerName(version),
+                        ]) 
+            except:
+                pass 
+    
+    @classmethod
+    def getDockerCMD(cls, cmdline, version):
+        return 'docker exec -it '+ cls._getContainerName(version) +' '+ cmdline
+            
         

@@ -3,6 +3,9 @@ from StepBase import Configure, Schedule
 
 import os
 
-b2f = BamToFastq(bamInput = './minidata/dropseq/tmp/unaligned_mc_tagged_polyA_filtered.bam', fastqOutputDir = './minidata/dropseq/tmp/')
+#Configure.enableDocker(False)
+Configure.setIdentity('cyliu')
+
+b2f = BamToFastq(bamInput = './step_00_TrimPolyA/unaligned_mc_tagged_polyA_filtered.bam')
 
 Schedule.run()

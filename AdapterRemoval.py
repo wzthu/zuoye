@@ -158,3 +158,13 @@ class AdapterRemoval(Step):
         #run commandline
         self.callCmdline('V1',cmdline)
         
+    def getMarkdownEN(self,):
+        a = """
+## Adapter Removal Result
+```{{r, echo=FALSE}}
+f<-file("{settings}")
+readLines(f)
+```        
+        """.format(settings=self.getOutput('settingsOutput')[0])
+        return a
+        

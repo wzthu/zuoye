@@ -2,6 +2,7 @@
 
 from StepBase import Step,Configure,Schedule
 from FastqDump import FastqDump
+import os
 class Hisat2(Step):
 
     def  __init__(self,
@@ -92,5 +93,21 @@ class Hisat2(Step):
                   '-1', fastqInput1[i],
                   '-2',fastqInput2[i],
                   '-S',samOutput[i]]
-        self.callCmdline('V1', cmdline)
 
+        result = self.callCmdline('V1', cmdline)
+        f = open(self.convertToRealPath(os.path.join(Configure.getTmpDir(),'stdout.txt')),'wb')   
+        f.write(result.stdout)
+        f.close()
+            
+    def getMarkdownEN(self,):
+        mdtext = """
+### hisat Result
+The hisat result is shown below:
+```{{r, echo=FALSE}}
+con <- file("{mapRs}", "r", blocking = FALSE)
+readLines(con)
+```
+Total map reads means that total number of reads mapped to genome
+        """.format(mapRs = os.path.join(Configure.getTmpDir(),'stdout.txt'))
+
+        return mdtext
