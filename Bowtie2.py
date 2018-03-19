@@ -243,8 +243,12 @@ per1 <- length(idx1)/length(mapping_rate)
 per2 <- length(idx2)/length(mapping_rate)
 per3 <- length(idx3)/length(mapping_rate)
 ```
+The number of sample is `r length(mapping_rate)`.
+
 There are  `r per1` sample mapping rate is less than 30%.
+
 There are  `r per2` sample mapping rate is between 30% ~ 70%.
+
 There are  `r per3` sample mapping rate is more than 70%.
 
         """.format(logfile=self.getLogPath())

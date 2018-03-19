@@ -15,9 +15,9 @@ from PeakCalling import PeakCalling
 from GenPeakWithFilter import GenPeakWithFilter
 from VarAndClustering import VarAndClustering
 
-Configure.setRefDir('/home/hca/zhangwei_data/hg19_bowtie2')
+Configure.setRefDir('/data8t_1/hca/ref/hg19_bowtie2')
 Configure.setGenome('hg19')
-Configure.setIdentity('ATACATAC')
+Configure.setIdentity('ATAC')
 
 stf = SRAToFastq(sraInput='/home/hca/zhangwei_data/GM12878')
 
