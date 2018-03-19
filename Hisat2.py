@@ -46,6 +46,7 @@ class Hisat2(Step):
         ht2Idx = self.getParamIO('ht2Idx')
         if samOutputDir is None:
             self.setParamIO('samOutputDir',Configure.getTmpDir())
+        self.setOutput('stdOutput', os.path.join(Configure.getTmpDir(),'stdout.txt'))
 
         # print(ht2Idx)
         #set all input files
@@ -95,7 +96,7 @@ class Hisat2(Step):
                   '-S',samOutput[i]]
 
         result = self.callCmdline('V1', cmdline)
-        f = open(self.convertToRealPath(os.path.join(Configure.getTmpDir(),'stdout.txt')),'wb')   
+        f = open(self.convertToRealPath(self.getOutput('stdOutput')),'ab+')
         f.write(result.stdout)
         f.close()
             
@@ -108,6 +109,6 @@ con <- file("{mapRs}", "r", blocking = FALSE)
 readLines(con)
 ```
 Total map reads means that total number of reads mapped to genome
-        """.format(mapRs = os.path.join(Configure.getTmpDir(),'stdout.txt'))
+        """.format(mapRs = self.getOutput('stdOutput'))
 
         return mdtext

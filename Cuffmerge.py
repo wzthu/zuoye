@@ -39,7 +39,7 @@ class Cuffmerge(Step):
         gtfOutputDir = self.getParamIO('gtfOutputDir')
         if gtfOutputDir is None:
             self.setParamIO('gtfOutputDir',Configure.getTmpDir())
-
+        self.setOutput('stdOutput', os.path.join(Configure.getTmpDir(),'stdout.txt'))
         #set all input files        
         self.setInputDirOrFile('assembliesInput',assembliesInput) 
         
@@ -85,7 +85,7 @@ class Cuffmerge(Step):
                     ]
                     
         result = self.callCmdline('V2', cmdline)
-        f = open(self.convertToRealPath(os.path.join(Configure.getTmpDir(),'stdout.txt')),'wb')   
+        f = open(self.convertToRealPath(self.getOutput('stdOutput')),'ab+')
         f.write(result.stdout)
         f.close()
             
@@ -98,7 +98,7 @@ con <- file("{mapRs}", "r", blocking = FALSE)
 readLines(con)
 ```
 Total map reads means that total number of reads mapped to genome
-        """.format(mapRs = os.path.join(Configure.getTmpDir(),'stdout.txt'))
+        """.format(mapRs = self.getOutput('stdOutput'))
 
         return mdtext
             

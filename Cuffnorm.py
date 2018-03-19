@@ -48,6 +48,7 @@ class Cuffnorm(Step):
 		if outputDir is None:
 			self.setParamIO('outputDir',Configure.getTmpDir())
 
+		self.setOutput('stdOutput', os.path.join(Configure.getTmpDir(),'stdout.txt'))
 		outputDir = self.getParamIO('outputDir')
 		# self.setParamIO('cxbInput',cxbInput)
 
@@ -137,7 +138,7 @@ class Cuffnorm(Step):
 				]
 
 		result = self.callCmdline('V1', cmdline)
-		f = open(self.convertToRealPath(os.path.join(Configure.getTmpDir(),'stdout.txt')),'wb')   
+		f = open(self.convertToRealPath(self.getOutput('stdOutput')),'ab+')
 		f.write(result.stdout)
 		f.close()
 
@@ -150,6 +151,6 @@ con <- file("{mapRs}", "r", blocking = FALSE)
 readLines(con)
 ```
 Total map reads means that total number of reads mapped to genome
-""".format(mapRs = os.path.join(Configure.getTmpDir(),'stdout.txt'))
+""".format(mapRs = self.getOutput('stdOutput'))
 
 		return mdtext
