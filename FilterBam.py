@@ -59,4 +59,4 @@ class FilterBam(Step):
         ## FilterBam Result
         Discard reads of low quality.
         """
-        return None
+        return ""

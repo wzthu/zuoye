@@ -57,4 +57,4 @@ class SortBam(Step):
         ## SortBam Result
         Sort bam file as query order.
         """
-        return None
+        return ""
