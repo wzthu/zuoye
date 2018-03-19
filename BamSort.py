@@ -39,6 +39,7 @@ class BamSort(Step):
         self.setInputDirOrFile('bamInput', bamInput)
         # set all output files
         self.setOutputDir1To1('bamOutput', bamOutputDir, None, 'bam', 'bamInput')
+        self.setOutput('stdOutput', os.path.join(Configure.getTmpDir(),'stdout.txt'))
 
         if bamInput is not None:
             self._setInputSize(len(self.getInputList('bamInput')))
@@ -73,7 +74,7 @@ class BamSort(Step):
         ]
 
         result = self.callCmdline('V1', cmdline)
-        f = open(self.convertToRealPath(os.path.join(Configure.getTmpDir(),'stdout.txt')),'wb')   
+        f = open(self.convertToRealPath(self.getOutput('stdOutput')),'ab+')
         f.write(result.stdout)
         f.close()
             
@@ -86,6 +87,6 @@ con <- file("{mapRs}", "r", blocking = FALSE)
 readLines(con)
 ```
 Total map reads means that total number of reads mapped to genome
-        """.format(mapRs = os.path.join(Configure.getTmpDir(),'stdout.txt'))
+        """.format(mapRs = self.getOutput('stdOutput'))
 
         return mdtext
