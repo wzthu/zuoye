@@ -1284,6 +1284,16 @@ knitr::opts_chunk$set(echo = TRUE)
                     subprocess.run('ln -f '+ ainpath +' '+ des_ainpath, shell=True, check=True)                        
                     self.setInput(ainpath,des_ainpath)
                     mkd = mkd.replace(ainpath,os.path.join('./links',ainpath[1:]))
+         
+
+        logpath = step.getLogPath()
+        if logpath in mkd:
+            des_logpath = os.path.join(folderPath,logpath[1:])                    
+            os.makedirs(os.path.dirname(des_logpath), exist_ok=True)
+            subprocess.run('ln -f '+ logpath +' '+ des_logpath, shell=True, check=True)                        
+            self.setInput(logpath,des_logpath)
+            mkd = mkd.replace(logpath,os.path.join('./links',logpath[1:]))
+            subprocess.run('ln -f '+ logpath +' '+ des_logpath, shell=True, check=True) 
         return re.sub('(\./links)+','./links',mkd)
 
         
