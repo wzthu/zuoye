@@ -78,12 +78,12 @@ class FastQC(Step):
         mdtext = """
 ## FastQC Usage
 
-FastQC('/path/to/input_fastq',[fastq/sra],'/path/to/output_dir')
-Attention!
-* In this release, only .fastq format file can be setting as input!
+FastQC('/path/to/input_fastq',[fastq/sra],'/path/to/output_dir')  
+Attention!  
+* In this release, only .fastq format file can be setting as input!  
 
-## FastQC Quality Control Result
-The FastQC Quality Control is shown below:
+## FastQC Quality Control Result  
+The FastQC Quality Control is shown below:  
 ```{{r eval=TRUE, echo=FALSE, warning=FALSE, message=FALSE}}
 library(knitr)
 library(kableExtra)
@@ -96,28 +96,7 @@ kable(fq, "html") %>% kable_styling() %>% scroll_box(width = "1100px", height = 
 
         
 """.format(fastq_name = fastqName_R,fastqc_report= fastqcHtml_R )
-        
-        
-        
-        
-        mdtext1 = """
-## FastQC Usage
-
-FastQC('/path/to/input_fastq',[fastq/sra],'/path/to/output_dir')
-Attention!
-* In this release, only .fastq format file can be setting as input!
-
-## FastQC Quality Control Result
-The FastQC Quality Control is shown below:
-```{{python,echo=Fasle}}
-import pandas as pd
-pd.DataFrame({{"Fastq Name":{fastq_name},"Report":{fastqc_report}}})
-```
-
-
-        
-""".format(fastq_name = fastqName,fastqc_report= self.getOutput('fastqcOutput_html'))
-        
+ 
         return mdtext
             
             
@@ -125,7 +104,7 @@ pd.DataFrame({{"Fastq Name":{fastq_name},"Report":{fastqc_report}}})
         # obtain all input and output dir list
         fastqInput = self.getInputList('fastqInput')
         fastqcOutputDir = self.getParamIO('fastqcOutputDir')
-        # not necessary to assert if pwd is existed
+
         cmdline =['fastqc',
                    '-t',str(self.getParam('threads')),
                    '-o',fastqcOutputDir,
