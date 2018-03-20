@@ -120,3 +120,7 @@ class MergeToFrag(Step):
             'rm -f', tmpfile3
         ]
         result = self.callCmdline(None, cmdline)
+
+    def getMarkdownEN(self, ):
+        mdtext = """"""
+        return mdtext

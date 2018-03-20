@@ -97,4 +97,6 @@ class BamToBed(Step):
         result = self.callCmdline('V1', cmdline)
 
 
-
+    def getMarkdownEN(self, ):
+        mdtext = """"""
+        return mdtext

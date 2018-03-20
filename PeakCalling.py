@@ -98,3 +98,40 @@ class PeakCalling(Step):
         ]
         result = self.callCmdline('V2', cmdline)
 
+    def getMarkdownEN(self, ):
+        outputSummit = self.getOutputList('outputSummit')
+
+        mdtext = """
+## MACS2 Peak Calling Result
+
+The following is pie chart for peak scores.
+```{{r eval=TRUE, echo=FALSE, warning=FALSE, message=FALSE}}
+library(rtracklayer)
+a <- import(con = "{outputSummit}", format = "BED")
+
+p1 <- length(which(a$score >= 0 & a$score < 10))
+p2 <- length(which(a$score >= 10 & a$score < 20))
+p3 <- length(which(a$score >= 20 & a$score < 30))
+p4 <- length(which(a$score >= 30 & a$score < 40))
+p5 <- length(which(a$score >= 40))
+
+x <- c(p1, p2, p3, p4, p5)
+piepercent<- paste(round(100*x/sum(x), 2), "%")
+labels <- c("score < 10", 
+            "10 <= score < 20", 
+            "20 <= score < 30", 
+            "30 <= score < 40", 
+            "score >= 40")
+
+pie(x, labels = piepercent, 
+    main = "Pie Chart For MACS2 Score",
+    col = c("purple", "violetred1", "green3", "cornsilk", "cyan"))
+legend("topright", 
+       legend = labels, 
+       cex = 1,
+       fill = c("purple", "violetred1", "green3", "cornsilk", "cyan"))
+
+```
+
+                """.format(outputSummit=outputSummit[0])
+        return mdtext

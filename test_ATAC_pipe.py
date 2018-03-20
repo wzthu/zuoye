@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
+from StepBase import Configure, Schedule
 from Bowtie2 import Bowtie2
 from AdapterRemoval import AdapterRemoval
-from StepBase import Configure,Schedule
 from SamToBam import SamToBam
 from BamSort import BamSort
 from RmDuplicates import RmDuplicates
@@ -15,11 +15,11 @@ from PeakCalling import PeakCalling
 from GenPeakWithFilter import GenPeakWithFilter
 from VarAndClustering import VarAndClustering
 
-Configure.setRefDir('/home/hca/zhangwei_data/hg19_bowtie2')
+Configure.setRefDir('/data8t_1/hca/ref/hg19_bowtie2')
 Configure.setGenome('hg19')
-Configure.setIdentity('ATACATAC')
+Configure.setIdentity('ATAC')
 
-stf = SRAToFastq(sraInput='/home/hca/zhangwei_data/GM12878')
+stf = SRAToFastq(sraInput='/data8t_1/scATAC/GM12878')
 
 # print("SRAToFastq output:")
 # print(stf.getOutput('fastqOutput1'))
