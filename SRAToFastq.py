@@ -106,7 +106,10 @@ fq <- cbind(fq1, fq2)
 colnames(fq) <- c("Quality Control for _1.fastq", "Quality Control for _2.fastq")
 ```
 The FASTQC html report path are as follows:
-` r kable(fq, "html") %>% kable_styling() %>% scroll_box(width = "500px", height = "200px")`
+
+```{{r eval=TRUE, echo=FALSE, warning=FALSE, message=FALSE}}
+kable(fq, "html") %>% kable_styling() %>% scroll_box(width = "1100px", height = "500px")
+```
 
 
         """.format(fq1path=fastqc1_path_str, fq2path=fastqc2_path_str)

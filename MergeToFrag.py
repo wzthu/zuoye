@@ -122,10 +122,5 @@ class MergeToFrag(Step):
         result = self.callCmdline(None, cmdline)
 
     def getMarkdownEN(self, ):
-        mdtext = """
-## Merge Reads to DNA Fragments Result
-
-Reads has been merged to fragments!
-
-                """
+        mdtext = """"""
         return mdtext

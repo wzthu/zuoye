@@ -79,14 +79,6 @@ class BamSort(Step):
         f.close()
             
     def getMarkdownEN(self,):
-        mdtext = """
-### bamsort Result
-The bamsort result is shown below:
-```{{r, echo=FALSE}}
-con <- file("{mapRs}", "r", blocking = FALSE)
-readLines(con)
-```
-Total map reads means that total number of reads mapped to genome
-        """.format(mapRs = self.getOutput('stdOutput'))
-
+        # this function do not need any report!
+        mdtext = """"""
         return mdtext

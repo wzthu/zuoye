@@ -159,12 +159,32 @@ class AdapterRemoval(Step):
         self.callCmdline('V1',cmdline)
         
     def getMarkdownEN(self,):
-        a = """
+        settingsOutput = self.getOutput('settingsOutput')
+        settingsOutput_path = []
+
+        for st in settingsOutput:
+            settingsOutput_path.append("\"" + st + "\"")
+        settingsOutput_path_str = ",".join([i for i in settingsOutput_path])
+        fastqc1_path_str = "c(" + settingsOutput_path_str + ")"
+
+
+        mdtext = """
 ## Adapter Removal Result
-```{{r, echo=FALSE}}
-f<-file("{settings}")
-readLines(f)
-```        
-        """.format(settings=self.getOutput('settingsOutput')[0])
-        return a
-        
+```{{r eval=TRUE, echo=FALSE, warning=FALSE, message=FALSE}}
+library(knitr)
+library(kableExtra)
+st <- {settings}
+st <- as.data.frame(st)
+colnames(st) <- c("Adapter Information File Path")
+```
+
+The AdapterRemoval report path for every sample are as follows:
+
+```{{r eval=TRUE, echo=FALSE, warning=FALSE, message=FALSE}}
+kable(st, "html") %>% kable_styling() %>% scroll_box(width = "800px", height = "400px")
+```
+
+        """.format(settings=fastqc1_path_str)
+        return mdtext
+
+

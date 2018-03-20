@@ -10,8 +10,5 @@ test=SRAToFastq(sraInput='./minidata/atac/SraForTest')
 
 Schedule.run()
 
-f = open("/data8t_1/zhangwei1/11111111.Rmd", "w")
-f.write(test.getMarkdownEN())
-f.close()
 
 
