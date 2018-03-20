@@ -116,6 +116,7 @@ class GraphAll(GraphMng):
         edge1 = [
                 #Smart-seq
                 ['FastqDump','Hisat2'],
+                ['FastqDump','FastQC'],
                 ['Hisat2','SamToBam'],
                 ['SamToBam','Bamsort'],
                 ['Bamsort','Cufflinks'],
