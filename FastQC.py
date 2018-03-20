@@ -2,12 +2,12 @@
 # coding: utf-8
 from StepBase import Step,Configure,Schedule
 import os
+from FastqDump import FastqDump
 class FastQC(Step):
 
     def  __init__(self,
 
                   fastqInput=None,
-                  fileFormat =None,
                   fastqcOutputDir = None,
                   threads = None,
                   cmdParam = None,
@@ -23,7 +23,7 @@ class FastQC(Step):
 
         #set other parameters
         #self.setParam('isNoDiscordant', isNoDiscordant)
-        self.setParam('fileFormat',fileFormat)
+        #self.setParam('fileFormat',fileFormat)
         if threads is None:
             threads = Configure.getThreads()
         self.setParam('threads',threads)
@@ -59,7 +59,10 @@ class FastQC(Step):
     def call(self,*args):
 
         Upstream = args[0]
-
+        if isinstance(Upstream,FastqDump):
+            fastqInput = Upstream.getOutput('fastqOutput1')
+            fastqInput.extend( Upstream.getOutput('fastqOutput2'))
+            self.setParamIO('fastqInput', fastqInput)
         # set all required input parameters from upstream object
         #上游可能為 “fastqInput1”,“fastqInput2”,“fastqOnput1”
         #self.setParamIO('fastqInput',Upstream.getOutput('fastqOutput1'))
