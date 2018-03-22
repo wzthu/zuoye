@@ -17,9 +17,12 @@ library(Matrix)
 load(input)
 setwd(output)
 #############################################################################################
-test <- FilterCells(object = test, subset.names = c("nGene","nUMI"),
-                  low.thresholds = c(-Inf, -Inf), high.thresholds = c(5600,40000))
+humi <- quantile(test@meta.data$nUMI,0.95)
+hgene <- quantile(test@meta.data$nGene,0.95)
+lumi <- quantile(test@meta.data$nUMI,0.05)
+lgene <- quantile(test@meta.data$nGene,0.05)
 
+test <- FilterCells(object = test, subset.names = c("nGene","nUMI"), low.thresholds = c(lgene, lumi), high.thresholds = c(hgene,humi))
 
 test <- NormalizeData(object = test, normalization.method = "LogNormalize",scale.factor = 10000)
 

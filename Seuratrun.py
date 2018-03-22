@@ -136,37 +136,26 @@ class Seuratrun(Step):
         #     print(cmdline)
         #     self.callCmdline(cmdline=cmdline, dockerVersion='V1')
 
-    def getMarkdownEN(self):
+    def getMarkdownEN(self,):
         rmd = '''
----
-title: "Seuratrun"
-author: "Author:Frankie"
-output: html_document
----
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
+## Seurat analysis
 `Runobject = Seuratrun(inputdir, outputdir, rscript)(upstream)`
 
-### Input: 
-1. Created from original data
-- inputdir : Path of upstream files(Seurat object).
-- outputdir: Path of all the analysis results
-- rscript : Path of alternative Rscript.
-2. From upstream object such as Seuratpreprocessing object
-- rscript : Path of alternative Rscript.
+### Select variable genes
 
-### Output:
-- All the results will be saved in the outputdir
-- tSne plot& Variablegenes plot& PCAelbowplot
-
-### Variablegenes
+Seurat calculates highly variable genes and focuses on these for downstream analysis.
 ![]({variableimagepath})
 
-### PCAelbowplot
+### Determine statistically significant principal components
+
+To overcome the extensive technical noise in any single gene for scRNA-seq data, determining how many PCs to include downstream is therefore an important step.
+
 ![]({elbowimagepath})
 
-### tSne plot
+### Run Non-linear dimensional reduction (tSNE)
+
+Seurat continues to use tSNE as a powerful tool to visualize and explore these datasets.
+
 ![]({tsneimagepath})
         '''.format(variableimagepath=self.getOutput('variableGenes'),
                    elbowimagepath=self.getOutput('Elbowplot'),
