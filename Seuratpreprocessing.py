@@ -80,6 +80,7 @@ class Seuratpreprocessing(Step):
             else:
                 self.setInputDirOrFile('matrix', inputdir)
 
+            self.setOutputDirNTo1('variableGenes', os.path.join(outputdir, 'variableGenes.jpeg'), '', 'barcodes')
             self.setOutputDirNTo1('Rdata', os.path.join(outputdir, 'Preprocessing.Rdata'), '', 'barcodes')
             self.setOutputDirNTo1('violinplot', os.path.join(outputdir, 'violinplot.jpeg'), '', 'barcodes')
             self.setOutputDirNTo1('geneplot', os.path.join(outputdir, 'geneplot.jpeg'), '', 'barcodes')
@@ -145,6 +146,12 @@ Violin plot is a method of plotting numeric data. It is similar to box plot with
 ### Geneplot:
 Geneplot here shows the relations between nGenes and nUMIs to determine the suitable threshold.
 ![]({geneimagepath})
-        """.format(vioimagepath=self.getOutput('violinplot'), geneimagepath = self.getOutput('geneplot'))
+
+### Select variable genes
+Seurat calculates highly variable genes and focuses on these for downstream analysis.
+![]({variableimagepath})
+        """.format(vioimagepath=self.getOutput('violinplot'),
+                   geneimagepath = self.getOutput('geneplot'),
+                   variableimagepath=self.getOutput('variableGenes'))
         return rmd
 
