@@ -34,7 +34,10 @@ class Configure:
                # 'V':'hca:latest'
                 },
         'identity':None,
-        }   
+        }  
+        
+    __refSuffix = dict()
+    __checkRef = dict()
    
     def __init__(self,):
         raise Exception("can not be instanized")
@@ -110,15 +113,39 @@ class Configure:
         return cls.__config['identity']
     
     @classmethod
+    def setRefSuffix(cls, refName, suffix, check=True):
+        if refName in cls.__refSuffix.keys():
+            print(refName, 'is configured')
+        else:
+            cls.__refSuffix[refName] = suffix
+            cls.__checkRef[refName] = check
+            if cls.getGenome() is not None:
+                cls.setGenome(cls.getGenome())
+    
+    @classmethod
     def setGenome(cls,val):
         if cls.__config['refdir'] is None:
             raise Exception('refdir should be configure first, call Configure.setRefDir for configuration')
-        ## bowtie2 index
-        cls.__config['bt2Idx'] = os.path.join(cls.getRefDir(),val)
-        suffix = ['.1.bt2','.2.bt2','.3.bt2','.4.bt2','.rev.1.bt2','.rev.2.bt2']
-        cls.__config['bt2IdxFiles'] = [ cls.__config['bt2Idx'] + s for s in suffix ]
         
-        cls.__config['genome'] = val
+        for refName in cls.__refSuffix.keys():
+            if isinstance(cls.__refSuffix[refName],list):                
+                cls.__config[refName] = [ os.path.join(cls.getRefDir(), val + s) for s in cls.__refSuffix[refName] ]
+                if cls.__checkRef[refName]:
+                    for path in cls.__config[refName]:
+                        if not os.path.exists(path):
+                            raise Exception('reference file path:',path,'does not exist')
+            else:
+                cls.__config[refName] = os.path.join(cls.getRefDir(), val + cls.__refSuffix[refName])
+                if cls.__checkRef[refName]:
+                    if not os.path.exists(cls.__config[refName]):
+                        raise Exception('reference file path:', cls.__config[refName], 'does not exist')
+        
+        ## bowtie2 index
+        #cls.__config['bt2Idx'] = os.path.join(cls.getRefDir(),val)
+        #suffix = ['.1.bt2','.2.bt2','.3.bt2','.4.bt2','.rev.1.bt2','.rev.2.bt2']
+        #cls.__config['bt2IdxFiles'] = [ cls.__config['bt2Idx'] + s for s in suffix ]
+        
+        #cls.__config['genome'] = val
         
         
     @classmethod
@@ -1142,37 +1169,44 @@ class Step(StepBase):
         
 
 class Report(Step):
-    def __init__(self, steps = None, **kwargs):
+    def __init__(self, steps = None, addToSchedule = True, **kwargs):
         super(Step, self).__init__(cmdParam = [],**kwargs)
         self.setParam('steps',steps)
         self._setMultiRun()
-        
+        self.sectionTitles = list()
+        self.steps = dict()
         self.initIO()
+        if addToSchedule:
+            Schedule.add(self) 
     
     def initIO(self,):
         if not os.path.exists(self.getStepFolerPath()):
             os.mkdir(self.getStepFolerPath())
-
+        steps = self.getParam('steps')
+        if steps is not None:
+            self.add('Reports for Each Step',steps)
         self.setOutput('reportHTML', os.path.join(self.getStepFolerPath(),'report.html'))
-          
-            
+        
             
     def __call__(self,*args):
         if len(args)==0 or len(args) >1:
             raise Exception('only support one Step object or a list of Step object')
-        steps = args[0]
+        steps = args[0]       
+        
+        self.setParam('steps',steps)
+        self.initIO()
+        
+    def add(self,sectionTitle,steps):
         if isinstance(steps,list):
             for i in range(len(steps)):
                 if not isinstance(steps[i],Step):
                     raise Exception('only Step subclasses are supported')
         elif not isinstance(steps,Step):
             raise Exception('only Step subclasses or Step subclasses list are supported')
-        
-        self.setParam('steps',steps)
-        self.initIO()
+        self.sectionTitles.append(sectionTitle)
+        self.steps[sectionTitle] = self.convertToList(steps)
 
     def run(self,):
-        steps = self.getParam('steps')
         rfile = open(os.path.join(self.getStepFolerPath(),'render.R'),'w')        
         rscript = """
 library(rmarkdown)
@@ -1200,12 +1234,15 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# Quality Control
-
 """        
         mkdlist = [mkdhead]
-        for step in steps:
-            mkdlist.append(self._preProcessStep(step))
+        for titles in self.sectionTitles:
+            mkdlist.append('#'+titles)
+            mkdlist.append('\n')                         
+            for step in self.steps[titles]:
+                
+                mkdlist.append(self._preProcessStep(step))
+                mkdlist.append('\n')
             mkdlist.append('\n')
         rmdfile.writelines(mkdlist)
         rmdfile.close()
@@ -1231,7 +1268,7 @@ knitr::opts_chunk$set(echo = TRUE)
             shellscript = 'cd {workingPath} && xvfb-run Rscript render.R'.format(workingPath = os.path.join(Configure.getDockerPath(),self.getStepFolderName()))
             self.callCmdline('V1',shellscript,shell=True)
             
-            
+            self.callCmdline('V1', 'chmod 777 -R ' + os.path.join(Configure.getDockerPath(),self.getStepFolderName()),shell = True, stdoutToLog = False)
             if self.checkResult():
                 self.setFinish()
         lines = [self.getCurTime(),
@@ -1310,8 +1347,11 @@ class Schedule:
         for step in cls.__schedule:
             step.run()
         if report: 
+            for step in cls.__schedule:
+                if isinstance(step,Report):
+                    return
             if cls.__report is None:
-                cls.__report = Report(cls.__schedule)
+                cls.__report = Report(cls.__schedule, addToSchedule=False)
             else:
                 cls.__report(cls.__schedule)
             cls.__report.run()
