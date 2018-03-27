@@ -15,12 +15,15 @@ class FlowExample(Flow):
                  fastqInput2,
                  refdir, 
                  genome, 
-                 resultDir='.',                  
+                 resultDir='./result',                  
                  threads=None,                 
                  adapter1 = None,
                  adapter2 = None,
                  X = 2000,):
-        super(FlowExample,self).__init__(resultDir=resultDir, refdir=refdir, genome=genome, threads=threads)
+        super(FlowExample,self).__init__(resultDir=resultDir, 
+                                         refdir=refdir, 
+                                         genome=genome, 
+                                         threads=threads)
         self._setParam('fastqInput1',fastqInput1)
         self._setParam('fastqInput2',fastqInput2)
         self._setParam('adapter1',adapter1)
