@@ -160,6 +160,7 @@ class GraphAll(GraphMng):
                 ['Bowtie2', 'SamToBam'],
                 ['SamToBam', 'BamSort'],
                 ['BamSort', 'RmDuplicates'],
+                ['RmDuplicates', 'LibComplexity'],
                 ['RmDuplicates', 'BamToBed'],
                 ['BamToBed', 'MergeToFrag'],
                 ['BamToBed', 'RmChrOrMergeAllSample'],

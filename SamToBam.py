@@ -3,6 +3,8 @@
 
 @author: Weizhang
 
+this program convert SAM to BAM, including reads filter
+
 """
 
 from StepBase import Step,Configure
@@ -67,7 +69,7 @@ class SamToBam(Step):
         bamOutput = self.getOutputList('bamOutput')
 
         cmdline = [
-            'samtools view -b -S',
+            'samtools view -bS -q 30 -F 1804',
             '-@', str(self.getParam('threads')),
             '-o', bamOutput[i], samInput[i]
         ]
