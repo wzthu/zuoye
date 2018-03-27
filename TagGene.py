@@ -64,4 +64,4 @@ class TagGene(Step):
         ## TagGene Result
         Tag reads with gene exon.
         """
-        return None
+        return ""

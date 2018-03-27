@@ -54,4 +54,4 @@ class BamMerge(Step):
         ## BamMerge Result
         BamMerge
         """
-        return None
+        return ""

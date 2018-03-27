@@ -69,10 +69,5 @@ class BedSort(Step):
         result = self.callCmdline('V1', cmdline)
 
     def getMarkdownEN(self, ):
-        mdtext = """
-## Bed File Sort Result
-
-Bed Files has been sorted!
-
-                """
+        mdtext = """"""
         return mdtext

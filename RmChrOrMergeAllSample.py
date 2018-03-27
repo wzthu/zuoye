@@ -94,9 +94,9 @@ class RmChrOrMergeAllSample(Step):
 ```{{r eval=TRUE, echo=FALSE, warning=FALSE, message=FALSE}}
 savechr = "{savechr}"
 ```
-These chromatin is remained: `r savechr`.
+Reads from these chromatins is remained: `r savechr`.
 
-Other chromatin has been removed!
+Reads from other chromatins has been removed!
 
                 """.format(savechr=schr)
         return mdtext

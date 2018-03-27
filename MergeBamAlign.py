@@ -74,4 +74,4 @@ class MergeBamAlign(Step):
         ## MergeBamAlign Result
         Merge unaligned bam and sorted bam.
         """
-        return None
+        return ""

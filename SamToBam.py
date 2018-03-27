@@ -3,6 +3,8 @@
 
 @author: Weizhang
 
+this program convert SAM to BAM, including reads filter
+
 """
 
 from StepBase import Step,Configure
@@ -67,7 +69,7 @@ class SamToBam(Step):
         bamOutput = self.getOutputList('bamOutput')
 
         cmdline = [
-            'samtools view -b -S',
+            'samtools view -bS -q 30 -F 1804',
             '-@', str(self.getParam('threads')),
             '-o', bamOutput[i], samInput[i]
         ]
@@ -78,14 +80,6 @@ class SamToBam(Step):
         f.close()
             
     def getMarkdownEN(self,):
-        mdtext = """
-### sam2bam Result
-The sam2bam result is shown below:
-```{{r, echo=FALSE}}
-con <- file("{mapRs}", "r", blocking = FALSE)
-readLines(con)
-```
-Total map reads means that total number of reads mapped to genome
-        """.format(mapRs = self.getOutput('stdOutput'))
-
+        # this function do not need any report!
+        mdtext = """"""
         return mdtext

@@ -98,7 +98,5 @@ class BamToBed(Step):
 
 
     def getMarkdownEN(self, ):
-        mdtext = """
-All Bam files has been converted to Bed files!
-                """
+        mdtext = """"""
         return mdtext

@@ -7,6 +7,7 @@ from Cufflinks import Cufflinks
 from Cuffmerge import Cuffmerge
 from Cuffquant import Cuffquant
 from Cuffdiff import Cuffdiff
+from FastQC import FastQC
 
 Configure.setIdentity('sqchen0327')
 def smartseq_flow(sraInput, ht2Idx_ref, gtf_ref, fa_ref, threads):

@@ -47,6 +47,8 @@ class Bowtie2(Step):
         #如果有两个输入，写成(类名1，类名2)，以此类推
     
     """
+    Configure.setRefSuffix('bt2Idx','',check=False)
+    Configure.setRefSuffix('bt2IdxFiles',['.1.bt2','.2.bt2','.3.bt2','.4.bt2','.rev.1.bt2','.rev.2.bt2'])
     def __init__(self,
                  fastqInput1 = None, 
                  fastqInput2 = None, 
@@ -220,21 +222,23 @@ readLines(f)
         return a
         
     def getMarkdownEN(self,):
+        logfile = self.getLogPath()
+
         mdtext ="""
 ## Bowtie2 Mapping Result
 ```{{r eval=TRUE, echo=FALSE, warning=FALSE, message=FALSE}}
 lines <- readLines("{logfile}")
-bowtie_line <- 3
-mapping_rate <- c()
 
+mapping_rate <- c()
 for(i in seq(lines)){{
     if(grepl(pattern = "overall alignment rate", x = lines[i], fixed = TRUE)){{
-        tmp_line <- strsplit(x = lines[i], split = "\\\\\\\\r|\\\\\\\\n|\\\\s")
+        tmp_line <- strsplit(x = lines[i], split = "\\\\s")
         tmp_line <- unlist(lapply(tmp_line, function(x){{x[!x ==""]}}))
         idx <- which(tmp_line == "overall") - 1
         mapping_rate <- c(mapping_rate, tmp_line[idx])
     }}
 }}
+
 mapping_rate <- as.numeric(sub("%", "", mapping_rate, fixed=TRUE))
 idx1 <- which(mapping_rate < 30)
 idx2 <- which((mapping_rate >= 30) & (mapping_rate <= 70))
@@ -243,15 +247,15 @@ per1 <- length(idx1)/length(mapping_rate)
 per2 <- length(idx2)/length(mapping_rate)
 per3 <- length(idx3)/length(mapping_rate)
 ```
-The number of sample is `r length(mapping_rate)`.
+The number of sample is `r length(mapping_rate)`, the average mapping rate is `r mean(mapping_rate)`%.
 
-There are  `r per1` sample mapping rate is less than 30%.
+There are  `r round(per1*100, 2)`% sample mapping rate is less than 30%.
 
-There are  `r per2` sample mapping rate is between 30% ~ 70%.
+There are  `r round(per2*100, 2)`% sample mapping rate is between 30% ~ 70%.
 
-There are  `r per3` sample mapping rate is more than 70%.
+There are  `r round(per3*100, 2)`% sample mapping rate is more than 70%.
 
-        """.format(logfile=self.getLogPath())
+        """.format(logfile=logfile)
         return mdtext
 
 

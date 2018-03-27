@@ -15,8 +15,8 @@ import re
 
 class MergeToFrag(Step):
     def __init__(self,
-                 bedInput=None,  # <in.bam>|<in.sam>|<in.cram>
-                 bedOutputDir=None,  # -o FILE  output file name [stdout]
+                 bedInput=None,
+                 bedOutputDir=None,
                  cmdParam=None,
                  **kwargs):
         super(Step, self).__init__(cmdParam, **kwargs)
@@ -122,10 +122,5 @@ class MergeToFrag(Step):
         result = self.callCmdline(None, cmdline)
 
     def getMarkdownEN(self, ):
-        mdtext = """
-## Merge Reads to DNA Fragments Result
-
-Reads has been merged to fragments!
-
-                """
+        mdtext = """"""
         return mdtext

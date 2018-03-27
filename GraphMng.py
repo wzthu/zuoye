@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 """
 Created on Fri Mar  2 19:22:29 2018
 @author: WeiZheng
@@ -116,6 +116,7 @@ class GraphAll(GraphMng):
         edge1 = [
                 #Smart-seq
                 ['FastqDump','Hisat2'],
+                ['FastqDump','FastQC'],
                 ['Hisat2','SamToBam'],
                 ['SamToBam','Bamsort'],
                 ['Bamsort','Cufflinks'],
@@ -133,7 +134,8 @@ class GraphAll(GraphMng):
                 ['Tophat','Cufflinks'],
                 ['Star','HTSeq'],
                 #10x Genomeics
-                ['Cellranger','Seurat'],
+                ['Cellranger','Seuratpreprocessing'],
+		        ['Seuratpreprocessing','Seuratrun'],
                 ['Qualification10x','PCA'],
                 #drop-seq
                 ['FastqToBam','BamMerge'],
@@ -158,6 +160,7 @@ class GraphAll(GraphMng):
                 ['Bowtie2', 'SamToBam'],
                 ['SamToBam', 'BamSort'],
                 ['BamSort', 'RmDuplicates'],
+                ['RmDuplicates', 'LibComplexity'],
                 ['RmDuplicates', 'BamToBed'],
                 ['BamToBed', 'MergeToFrag'],
                 ['BamToBed', 'RmChrOrMergeAllSample'],
