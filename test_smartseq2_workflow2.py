@@ -7,11 +7,15 @@ from Cufflinks import Cufflinks
 from Cuffmerge import Cuffmerge
 from Cuffquant import Cuffquant
 from Cuffnorm import Cuffnorm
+from FastQC import FastQC
 
 Configure.setIdentity('sqchen')
 
 #Fastq-dump
 fastq_dump = FastqDump(sraInput1='../../chenshengquan/zuoye/minidata/smartseq/sra')
+
+#FastQC
+fastqc = FastQC()(fastq_dump)
 
 #Hisat2
 hisat = Hisat2(ht2Idx="../../chenshengquan/zuoye/minidata/smartseq/hg19_index/genome")(fastq_dump)

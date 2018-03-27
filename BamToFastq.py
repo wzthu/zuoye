@@ -52,4 +52,4 @@ class BamToFastq(Step):
         ## BamToFastq Result
         BamToFastq
         """
-        return None
+        return ""
