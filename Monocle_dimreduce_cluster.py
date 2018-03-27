@@ -99,7 +99,7 @@ class Monocle_dimreduce_cluster(Step):
         num_PCA = self.getParam('num_PCA')
         cluster_num = self.getParam('cluster_num')
         cmdline = ['Rscript',
-                    '/data/Monocle_dimreduce_cluster.R',
+                    '/data8t_1/Rscript/Monocle_dimreduce_cluster.R',
         			imageRdata[0],
                     str(num_PCA),
                     str(cluster_num),
