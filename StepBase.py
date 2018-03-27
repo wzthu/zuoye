@@ -325,26 +325,7 @@ class StepBase:
     
     def getCurTime(self,):
         return time.strftime("%Y-%m-%d %H:%M:%S",time.localtime(time.time()))
-    
-    def linkRecursive(self,originPath,desPath):
-        #print(originPath)
-        #print('To')
-        #print(desPath)
-        if os.path.isfile(originPath):
-            subprocess.run(['rm','-rf',desPath])
-            subprocess.run(['ln',originPath,desPath])
-            return
-        elif os.path.isdir(originPath):
-            os.makedirs(desPath,exist_ok=True)
-            files = os.listdir(originPath)
-            for f in files:
-                self.linkRecursive(os.path.join(originPath,f),os.path.join(desPath,f))
-        else:
-            print(['originPath:',originPath,'is neither dir nor file'])
-            #raise Exception('originPath:',originPath,'is neither dir nor file')
-            
-                    
-    
+  
     def getIOtype(self,value):
         if value is None:
             return None
@@ -389,8 +370,10 @@ class StepBase:
                 '.tmp_for_docker',
                  origin[1:])
         os.makedirs(virDir,exist_ok=True)
-        #print(['ln','-f',origin,virPath])
-        subprocess.run(['ln','-f',origin,virPath])
+        try:
+            subprocess.run(['ln','-f',origin,virPath], check=True)
+        except subprocess.CalledProcessError:
+            subprocess.run(['cp',origin,virPath], check=True)
     
     def linkRealPaths(self,des):
         virPath = os.path.join(
@@ -399,9 +382,11 @@ class StepBase:
                 '.tmp_for_docker',
                  des[1:])
         os.makedirs(os.path.dirname(des),exist_ok=True)
-        #print(['ln','-f',virPath,des])
         if os.path.exists(virPath):
-            subprocess.run(['ln','-f',virPath,des])
+            try:
+                subprocess.run(['ln','-f',virPath,des], check=True)
+            except subprocess.CalledProcessError:
+                subprocess.run(['cp',virPath,des], check=True)
         else:
             raise Exception(virPath,des,'does not create succesfull')
         
@@ -1270,7 +1255,10 @@ knitr::opts_chunk$set(echo = TRUE)
                     des_aoutpath = os.path.join(folderPath,aoutpath[1:])
                     print(des_aoutpath)
                     os.makedirs(os.path.dirname(des_aoutpath), exist_ok=True)
-                    subprocess.run('ln -f '+ aoutpath +' '+ des_aoutpath, shell=True, check=True)                        
+                    try:
+                        subprocess.run('ln -f '+ aoutpath +' '+ des_aoutpath, shell=True, check=True)     
+                    except:
+                        subprocess.run(['cp', aoutpath, des_aoutpath],check=True)
                     self.setInput(aoutpath,des_aoutpath)
                     mkd = mkd.replace(aoutpath,os.path.join('./links',aoutpath[1:]))
         inkeys = step.getInputs()
@@ -1281,7 +1269,10 @@ knitr::opts_chunk$set(echo = TRUE)
                     des_ainpath = os.path.join(folderPath,ainpath[1:])
                     print(des_ainpath)
                     os.makedirs(os.path.dirname(des_ainpath), exist_ok=True)
-                    subprocess.run('ln -f '+ ainpath +' '+ des_ainpath, shell=True, check=True)                        
+                    try:
+                        subprocess.run('ln -f '+ ainpath +' '+ des_ainpath, shell=True, check=True)                        
+                    except:
+                        subprocess.run(['cp', ainpath, des_ainpath], check=True)
                     self.setInput(ainpath,des_ainpath)
                     mkd = mkd.replace(ainpath,os.path.join('./links',ainpath[1:]))
          
@@ -1290,7 +1281,10 @@ knitr::opts_chunk$set(echo = TRUE)
         if logpath in mkd:
             des_logpath = os.path.join(folderPath,logpath[1:])                    
             os.makedirs(os.path.dirname(des_logpath), exist_ok=True)
-            subprocess.run('ln -f '+ logpath +' '+ des_logpath, shell=True, check=True)                        
+            try:
+                subprocess.run('ln -f '+ logpath +' '+ des_logpath, shell=True, check=True)  
+            except:
+                subprocess.run(['cp', logpath, des_logpath], check=True)                      
             self.setInput(logpath,des_logpath)
             mkd = mkd.replace(logpath,os.path.join('./links',logpath[1:]))
             subprocess.run('ln -f '+ logpath +' '+ des_logpath, shell=True, check=True) 
