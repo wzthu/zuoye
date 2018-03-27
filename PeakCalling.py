@@ -128,7 +128,7 @@ pie(x, labels = piepercent,
     col = c("purple", "violetred1", "green3", "cornsilk", "cyan"))
 legend("topright", 
        legend = labels, 
-       cex = 0.8,
+       cex = 1,
        fill = c("purple", "violetred1", "green3", "cornsilk", "cyan"))
 
 ```

@@ -8,6 +8,6 @@ Configure.enableDocker(True)
 # Folder Test
 # fastqc = FastQC('./minidata/test_fastqc/','fastq',)
 # FileTest
-fastqc = FastQC('./minidata/smartseq/fastq/','fastq',)
-
+#fastqc = FastQC('./minidata/smartseq/fastq/','fastq',)
+fastqc = FastQC('./minidata/smartseq/fastq/',)
 Schedule.run()

@@ -84,8 +84,6 @@ class GenPeakWithFilter(Step):
     def getMarkdownEN(self,):
         summitInput = self.getInputList('summitInput')
         bedOutput = self.getOutputList('bedOutput')
-        print(summitInput)
-        print(bedOutput)
         mdtext ="""
 ## Peak Filter Result
 ```{{r eval=TRUE, echo=FALSE, warning=FALSE, message=FALSE}}
@@ -93,7 +91,7 @@ library(rtracklayer)
 summit <- import(con = "{summitInput}", format = "BED")
 bed <- import(con = "{bedOutput}", format = "BED")
 ```
-The input peak file contains `r length(summit)` peaks, after filtering, top `r length(bed)` peaks left.
+The input peak file contains `r length(summit)` peaks, after filtering, top `r length(bed)` peaks are selected.
 
         """.format(summitInput=summitInput[0], bedOutput=bedOutput[0])
         return mdtext

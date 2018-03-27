@@ -22,6 +22,9 @@ thread <- Args[8]  # number of core
 genomeidx <- Args[9]  # specify a genome
 var.tiff <- Args[10]  # pdf file path
 clu.tiff <- Args[11]  # pdf file path
+devmatrix_path <- Args[12]  # devmatrix file path
+variability_path <- Args[13]  # variability matrix file path
+clu_matrix_path <- Args[14]  # clustring matrix file path
 
 if(genomeidx == "hg19"){
     library(BSgenome.Hsapiens.UCSC.hg19)
@@ -47,8 +50,7 @@ if(genomeidx == "hg19"){
 
 # extract all bam files
 bamfile <- Sys.glob(file.path(bamDir, "*.bam"))
-print(bamDir)
-print(bamfile)
+
 
 # peak file
 peaks <- getPeaks(peakfile, sort_peaks = TRUE)
@@ -69,17 +71,28 @@ counts_filtered <- filterPeaks(counts_filtered)
 
 motif_ix <- matchMotifs(motifs, counts_filtered, genome = genome)
 
-# computing deviations
+# computing deviations and save deviation matrix
 dev <- computeDeviations(object = counts_filtered, annotations = motif_ix)
+devmatrix <- as.data.frame(deviations(dev))
+write.table(x = devmatrix, file = devmatrix_path, quote = FALSE, 
+            sep = "\t", row.names = TRUE, col.names = TRUE)
+# computing variability and save variability
 variability <- computeVariability(dev)
+variability_matrix <- as.data.frame(cbind(variability$variability, variability$p_value, variability$p_value_adj))
 
+rownames(variability_matrix) <- as.character(variability$name)
+colnames(variability_matrix) <- c("variability", "p_value", "p_value_adj")
+
+write.table(x = variability_matrix, file = variability_path, quote = FALSE, 
+            sep = "\t", row.names = TRUE, col.names = TRUE)
+
+# linux
 options(bitmapType='cairo')
 
 # plot variability
 tiff(var.tiff)
 plotVariability(variability, use_plotly = FALSE)
 dev.off()
-
 
 # clustering
 sample_cor <- getSampleCorrelation(dev)
@@ -88,5 +101,10 @@ pheatmap(as.dist(sample_cor),
          clustering_distance_rows = as.dist(1-sample_cor),
          clustering_distance_cols = as.dist(1-sample_cor),
          filename = clu.tiff)
+
+# save clu matrix
+sample_cor_matrix <- as.data.frame(sample_cor)
+write.table(x = sample_cor_matrix, file = clu_matrix_path, quote = FALSE, 
+            sep = "\t", row.names = TRUE, col.names = TRUE)
 
 

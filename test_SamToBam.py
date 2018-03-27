@@ -7,7 +7,6 @@ Configure.setGenome('hg19')
 Configure.setIdentity('ATAC')
 
 test=SamToBam(samInput='./minidata/atac/SamForTest',
-              threads=5,
-              bamOutputDir='./bamOutputDir')
+              threads=5)
 
 Schedule.run()
