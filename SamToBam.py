@@ -3,6 +3,8 @@
 
 @author: Weizhang
 
+this program convert SAM to BAM, including reads filter
+
 """
 
 from StepBase import Step,Configure
@@ -34,6 +36,7 @@ class SamToBam(Step):
         if bamOutputDir is None:
             self.setParamIO('bamOutputDir',Configure.getTmpDir())
             
+        self.setOutput('stdOutput', os.path.join(Configure.getTmpDir(),'stdout.txt'))
 
         # set all input files
         self.setInputDirOrFile('samInput', samInput)
@@ -66,25 +69,17 @@ class SamToBam(Step):
         bamOutput = self.getOutputList('bamOutput')
 
         cmdline = [
-            'samtools view -b -S',
+            'samtools view -bS -q 30 -F 1804',
             '-@', str(self.getParam('threads')),
             '-o', bamOutput[i], samInput[i]
         ]
 
         result = self.callCmdline('V1', cmdline)
-        f = open(self.convertToRealPath(os.path.join(Configure.getTmpDir(),'stdout.txt')),'wb')   
+        f = open(self.convertToRealPath(self.getOutput('stdOutput')),'ab+')
         f.write(result.stdout)
         f.close()
             
     def getMarkdownEN(self,):
-        mdtext = """
-### sam2bam Result
-The sam2bam result is shown below:
-```{{r, echo=FALSE}}
-con <- file("{mapRs}", "r", blocking = FALSE)
-readLines(con)
-```
-Total map reads means that total number of reads mapped to genome
-        """.format(mapRs = os.path.join(Configure.getTmpDir(),'stdout.txt'))
-
+        # this function do not need any report!
+        mdtext = """"""
         return mdtext

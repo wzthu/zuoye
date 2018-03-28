@@ -104,6 +104,10 @@ ENV/
 # mkdocs documentation
 /site
 
+# TempFile
+__pycache__
+*ipynb
+
 # mypy
 .mypy_cache/
 minidata/smartseq/hg19_index/genome.8.ht2

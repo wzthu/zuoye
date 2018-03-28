@@ -116,6 +116,7 @@ class GraphAll(GraphMng):
         edge1 = [
                 #Smart-seq
                 ['FastqDump','Hisat2'],
+                ['FastqDump','FastQC'],
                 ['Hisat2','SamToBam'],
                 ['SamToBam','Bamsort'],
                 ['Bamsort','Cufflinks'],
@@ -159,6 +160,7 @@ class GraphAll(GraphMng):
                 ['Bowtie2', 'SamToBam'],
                 ['SamToBam', 'BamSort'],
                 ['BamSort', 'RmDuplicates'],
+                ['RmDuplicates', 'LibComplexity'],
                 ['RmDuplicates', 'BamToBed'],
                 ['BamToBed', 'MergeToFrag'],
                 ['BamToBed', 'RmChrOrMergeAllSample'],
