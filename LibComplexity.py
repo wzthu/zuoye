@@ -33,7 +33,7 @@ class LibComplexity(Step):
         # set all input files
         self.setInputDirOrFile('bamInput', bamInput)
         # set all output files
-        self.setOutputDir1To1('sumOutput', sumOutputDir, None, 'txt', 'bamInput')
+        self.setOutputDir1To1('sumOutput', sumOutputDir, None, 'lcpx', 'bamInput')
 
         if sumOutputDir is None:
             self.setParamIO('sumOutputDir', Configure.getTmpDir())
