@@ -145,7 +145,7 @@ class Configure:
         #suffix = ['.1.bt2','.2.bt2','.3.bt2','.4.bt2','.rev.1.bt2','.rev.2.bt2']
         #cls.__config['bt2IdxFiles'] = [ cls.__config['bt2Idx'] + s for s in suffix ]
         
-        #cls.__config['genome'] = val
+        cls.__config['genome'] = val
         
         
     @classmethod
