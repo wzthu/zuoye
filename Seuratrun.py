@@ -12,13 +12,19 @@ class Seuratrun(Step):
     """
         Seuratrun is a Step to tackle with Seurat object and finish Seurat analysis.
         See __init__ to initialize this step.
-        > Seuratpreprocessing(): __init__  parameters
+        > Seuratrun(): __init__  parameters
             inputdir: str or str list
                 a directory contain seurat object, for example: /home/data/Seuratpreprocessing
             outputdir: str
                 outputdir path of all the results, default: ~/step_02_Seuratrun/
             rscript: str
                 rscript file path, for example: /home/data/Seuratrun.R
+            xlowcut: num
+                low threshold of variable genes mean expression
+            xhighcut: num
+                high threshold of variable genes mean expression
+            ycut: num
+                threshold of variable genes dispersion
             cmdParam: str or list of string
                 current unsupported
          > Seuratrun()(): __call__ parameters
@@ -32,7 +38,10 @@ class Seuratrun(Step):
                  # genes=None,
                  inputdir = None,
                  rscript=None,
-                 # datatype = None,
+                 xlowcut = None,
+                 xhighcut = None,
+                 ycut = None,
+                 # datatype = None,run
                  # matrix=None,
                  # densematrix = None,
                  cmdParam=None,
@@ -49,6 +58,9 @@ class Seuratrun(Step):
         self.setParamIO('outputdir', outputdir)
         self.setParamIO('rscript', rscript)
         # self.setParam('datatype', datatype)
+        self.setParam('xlowcut', xlowcut)
+        self.setParam('xhighcut', xhighcut)
+        self.setParam('ycut', ycut)
 
         self.initIO()
         self._setMultiRun()
@@ -76,7 +88,6 @@ class Seuratrun(Step):
             # self.setInputDirOrFile('matrix', os.path.join(inputdir, 'matrix.mtx'))
             # self.setOutputDirNTo1('violinplot', os.path.join(outputdir, 'violinplot.jpeg'), '', 'barcodes')
             # self.setOutputDirNTo1('geneplot', os.path.join(outputdir, 'geneplot.jpeg'), '', 'barcodes')
-            self.setOutputDirNTo1('variableGenes', os.path.join(outputdir, 'variableGenes.jpeg'), '', 'inputfile')
             self.setOutputDirNTo1('Elbowplot', os.path.join(outputdir, 'Elbowplot.jpeg'), '', 'inputfile')
             self.setOutputDirNTo1('TSNEplot', os.path.join(outputdir, 'TSNEplot.jpeg'), '', 'inputfile')
 
@@ -104,13 +115,24 @@ class Seuratrun(Step):
         # get output parameters
         outputdir = self.getParamIO('outputdir')
 
-        cmdline = ['Rscript',
-                   rscript,
-                   inputfile,
-                   # datatype,
-                   outputdir]
-        print(cmdline)
-        self.callCmdline(cmdline=cmdline, dockerVersion='V1')
+        xlow = self.getParam('xlowcut')
+        xhigh = self.getParam('xhighcut')
+        y = self.getParam('ycut')
+
+        if (xlow is None) and (xhigh is None) and (y is None):
+            cmdline = ['Rscript',
+                       rscript,
+                       inputfile,
+                       # datatype,
+                       outputdir, 'xlow', 'xhigh', 'y']
+            self.callCmdline(cmdline=cmdline, dockerVersion='V1')
+        else:
+            cmdline = ['Rscript',
+                       rscript,
+                       inputfile,
+                       # datatype,
+                       outputdir, xlow, xhigh, y]
+            self.callCmdline(cmdline=cmdline, dockerVersion='V1')
         #
         # replace file path
         # inputdir = inputdir.replace('/home/cfeng', '/data')
@@ -136,39 +158,23 @@ class Seuratrun(Step):
         #     print(cmdline)
         #     self.callCmdline(cmdline=cmdline, dockerVersion='V1')
 
-    def getMarkdownEN(self):
+    def getMarkdownEN(self,):
         rmd = '''
----
-title: "Seuratrun"
-author: "Author:Frankie"
-output: html_document
----
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
+## Seurat analysis
 `Runobject = Seuratrun(inputdir, outputdir, rscript)(upstream)`
 
-### Input: 
-1. Created from original data
-- inputdir : Path of upstream files(Seurat object).
-- outputdir: Path of all the analysis results
-- rscript : Path of alternative Rscript.
-2. From upstream object such as Seuratpreprocessing object
-- rscript : Path of alternative Rscript.
 
-### Output:
-- All the results will be saved in the outputdir
-- tSne plot& Variablegenes plot& PCAelbowplot
+### Determine statistically significant principal components
 
-### Variablegenes
-![]({variableimagepath})
+To overcome the extensive technical noise in any single gene for scRNA-seq data, determining how many PCs to include downstream is therefore an important step.
 
-### PCAelbowplot
 ![]({elbowimagepath})
 
-### tSne plot
+### Run Non-linear dimensional reduction (tSNE)
+
+Seurat continues to use tSNE as a powerful tool to visualize and explore these datasets.
+
 ![]({tsneimagepath})
-        '''.format(variableimagepath=self.getOutput('variableGenes'),
-                   elbowimagepath=self.getOutput('Elbowplot'),
+        '''.format(elbowimagepath=self.getOutput('Elbowplot'),
                    tsneimagepath=self.getOutput('TSNEplot'))
         return rmd
