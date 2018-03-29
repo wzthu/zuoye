@@ -51,11 +51,16 @@ class VarAndClustering(Step):
         self.setInputDirOrFile('peakInput', peakInput)
         self.setInputDirOrFile('rScript', rScript)
         # set all output files
-        self.setOutputDir1To1('var.tiff', figureOutput, None, '_var.tiff', 'peakInput', '')
-        self.setOutputDir1To1('clustring.tiff', figureOutput, None, '_clustring.tiff', 'peakInput', '')
-        self.setOutputDir1To1('dev.matrix', figureOutput, None, '_devmatrix.txt', 'peakInput', '')
-        self.setOutputDir1To1('var.matrix', figureOutput, None, '_varmatrix.txt', 'peakInput', '')
-        self.setOutputDir1To1('clu.matrix', figureOutput, None, '_clumatrix.txt', 'peakInput', '')
+        self.setOutputDirNTo1('var.tiff', None, 'variation.tiff', 'bamInput')
+        self.setOutputDirNTo1('clustring.tiff', None, 'clustring.tiff', 'bamInput')
+        self.setOutputDirNTo1('dev.matrix', None, 'devmatrix.txt', 'bamInput')
+        self.setOutputDirNTo1('var.matrix', None, 'varmatrix.txt', 'bamInput')
+        self.setOutputDirNTo1('clu.matrix', None, 'clumatrix.txt', 'bamInput')
+        # self.setOutputDir1To1('var.tiff', figureOutput, None, '_var.tiff', 'peakInput', '')
+        # self.setOutputDir1To1('clustring.tiff', figureOutput, None, '_clustring.tiff', 'peakInput', '')
+        # self.setOutputDir1To1('dev.matrix', figureOutput, None, '_devmatrix.txt', 'peakInput', '')
+        # self.setOutputDir1To1('var.matrix', figureOutput, None, '_varmatrix.txt', 'peakInput', '')
+        # self.setOutputDir1To1('clu.matrix', figureOutput, None, '_clumatrix.txt', 'peakInput', '')
 
         if peakInput is not None:
             self._setInputSize(len(self.getInputList('peakInput')))
