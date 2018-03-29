@@ -80,6 +80,7 @@ class Seuratpreprocessing(Step):
             else:
                 self.setInputDirOrFile('matrix', inputdir)
 
+            self.setOutputDirNTo1('variableGenes', os.path.join(outputdir, 'variableGenes.jpeg'), '', 'barcodes')
             self.setOutputDirNTo1('Rdata', os.path.join(outputdir, 'Preprocessing.Rdata'), '', 'barcodes')
             self.setOutputDirNTo1('violinplot', os.path.join(outputdir, 'violinplot.jpeg'), '', 'barcodes')
             self.setOutputDirNTo1('geneplot', os.path.join(outputdir, 'geneplot.jpeg'), '', 'barcodes')
@@ -129,36 +130,28 @@ class Seuratpreprocessing(Step):
         print(cmdline)
         self.callCmdline(cmdline=cmdline, dockerVersion='V1')
 
-    def getMarkdownEN(self):
-        rmd = '''
----
-title: "Seuratpreprocessing"
-author: "Author:Frankie"
-output: html_document
----
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
+    def getMarkdownEN(self,):
+        rmd = """
+
+## Data Preprocessing
 `Preobject = Seuratpreprocessing(inputdir, outputdir, datatype=['10x','densemtx'], rscript)(upstream)`
 
-### Input: 
-1. Created from original data
-- inputdir : Path of Matrix directory(one dense matrix or sparse matrix per time).
-- outputdir: Path of all the analysis results
-- datatpe: Specify the inputdata type, such as '10x'
-- rscript : Path of alternative Rscript.
-2. From upstream object such as Seuratpreprocessing object
-- rscript : Path of alternative Rscript.
+You can set threshholds for downstream analysis based on below two pictures,
+here we visualize gene and molecule counts, plot their relationship, thus you can exclude cells with a clear outlier number of genes detected as potential multiplets.
 
-### Output:
-- Seurat object saved in outputdir for downstream analysis
-- Violinplot and geneplot saved in outputdir for you to do filtering
-
-### Violinplot
+### Violinplot:
+Violin plot is a method of plotting numeric data. It is similar to box plot with a rotated kernel density plot on each side.
 ![]({vioimagepath})
 
-### Geneplot
+### Geneplot:
+Geneplot here shows the relations between nGenes and nUMIs to determine the suitable threshold.
 ![]({geneimagepath})
-        '''.format(vioimagepath=self.getOutput('violinplot'), geneimagepath = self.getOutput('geneplot'))
+
+### Select variable genes
+Seurat calculates highly variable genes and focuses on these for downstream analysis.
+![]({variableimagepath})
+        """.format(vioimagepath=self.getOutput('violinplot'),
+                   geneimagepath = self.getOutput('geneplot'),
+                   variableimagepath=self.getOutput('variableGenes'))
         return rmd
 

@@ -101,14 +101,18 @@ class Flow:
     def getFinalRsPath(self, fileOrFolderName):
         return os.path.join(self.finalResultDir,fileOrFolderName)
     
-    def _linkRecursive(self,srcPath,desPath):
+    def _linkRecursive(self,srcPath,desPath,desFolder=True):
         #print(originPath)
         #print('To')
         #print(desPath)
+        if not desPath.startsWith(self.finalResultDir):
+            desPath = self.getFinalRsPath(desPath)
         originPaths = srcPath
         if isinstance(srcPath,list):
             os.makedirs(desPath, exist_ok=True)
-        else:           
+        else:
+            if desFolder:
+                os.makedirs(desPath, exist_ok=True)
             originPaths = [srcPath]
         for originPath in originPaths:
             print('------------')
@@ -122,7 +126,7 @@ class Flow:
                 os.makedirs(desPath,exist_ok=True)
                 files = os.listdir(originPath)
                 for f in files:
-                    self._linkRecursive(os.path.join(originPath,f),os.path.join(desPath,f))
+                    self._linkRecursive(os.path.join(originPath,f),os.path.join(desPath,f),desFolder=False)
             else:
                 #print(['originPath:',originPath,'is neither dir nor file'])
                 raise Exception('originPath:',originPath,'is neither dir nor file')
