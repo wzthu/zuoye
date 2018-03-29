@@ -15,8 +15,8 @@ import re
 
 class MergeToFrag(Step):
     def __init__(self,
-                 bedInput=None,  # <in.bam>|<in.sam>|<in.cram>
-                 bedOutputDir=None,  # -o FILE  output file name [stdout]
+                 bedInput=None,
+                 bedOutputDir=None,
                  cmdParam=None,
                  **kwargs):
         super(Step, self).__init__(cmdParam, **kwargs)
