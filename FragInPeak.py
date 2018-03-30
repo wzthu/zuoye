@@ -29,6 +29,8 @@ class FragInPeak(Step):
         self.setParamIO('rScript', rScript)
         self.initIO()
 
+        self._setUpstreamSize(2)
+
     def impInitIO(self):
         fragInput = self.getParamIO('fragInput')
         peakInput = self.getParamIO('peakInput')
@@ -40,16 +42,16 @@ class FragInPeak(Step):
         self.setInputDirOrFile('peakInput', peakInput)
         self.setInputDirOrFile('rScript', rScript)
         # set output files
-        self.setOutputDir1To1('percentage', reportOutputDir, None, '_LCForSample.txt', 'peakInput', '')
+        self.setOutputDirNTo1('percentage', None, 'FragInPeak.txt', 'fragInput')
 
-        if fragInput is not None:
+        if peakInput is not None:
             self._setInputSize(len(self.getInputList('peakInput')))
 
     def call(self, *args):
         fragInput = args[0]
         peakInput = args[1]
 
-        self.setParamIO('fragInput', fragInput.getOutput('bedOutput'))
+        self.setParamIO('fragInput', fragInput.getOutputList('bedOutput'))
         self.setParamIO('peakInput', peakInput.getOutputList('bedOutput'))
 
     def _multiRun(self,):
