@@ -167,15 +167,19 @@ class GraphAll(GraphMng):
                 ['BamToBed', 'MergeToFrag'],
                 ['BamToBed', 'RmChrOrMergeAllSample'],
                 ['RmChrOrMergeAllSample', 'MergeToFrag'],
+                ['MergeToFrag', 'FragInPeak'],
                 ['RmChrOrMergeAllSample', 'BedSort'],
                 ['BedSort', 'PeakCalling'],
                 ['PeakCalling', 'GenPeakWithFilter'],
+                ['LibComplexity', 'CellFilter'],
                 ['RmDuplicates', 'VarAndClustering'],
                 ]
 
         edge2 = [
                 ['SortBam', 'MergeBamAlign'],
                 ['GenPeakWithFilter', 'VarAndClustering'],
+                ['GenPeakWithFilter', 'FragInPeak'],
+                ['FragInPeak', 'CellFilter'],
                 ['Cuffmerge','Cuffquant'],
                 ['Cuffmerge','Cuffnorm'],
                 ['Cuffquant','Cuffdiff']
