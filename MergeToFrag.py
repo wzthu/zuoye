@@ -34,7 +34,7 @@ class MergeToFrag(Step):
         # set all input files
         self.setInputDirOrFile('bedInput', bedInput)
         # set all output files
-        self.setOutputDir1To1('bedOutput', bedOutputDir, None, 'frag.bed', 'bedInput')
+        self.setOutputDir1To1('bedOutput', bedOutputDir, None, 'frag.bed', 'bedInput')  # do not change!!!
 
         if bedInput is not None:
             self._setInputSize(len(self.getInputList('bedInput')))

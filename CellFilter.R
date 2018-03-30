@@ -24,6 +24,8 @@ for(i in seq(length(libcpx))){
 }
 colnames(libcpx.df) <- c("fileflag", "libcpx")
 
+
+
 fragInPeak <- read.table(file = fragInPeakInput)
 colnames(fragInPeak) <- c("fileflag", "FragInPeak")
 fragInPeak$fileflag <- as.character(x = fragInPeak$fileflag)
@@ -31,16 +33,20 @@ for(i in seq(length(fragInPeak$fileflag))){
     fragInPeak$fileflag[i] <- unlist(strsplit(x = basename(fragInPeak$fileflag[i]), split = ".", fixed = TRUE))[1]
 }
 
+
+
 tmp.fragInPeak <- c()
 for(fileflag in libcpx.df$fileflag){
     percent <- fragInPeak[which(fragInPeak$fileflag == fileflag), 2]
     tmp.fragInPeak <- c(tmp.fragInPeak, percent)
 }
 
-libcpx.df$fragInPeak <- tmp.fragInPeak
+libcpx.df[["fragInPeak"]] <- tmp.fragInPeak
 
 libcpx.df$libcpx <- log10(as.numeric(libcpx.df$libcpx))
 libcpx.df$fragInPeak <- as.numeric(100*libcpx.df$fragInPeak)
+
+
 
 # convert
 libSizeCutOff <- log10(as.numeric(libSizeCutOff))
