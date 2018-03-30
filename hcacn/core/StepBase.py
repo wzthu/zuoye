@@ -11,6 +11,7 @@ from .GraphMng import GraphAll,GraphATACgl
 import time
 import subprocess
 import re
+from ..steps import rscript 
 
 
 
@@ -746,6 +747,12 @@ class StepBase:
     
     def _getLogPath(self,):
         return self.__logpath
+    
+    def _getRscript(self,rscriptFilename):
+        filepath = os.path.join(os.path.dirname(rscript.__file__),rscriptFilename)
+        if not os.path.exists(filepath):
+            raise Exception('please check:',filepath, 'does not exists')
+        return filepath
     
     
 class Step(StepBase):
