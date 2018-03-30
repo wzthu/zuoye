@@ -1,6 +1,6 @@
-from StepBase import Configure,Schedule
-from FastqDump import FastqDump
-from Cuffmerge import Cuffmerge
+from hcacn.core import Configure,Schedule
+from hcacn.steps import FastqDump
+from hcacn.steps import Cuffmerge
 # Configure.setRefDir('/home/zwei/ref')
 # Configure.setGenome('hg19')
 

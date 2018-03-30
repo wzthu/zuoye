@@ -1,5 +1,5 @@
-from EasyTreat import EasyTreat
-from StepBase import Configure,Schedule
+from hcacn.steps import EasyTreat
+from hcacn.core import Configure,Schedule
 
 import os
 

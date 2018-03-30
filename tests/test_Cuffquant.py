@@ -1,5 +1,5 @@
-from Cuffquant import Cuffquant
-from stepbase import Configure,Schedule
+from hcacn.steps import Cuffquant
+from hcacn.core import Configure,Schedule
 
 import os
 

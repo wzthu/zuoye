@@ -1,5 +1,5 @@
-from StarAlign import StarAlign
-from StepBase import Configure,Schedule
+from hcacn.steps import StarAlign
+from hcacn.core import Configure,Schedule
 
 import os
 

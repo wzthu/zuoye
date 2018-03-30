@@ -1,14 +1,14 @@
-from StepBase import Schedule,Configure
-from FastqDump import FastqDump
-from Hisat2 import Hisat2
-from Tophat2 import Tophat2
-from SamToBam import SamToBam
-from BamSort import BamSort
-from Cufflinks import Cufflinks
-from Cuffmerge import Cuffmerge
-from Cuffquant import Cuffquant
-from Cuffdiff import Cuffdiff
-from FastQC import FastQC
+from hcacn.core import Schedule,Configure
+from hcacn.steps import FastqDump
+from hcacn.steps import Hisat2
+from hcacn.steps import Tophat2
+from hcacn.steps import SamToBam
+from hcacn.steps import BamSort
+from hcacn.steps import Cufflinks
+from hcacn.steps import Cuffmerge
+from hcacn.steps import Cuffquant
+from hcacn.steps import Cuffdiff
+from hcacn.steps import FastQC
 
 Configure.setIdentity('sqchen0327')
 def smartseq_flow(sraInput, ht2Idx_ref, gtf_ref, fa_ref, threads):

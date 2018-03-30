@@ -1,6 +1,6 @@
 
-from Bowtie2 import Bowtie2
-from StepBase import Configure,Schedule
+from hcacn.steps import Bowtie2
+from hcacn.core import Configure,Schedule
 
 Configure.setRefDir('/data8t_1/hca/ref/hg19_bowtie2')
 Configure.setGenome('hg19')

@@ -1,5 +1,5 @@
-from SortBam import SortBam
-from StepBase import Configure,Schedule
+from hcacn.steps import SortBam
+from hcacn.core import Configure,Schedule
 
 import os
 

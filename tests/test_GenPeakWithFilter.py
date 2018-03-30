@@ -5,8 +5,8 @@
 @FileName: test_GenPeakWithFilter.py
 """
 
-from StepBase import Configure,Schedule
-from GenPeakWithFilter import GenPeakWithFilter
+from hcacn.core import Configure,Schedule
+from hcacn.steps import GenPeakWithFilter
 
 Configure.setRefDir('/data8t_1/hca/ref/hg19_bowtie2')
 Configure.setGenome('hg19')

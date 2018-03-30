@@ -1,5 +1,5 @@
-from DetectError import DetectError
-from StepBase import Configure,Schedule
+from hcacn.steps import DetectError
+from hcacn.core import Configure,Schedule
 
 import os
 

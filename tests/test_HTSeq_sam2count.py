@@ -1,6 +1,6 @@
-from StepBase import Configure,Schedule
-from FastqDump import FastqDump
-from HTSeq_sam2count import HTSeq_sam2count
+from hcacn.core import Configure,Schedule
+from hcacn.steps import FastqDump
+from hcacn.steps import HTSeq_sam2count
 # Configure.setRefDir('/home/zwei/ref')
 # Configure.setGenome('hg19')
 

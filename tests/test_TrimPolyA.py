@@ -1,5 +1,5 @@
-from TrimPolyA import TrimPolyA
-from StepBase import Configure, Schedule
+from hcacn.steps import TrimPolyA
+from hcacn.core import Configure, Schedule
 
 import os
 

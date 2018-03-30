@@ -1,7 +1,7 @@
-from Cellranger import Cellranger
-from Seuratpreprocessing import Seuratpreprocessing
-from Seuratrun import Seuratrun
-from StepBase import Configure, Schedule
+from hcacn.steps import Cellranger
+from hcacn.steps import Seuratpreprocessing
+from hcacn.steps import Seuratrun
+from hcacn.core import Configure, Schedule
 
 Configure.setIdentity('fengchen')
 

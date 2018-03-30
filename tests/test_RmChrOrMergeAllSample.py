@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from RmChrOrMergeAllSample import RmChrOrMergeAllSample
-from StepBase import Configure,Schedule
+from hcacn.steps import RmChrOrMergeAllSample
+from hcacn.core import Configure,Schedule
 
 Configure.setRefDir('/data8t_1/hca/ref/hg19_bowtie2')
 Configure.setGenome('hg19')

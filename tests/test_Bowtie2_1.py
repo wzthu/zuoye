@@ -1,6 +1,6 @@
-from Bowtie2 import Bowtie2
-from AdapterRemoval import AdapterRemoval
-from StepBase import Configure,Schedule
+from hcacn.steps import Bowtie2
+from hcacn.steps import AdapterRemoval
+from hcacn.core import Configure,Schedule
 
 import os
 

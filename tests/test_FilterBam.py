@@ -1,5 +1,5 @@
-from FilterBam import FilterBam
-from StepBase import Configure, Schedule
+from hcacn.steps import FilterBam
+from hcacn.core import Configure, Schedule
 
 import os
 

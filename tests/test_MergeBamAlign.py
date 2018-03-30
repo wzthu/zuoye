@@ -1,5 +1,5 @@
-from MergeBamAlign import MergeBamAlign
-from StepBase import Configure,Schedule
+from hcacn.steps import MergeBamAlign
+from hcacn.core import Configure,Schedule
 
 import os
 

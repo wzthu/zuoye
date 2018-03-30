@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from SRAToFastq import SRAToFastq
-from StepBase import Configure,Schedule
+from hcacn.steps import SRAToFastq
+from hcacn.core import Configure,Schedule
 
 Configure.setRefDir('/data8t_1/hca/ref/hg19_bowtie2')
 Configure.setGenome('hg19')

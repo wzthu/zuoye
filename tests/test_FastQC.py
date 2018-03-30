@@ -1,7 +1,7 @@
 
 # coding: utf-8
-from StepBase import Step,Configure,Schedule
-from FastQC import FastQC
+from hcacn.core import Step,Configure,Schedule
+from hcacn.steps import FastQC
 Configure.setIdentity("yinqijin")
 
 Configure.enableDocker(True)

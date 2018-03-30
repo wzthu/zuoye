@@ -1,5 +1,5 @@
-from TagBarcode import TagBarcode
-from StepBase import Configure,Schedule
+from hcacn.steps import TagBarcode
+from hcacn.core import Configure,Schedule
 
 import os
 

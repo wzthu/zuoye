@@ -1,5 +1,5 @@
-from StepBase import Schedule
-from Hisat2 import Hisat2
+from hcacn.core import Schedule
+from hcacn.steps import Hisat2
 
 
 

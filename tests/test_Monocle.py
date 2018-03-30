@@ -2,9 +2,9 @@
 """
 @author: Zhenyi Wang
  """
-from StepBase import Configure,Schedule
-from MonocleQC import MonocleQC
-from Monocle_dimreduce_cluster import Monocle_dimreduce_cluster
+from hcacn.core import Configure,Schedule
+from hcacn.steps import MonocleQC
+from hcacn.steps import Monocle_dimreduce_cluster
 import os
 
 Configure.setIdentity('zywang')

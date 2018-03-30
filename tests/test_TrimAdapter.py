@@ -1,5 +1,5 @@
-from TrimAdapter import TrimAdapter
-from StepBase import Configure, Schedule
+from hcacn.steps import TrimAdapter
+from hcacn.core import Configure, Schedule
 
 import os
 

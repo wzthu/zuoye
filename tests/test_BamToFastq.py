@@ -1,5 +1,5 @@
-from BamToFastq import BamToFastq
-from StepBase import Configure, Schedule
+from hcacn.steps import BamToFastq
+from hcacn.core import Configure, Schedule
 
 import os
 

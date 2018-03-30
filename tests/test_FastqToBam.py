@@ -1,5 +1,5 @@
-from FastqToBam import FastqToBam
-from StepBase import Configure, Schedule
+from hcacn.steps import FastqToBam
+from hcacn.core import Configure, Schedule
 
 #Configure.enableDocker(False)
 Configure.setIdentity('cyliu')

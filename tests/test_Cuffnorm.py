@@ -1,5 +1,5 @@
-from Cuffnorm import Cuffnorm
-from stepbase import Configure,Schedule
+from hcacn.steps import Cuffnorm
+from hcacn.core import Configure,Schedule
 
 import os
 

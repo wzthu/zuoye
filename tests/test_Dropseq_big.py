@@ -1,20 +1,20 @@
-from FastqToBam import FastqToBam
-from BamMerge import BamMerge
-from TagBarcode import TagBarcode
-from FilterBam import FilterBam
-from TrimAdapter import TrimAdapter
-from TrimPolyA import TrimPolyA
-from BamToFastq import BamToFastq
-from StarAlign import StarAlign
-from SortBam import SortBam
-from MergeBamAlign import MergeBamAlign
-from TagGene import TagGene
-from DetectError import DetectError
-from DigitalExpression import DigitalExpression
-from EasyTreat import EasyTreat
-from MonocleQC import MonocleQC
-from Monocle_dimreduce_cluster import Monocle_dimreduce_cluster
-from StepBase import Configure,Schedule
+from hcacn.steps import FastqToBam
+from hcacn.steps import BamMerge
+from hcacn.steps import TagBarcode
+from hcacn.steps import FilterBam
+from hcacn.steps import TrimAdapter
+from hcacn.steps import TrimPolyA
+from hcacn.steps import BamToFastq
+from hcacn.steps import StarAlign
+from hcacn.steps import SortBam
+from hcacn.steps import MergeBamAlign
+from hcacn.steps import TagGene
+from hcacn.steps import DetectError
+from hcacn.steps import DigitalExpression
+from hcacn.steps import EasyTreat
+from hcacn.steps import MonocleQC
+from hcacn.steps import Monocle_dimreduce_cluster
+from hcacn.core import Configure,Schedule
 import os
 
 #Configure.enableDocker(False)

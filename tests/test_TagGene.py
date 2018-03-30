@@ -1,5 +1,5 @@
-from TagGene import TagGene
-from StepBase import Configure,Schedule
+from hcacn.steps import TagGene
+from hcacn.core import Configure,Schedule
 
 import os
 

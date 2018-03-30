@@ -5,8 +5,8 @@
 @FileName: test_CellFilter.py
 """
 
-from CellFilter import CellFilter
-from StepBase import Configure,Schedule
+from hcacn.steps import CellFilter
+from hcacn.core import Configure,Schedule
 
 Configure.setRefDir('/data8t_1/hca/ref/hg19_bowtie2')
 Configure.setGenome('hg19')

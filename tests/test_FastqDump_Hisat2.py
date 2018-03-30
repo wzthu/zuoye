@@ -1,6 +1,6 @@
-from StepBase import Configure,Schedule
-from FastqDump import FastqDump
-from Hisat2 import Hisat2
+from hcacn.core import Configure,Schedule
+from hcacn.steps import FastqDump
+from hcacn.steps import Hisat2
 # Configure.setRefDir('/home/zwei/ref')
 # Configure.setGenome('hg19')
 

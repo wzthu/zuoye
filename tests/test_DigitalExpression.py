@@ -1,5 +1,5 @@
-from DigitalExpression import DigitalExpression
-from StepBase import Configure,Schedule
+from hcacn.steps import DigitalExpression
+from hcacn.core import Configure,Schedule
 
 import os
 
