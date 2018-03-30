@@ -55,7 +55,7 @@ class Flow:
         Configure.setTmpDir(self.tmpdir)
         self._build()
         Schedule.run(report = False)
-        Schedule.stopDocker()
+        #Schedule.stopDocker()
         Configure.setTmpDir(tmpdir_store) 
         count = 0
         for key in self.objs:
@@ -105,7 +105,7 @@ class Flow:
         #print(originPath)
         #print('To')
         #print(desPath)
-        if not desPath.startsWith(self.finalResultDir):
+        if not desPath.startswith(self.finalResultDir):
             desPath = self.getFinalRsPath(desPath)
         originPaths = srcPath
         if isinstance(srcPath,list):
