@@ -49,5 +49,4 @@ from .VarAndClustering import VarAndClustering
 
 
 
-from . import rscript
 

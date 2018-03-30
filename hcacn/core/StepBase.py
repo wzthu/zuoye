@@ -11,7 +11,7 @@ from .GraphMng import GraphAll,GraphATACgl
 import time
 import subprocess
 import re
-from ..steps import rscript 
+from .. import rscript 
 
 
 
