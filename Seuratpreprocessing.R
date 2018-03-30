@@ -50,5 +50,26 @@ dev.off()
 jpeg(file="geneplot.jpeg")
 GenePlot(object = test, gene1 = "nUMI", gene2 = "nGene")
 dev.off()
+
+##############################################################################################
+humi <- quantile(test@meta.data$nUMI,0.95)
+hgene <- quantile(test@meta.data$nGene,0.95)
+lumi <- quantile(test@meta.data$nUMI,0.05)
+lgene <- quantile(test@meta.data$nGene,0.05)
+
+test <- FilterCells(object = test, subset.names = c("nGene","nUMI"), low.thresholds = c(lgene, lumi), high.thresholds = c(hgene,humi))
+
+test <- NormalizeData(object = test, normalization.method = "LogNormalize",scale.factor = 10000)
+
+test <- FindVariableGenes(object = test)
+##############################################################################################
+xhigh <- quantile(test@hvg.info$gene.mean,0.9)
+xlow <- quantile(test@hvg.info$gene.mean,0.1)
+y <- quantile(test@hvg.info$gene.dispersion.scaled,0.8)
+jpeg(filename ="variableGenes.jpeg")
+test <- FindVariableGenes(object = test, mean.function = ExpMean, dispersion.function = LogVMR,
+                          x.low.cutoff = xlow, x.high.cutoff = xhigh, y.cutoff = y)
+dev.off()
+
 file.remove('Preprocessing.Rdata')
 save(test,file = 'Preprocessing.Rdata')

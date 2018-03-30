@@ -15,7 +15,7 @@ class MonocleQC(Step):
     > MonocleQC():_init_paramters
         matrixdata: str
     	A file(a table with txt format) path. The first row should be cells label, 
-    	and the first should be genes name. Each row indicates a cell's data.
+    	and the first column should be genes name. Each column indicates a cell's data.
     outputpath: str
         A str indicates the name of appointed folder that saves outputs.You should
         build that folder in advance. The absolute path is also legel. 
@@ -122,7 +122,7 @@ class MonocleQC(Step):
         TotalmRNAs = self.getParam('TotalmRNAs')
         mean_expression_threshold = self.getParam('mean_expression_threshold')
         cmdline = ['Rscript',
-                    '/data/MonocleQC.R',
+                    '/data8t_1/Rscript/MonocleQC.R',
         			matrixdata,
                     str(min_expression),
                     str(num_cells_expressed_threshold),

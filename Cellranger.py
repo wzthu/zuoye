@@ -124,28 +124,19 @@ class Cellranger(Step):
                            % (refile, fastqInput)]
                 self.callCmdline(cmdline=cmdline, dockerVersion='V1', stdoutToLog=False)
 
-    def getMarkdownEN(self):
-        rmd = '''
----
-title: "Cellranger"
-author: "Author:Frankie"
-output: html_document
----
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
+    def getMarkdownEN(self, ):
+        rmd = '''	
+## Cellranger
+
 `Cellrangerobject = Cellranger(fastqinput, outputdir, refile, expectcells)`
 
-### Input: 
-- fastqInput : Path of folder containing fastq files.
-- outputdir: Path of all the analysis results
-- refile : Path of folder containing 10x-compatible reference.
-- [expect-cells] : Extra options that can tune the program(often as default)
+### Cellranger count fastqs to UMIs
 
-### Output:
-- All the results will be saved in the outputdir
-- Expression matrix can be found in outputdir/outs/filtered_gene_bc_matrices
-- Summary html can be found in 
+- Final outputs will be saved in ~/step_XX_Cellranger/outs/
+- Matrix file in sparse format can be found in /outs/filtered_gene_bc_matrices/hg19
+- Summary.html contain most of data infos can be found in /outs/web_summary.html 
+
+
         '''
         return rmd
 

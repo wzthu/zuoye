@@ -91,7 +91,7 @@ class GraphAll(GraphMng):
                  'SamToBam',
                  'Bamsort',
                  'BamSort',
-                 'Tophat',
+                 'Tophat2',
                  'Star',
                  'Cufflinks',
                  'Cuffmerge',
@@ -116,8 +116,10 @@ class GraphAll(GraphMng):
         edge1 = [
                 #Smart-seq
                 ['FastqDump','Hisat2'],
+                ['FastqDump','Tophat2'],
                 ['FastqDump','FastQC'],
                 ['Hisat2','SamToBam'],
+                ['Tophat2','SamToBam'],
                 ['SamToBam','Bamsort'],
                 ['Bamsort','Cufflinks'],
                 ['SamToBam','BamSort'],
@@ -160,19 +162,24 @@ class GraphAll(GraphMng):
                 ['Bowtie2', 'SamToBam'],
                 ['SamToBam', 'BamSort'],
                 ['BamSort', 'RmDuplicates'],
+                ['RmDuplicates', 'LibComplexity'],
                 ['RmDuplicates', 'BamToBed'],
                 ['BamToBed', 'MergeToFrag'],
                 ['BamToBed', 'RmChrOrMergeAllSample'],
                 ['RmChrOrMergeAllSample', 'MergeToFrag'],
+                ['MergeToFrag', 'FragInPeak'],
                 ['RmChrOrMergeAllSample', 'BedSort'],
                 ['BedSort', 'PeakCalling'],
                 ['PeakCalling', 'GenPeakWithFilter'],
+                ['LibComplexity', 'CellFilter'],
                 ['RmDuplicates', 'VarAndClustering'],
                 ]
 
         edge2 = [
                 ['SortBam', 'MergeBamAlign'],
                 ['GenPeakWithFilter', 'VarAndClustering'],
+                ['GenPeakWithFilter', 'FragInPeak'],
+                ['FragInPeak', 'CellFilter'],
                 ['Cuffmerge','Cuffquant'],
                 ['Cuffmerge','Cuffnorm'],
                 ['Cuffquant','Cuffdiff']
