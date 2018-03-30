@@ -1,5 +1,5 @@
-from BamSortRNA import Bamsort
-from stepbase import Configure,Schedule
+from hcacn.steps import Bamsort
+from hcacn.core import Configure,Schedule
 
 import os
 

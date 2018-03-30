@@ -1,22 +1,10 @@
 # -*- coding: utf-8 -*-
 
-from StepBase import Configure, Schedule
-from Bowtie2 import Bowtie2
-from AdapterRemoval import AdapterRemoval
-from SamToBam import SamToBam
-from BamSort import BamSort
-from RmDuplicates import RmDuplicates
-from BamToBed import BamToBed
-from RmChrOrMergeAllSample import RmChrOrMergeAllSample
-from MergeToFrag import MergeToFrag
-from BedSort import BedSort
-from SRAToFastq import SRAToFastq
-from PeakCalling import PeakCalling
-from GenPeakWithFilter import GenPeakWithFilter
-from VarAndClustering import VarAndClustering
-from LibComplexity import LibComplexity
-from FragInPeak import FragInPeak
-from CellFilter import CellFilter
+from hcacn.core import Configure, Schedule
+from hcacn.steps import *
+#from hcacn.steps import Bowtie2, AapterRemoval, SamToBam, BamSort, RmDuplicates,  BamToBed
+#from hcacn.steps import RmChrOrMergeAllSample,MergeToFrag,BedSort,SRAToFastq, PeakCalling
+#from hcacn.steps  import GenPeakWithFilter, VarAndClustering,LibComplexity,FragInPeak,CellFilter
 
 Configure.setRefDir('/data8t_1/hca/ref/hg19_bowtie2')
 Configure.setGenome('hg19')

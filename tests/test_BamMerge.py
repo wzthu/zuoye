@@ -1,5 +1,5 @@
-from BamMerge import BamMerge
-from StepBase import Configure,Schedule
+from hcacn.steps import BamMerge
+from hcacn.core import Configure,Schedule
 
 import os
 
