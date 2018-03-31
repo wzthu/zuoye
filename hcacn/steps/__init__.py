@@ -44,8 +44,9 @@ from .Tophat2 import Tophat2
 from .TrimAdapter import TrimAdapter
 from .TrimPolyA import TrimPolyA
 from .VarAndClustering import VarAndClustering
-
-
+from .SingleCellExperiment import SingleCellExperiment
+from .SC3_Cluster import SC3_Cluster
+from .SC3_DE import SC3_DE
 
 
 
