@@ -127,3 +127,5 @@ minidata/smartseq/hg19.fa
 minidata/atac/SamForTest/SRR1779703_1.sam
 minidata/smartseq/hg19_index/make_hg19.sh
 minidata/atac/SamForTest/SRR1779703_1.sam
+
+minidata/
