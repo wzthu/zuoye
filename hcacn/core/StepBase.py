@@ -756,6 +756,8 @@ class StepBase:
         if not os.path.exists(filepath):
             raise Exception('please check:',filepath, 'does not exists')
         return filepath
+    def setInputRscript(self,name,rscriptFilename):
+        self.setInput(name,self._getRscript(rscriptFilename))
     
     
 class Step(StepBase):

@@ -91,6 +91,7 @@ class GraphAll(GraphMng):
                  'SamToBam',
                  'Bamsort',
                  'BamSort',
+                 'Stringtie',
                  'Tophat2',
                  'Star',
                  'Cufflinks',
@@ -122,9 +123,11 @@ class GraphAll(GraphMng):
                 ['Tophat2','SamToBam'],
                 ['SamToBam','Bamsort'],
                 ['Bamsort','Cufflinks'],
+                ['BamSort','Stringtie'],
                 ['SamToBam','BamSort'],
                 ['BamSort','Cufflinks'],
                 ['Cufflinks','Cuffmerge'],
+                ['Stringtie','Cuffmerge'],
                 ['BamSort','Cuffquant'],
                 ['Cuffquant','Cuffnorm'],
                 ['Cuffmerge','Cuffdiff'],
@@ -137,7 +140,7 @@ class GraphAll(GraphMng):
                 ['Star','HTSeq'],
                 #10x Genomeics
                 ['Cellranger','Seuratpreprocessing'],
-		        ['Seuratpreprocessing','Seuratrun'],
+                ['Seuratpreprocessing','Seuratrun'],
                 ['Qualification10x','PCA'],
                 #drop-seq
                 ['FastqToBam','BamMerge'],
@@ -198,8 +201,3 @@ class GraphATACgl(GraphMng):
                 ['SamToBam','BamToSam'],
                 ]
         super(GraphATACgl, self).__init__([edge1],[[]])
-        
-                
-        
-        
-        
