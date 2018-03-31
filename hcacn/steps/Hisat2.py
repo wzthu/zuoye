@@ -4,7 +4,7 @@ from ..core import Step,Configure,Schedule
 from .FastqDump import FastqDump
 import os
 class Hisat2(Step):
-
+    Configure.setRefSuffix('ht2Idx','.ht2.index/genome',check=False)
     def  __init__(self,
                   fastqInput1 = None,
                   fastqInput2 = None,
@@ -22,8 +22,6 @@ class Hisat2(Step):
         self.setParamIO('ht2Idx',ht2Idx)
         self.setParamIO('samOutputDir',samOutputDir)
 
-
-
         # call self.initIO()
         self.initIO()
 
@@ -33,8 +31,6 @@ class Hisat2(Step):
             self.setParam('threads',Configure.getThreads())
         else:
             self.setParam('threads',threads)
-
-
 
     def impInitIO(self,):
 
@@ -48,20 +44,16 @@ class Hisat2(Step):
             self.setParamIO('samOutputDir',Configure.getTmpDir())
         self.setOutput('stdOutput', os.path.join(Configure.getTmpDir(),'stdout.txt'))
 
-        # print(ht2Idx)
         #set all input files
-        #self.setInputDirOrFile('fastqInput1',fastqInput1)
         self.setInputDirOrFile('fastqInput1',fastqInput1)
         self.setInputDirOrFile('fastqInput2',fastqInput2)
 
-
         if ht2Idx is None:
-            self.setInput('ht2IdxFile', Configure.getConfig('ht2IdxFile'))
-            self.setParamIO('ht2Idx', Configure.getConfig('ht2Indx'))
-        else:
-            suffix = ['.1.ht2','.2.ht2','.3.ht2','.4.ht2','.5.ht2','.6.ht2','.7.ht2','.8.ht2']
-            ht2IdxFiles = [ ht2Idx + s for s in suffix ]
-            self.setInput('ht2IdxFiles', ht2IdxFiles)
+            self.setParamIO('ht2Idx', Configure.getConfig('ht2Idx'))
+            ht2Idx = self.getParamIO('ht2Idx')
+        suffix = ['.1.ht2','.2.ht2','.3.ht2','.4.ht2','.5.ht2','.6.ht2','.7.ht2','.8.ht2']
+        ht2IdxFiles = [ ht2Idx + s for s in suffix ]
+        self.setInput('ht2IdxFiles', ht2IdxFiles)
 
         # create output file paths and set
         self.setOutputDir1To1('samOutput',samOutputDir,None,'sam','fastqInput1')

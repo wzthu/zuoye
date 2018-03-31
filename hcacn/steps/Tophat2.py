@@ -4,7 +4,8 @@ from ..core import Step,Configure,Schedule
 from .FastqDump import FastqDump
 import os
 class Tophat2(Step):
-
+    Configure.setRefSuffix('bt2Idx','.bt2.index/bt2_index',check=False)
+    Configure.setRefSuffix('gtfInput','.gtf',check=False)
     def  __init__(self,
                   fastqInput1 = None,
                   fastqInput2 = None,
@@ -46,21 +47,16 @@ class Tophat2(Step):
         self.setInputDirOrFile('fastqInput2',fastqInput2)
 
         if bt2Idx is None:
-            self.setInput('bt2IdxFile', Configure.getConfig('bt2IdxFile'))
-            self.setParamIO('bt2Idx', Configure.getConfig('ht2Indx'))
-        else:
-            suffix = ['.1.bt2','.2.bt2','.3.bt2','.4.bt2','.rev.1.bt2','.rev.2.bt2']
-            bt2IdxFiles = [ bt2Idx + s for s in suffix ]
-            self.setInput('bt2IdxFiles', bt2IdxFiles)
-
-
+            self.setParamIO('bt2Idx', Configure.getConfig('bt2Idx'))
+            bt2Idx = self.getParamIO('bt2Idx')
+        suffix = ['.1.bt2','.2.bt2','.3.bt2','.4.bt2','.rev.1.bt2','.rev.2.bt2']
+        bt2IdxFiles = [ bt2Idx + s for s in suffix]
+        self.setInput('bt2IdxFiles', bt2IdxFiles)
 
         if gtfInput is None:
-            gtfInput=Configure.getConfig('')
-            self.setIput('gtfInput',gtfInput)
+            gtfInput=Configure.getConfig('gtfInput')
             self.setParamIO('gtfInput',gtfInput)
-        else:
-            self.setInput('gtfInput',gtfInput)
+        self.setInput('gtfInput',gtfInput)
 
         if fastqInput1 is not None:
             self._setInputSize(len(self.getInputList('fastqInput1')))

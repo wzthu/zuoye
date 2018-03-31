@@ -1,68 +1,47 @@
-# -*- coding: utf-8 -*-
-"""
-@author: Qijin Yin
-"""
+
 
 from ..core import Step,Configure
-
-
+from ..steps import SingleCellExperiment
+import os
 class SC3_Cluster(Step):
     def __init__(self,
-                 imageRdata = None,
+                 sceInput = None,
                  outputpath = None,
-                 num_PCA = 3,
-                 cluster_num = 3,
+                 cluster_num = 0,
                  cmdParam=None,
                  **kwargs):
         """
-        Monocle_dimreduce_cluster is a Step to apply dimention reduction by T-SNE 
-        and cluster cells by density peak clustering algorithm. Recommend to use this 
-        Step as the downstream of MonocleQC, or it may lead to some errors.
-        >Monocle_dimreduce_cluster():_init_parameters
-            imageRdata: str
-            The R workspace saved by MonocleQC Step.
+        SC3_Cluster is XXX. Need to use this 
+        Step as the downstream of SingleCellExperiment.
+        >SC3_Cluster():_init_parameters
+            sce: str
+            The R workspace saved by SingleCellExperiment Step.
             outputpath: str
             A str indicates the name of appointed folder that saves outputs.You should
             build that folder in advance. The absolute path is also legel. 
-            num_PCA: int
-            The number of pinciple components used in T-SNE dimention reduction.Default is 3.
             cluster_num: int
             The number of clusters.
+            set to 0 will auto estimate the cluster number
             cmdParam: str or list of string
             current unsupported
-        >Monocle_dimreduce_cluster()():_call_parameters
+        >SC3_Cluster()():_call_parameters
             Avaliabel upstream objects combinations:
-            (MonocleQC)
+            (SingleCellExperiment)
         """
         super(Step, self).__init__(cmdParam,**kwargs)
-        """
-        called by 'Monocle_dimreduce_cluster()'
-        __init__(): Initialize the class with inputs, outputs and other parameters.
-        Setting all parameter is the main target of this function.
-        >Parameters
-        imageRdata: str
-            The R workspace saved by MonocleQC Step.
-        outputpath: str
-            A str indicates the name of appointed folder that saves outputs.
-        num_PCA: int
-            The number of pinciple components used in T-SNE dimention reduction.Default is 3.
-            cluster_num: int
-        The number of clusters.
-        cmdParam: str or list of string
-            current unsupported
-        """
         
-        #Configure.enableDocker(False)
+        
+
         # set all input and output parameters
-        self.setParamIO('imageRdata',imageRdata)
+        self.setParamIO('sceInput',sceInput)
         self.setParamIO('outputpath',outputpath) 
         # call self.initIO()
         self.initIO()
         #set other parameters
 
-        self.setParam('num_PCA',num_PCA)
+
         self.setParam('cluster_num',cluster_num)
-        self._setMultiRun()
+        #self._setMultiRun()
         
     def impInitIO(self,):
         """
@@ -70,51 +49,96 @@ class SC3_Cluster(Step):
         all of the input and output files from the io parameters set in __init__() 
         """
         # obtain all input and output parameters        
-        imageRdata = self.getParamIO('imageRdata')        
+               
         outputpath = self.getParamIO('outputpath')  
-
-        
         #set the input file
         if outputpath is None:
             self.setParamIO('outputpath',Configure.getTmpDir()) 
-            outputpath = self.getParamIO('outputpath')  
-        self.setInput('imageRdata', imageRdata)
-        # create output file paths and set
-        self.setOutputDir1To1('densitypeak_cluster',outputpath, 'densitypeak_cluster','jpg','imageRdata')
-       
-    def call(self, *args):
-        """
-        called by Seurat()(object)
-        """
-        # the first object
-        MonocleQCupstream = args[0]      
-        
-        # set all required input parameters from upstream object
-        self.setParamIO('imageRdata',MonocleQCupstream.getOutput('MonocleQCimage'))
-        #print(MonocleQCupstream.getOutput('MonocleQCimage'))
-        
-    def _multiRun(self,):
-        imageRdata = self.getInput('imageRdata')
-        num_PCA = self.getParam('num_PCA')
-        cluster_num = self.getParam('cluster_num')
-        cmdline = ['Rscript',
-                    '/data8t_1/Rscript/Monocle_dimreduce_cluster.R',
-        			imageRdata[0],
-                    str(num_PCA),
-                    str(cluster_num),
-                    self.getParamIO('outputpath')
-        			]
-        print(''.join(cmdline))
-        self.callCmdline('V1',cmdline)
-    def getMarkdownEN(self,):
-        mdtext="""
-## Monocle dimention reduction and clustering results
-```{{r, echo=FALSE,  eval=FALSE}}
-#don't run
-Monocle_dimreduce_cluster(outputpath='outputresult')(MonocleQC_result)
-```
-### Select the number of principle components used in dimension reduction, monocle use T-SNE to project the high-dimentional points into a low-dimentional space. Density-peak cluster method is used in clustering.
-![]({densitypeak_cluster})
+            outputpath = self.getParamIO('outputpath') 
 
-        """
+        sceInput = self.getParamIO('sceInput') 
+        #set all input files
+        self.setInputDirOrFile('sceInput',sceInput)
+
+        # create output file paths and set
+        #self.setOutputDir1To1ByFunc('sceOutput',outputpath,func,"matrix_file")
+        #self.setOutputDir1To1('sc3OutputFolder',outputpath,None,"_folder","sceInput",sep='')
+        def func1(basename):
+            return basename+'/Consensus_Cluster.jpg'
+        def func2(basename):
+            return basename+'/Result.xls'       
+        self.setOutputDir1To1ByFunc('sc3Output_EConsensus_Cluster.jpg',outputpath, func1,'sceInput')
+        self.setOutputDir1To1ByFunc('sc3Output_Result.xls',outputpath, func2,'sceInput')
+
+
+        # Rscripts
+        self.setInputRscript('Rscript','SC3.R')
+
+        if sceInput is not None:
+            self._setInputSize(len(self.getInputList('sceInput')))
+    def call(self,*args):
+
+        Upstream = args[0]
+        if isinstance(Upstream,SingleCellExperiment):
+            self.setParamIO('sceInput', Upstream.getOutput('sceOutput'))
+
+
+    def getMarkdownEN(self,):
+        EConsensus_Cluster = self.getOutput('sc3Output_EConsensus_Cluster.jpg')
+        EConsensus_Cluster_sen = ['***For %s***\n![EConsensus Cluster](%s)'%(item.split("/")[-2],item) for item in EConsensus_Cluster]
+        EConsensus_Cluster_sen = "\n".join(EConsensus_Cluster_sen)
+
+        Result_xls = self.getOutput('sc3Output_Result.xls')
+        list_name = [  item.split("/")[-2] for item in EConsensus_Cluster]
+        list_name = "c(\"" + "\",\"".join(list_name) + "\")"
+        list_excel = "c(\"" + "\",\"".join(Result_xls) + "\")"
+        mdtext = """
+## Cluster Usage
+
+SC3_Cluster('/path/to/sce.RData','/path/to/output_dir',cluster_num)  
+
+## SC3 Cluster Result  
+The SC3 Cluster result is shown below:  
+
+### EConsensus_Cluster Result  
+{EConsensus_Cluster}   
+
+### Excel Result  
+
+```{{r eval=TRUE, echo=FALSE, warning=FALSE, message=FALSE}}
+library(knitr)
+library(kableExtra)
+list_name <- {list_name}
+list_excel <- {list_excel}
+sc <- cbind(list_name, list_excel)
+colnames(sc) <- c("Import Data", "Excel Diretory")
+kable(sc, "html") %>% kable_styling() %>% scroll_box(width = "1100px", height = "500px")
+```
+
+
+
+
+""".format(EConsensus_Cluster=EConsensus_Cluster_sen ,
+    list_name =list_name,
+    list_excel =list_excel,
+        )
+
+        print(mdtext)
         return mdtext
+            
+            
+    def _singleRun(self,i):
+        # obtain all input and output dir list
+        sceInputs = self.getInputList('sceInput')
+        cluster_num =  self.getParam('cluster_num')
+        sc3Outputjpgs = self.getOutput('sc3Output_EConsensus_Cluster.jpg')
+        os.path.dirname
+        Rscript = self.getInput('Rscript')
+        cmdline =['Rscript',
+                  Rscript,
+                   sceInputs[i],
+                   str(cluster_num),
+                   os.path.dirname(sc3Outputjpgs[i]),
+                   'cluster'
+                   ]
+        self.callCmdline('V1', cmdline)

@@ -38,6 +38,7 @@ from .Seuratrun import Seuratrun
 from .SortBam import SortBam
 from .SRAToFastq import SRAToFastq
 from .StarAlign import StarAlign
+from .Stringtie import Stringtie
 from .TagBarcode import TagBarcode
 from .TagGene import TagGene
 from .Tophat2 import Tophat2

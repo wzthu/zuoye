@@ -5,7 +5,7 @@
 
 from ..core import Step,Configure
 
-import os
+
 
 class SingleCellExperiment(Step):
     def __init__(self,
@@ -20,8 +20,8 @@ class SingleCellExperiment(Step):
          
 
         # set all input and output parameters
-        self.setInput('matrix_file',matrix_file)
-        self.setInput('ann_file',ann_file)
+        self.setParamIO('matrix_file',matrix_file)
+        self.setParamIO('ann_file',ann_file)
         self.setParamIO('outputpath',outputpath) 
         # call self.initIO()
         self.initIO()
@@ -35,12 +35,21 @@ class SingleCellExperiment(Step):
             self.setParamIO('outputpath',Configure.getTmpDir()) 
             outputpath = self.getParamIO('outputpath') 
 
-        matrix_file = self.getInput('matrix_file') 
+        # obtain all input and output parameters
+        matrix_file = self.getParamIO('matrix_file')
+        ann_file = self.getParamIO('ann_file')
+
+        #set all input files
+        self.setInputDirOrFile('matrix_file',matrix_file)
+        self.setInputDirOrFile('ann_file',ann_file)
+
         # create output file paths and set
         self.setOutputDir1To1('sceOutput',outputpath,None,".RData","matrix_file",sep='')
 
         # Rscripts
         self.setInputRscript('Rscript','SingleCellExperiment.R')
+
+        matrix_file = self.getInput('matrix_file') 
         if matrix_file is not None:
             self._setInputSize(len(self.getInputList('matrix_file')))
 
@@ -54,9 +63,9 @@ class SingleCellExperiment(Step):
 
     def getMarkdownEN(self,):
         mdtext = """
-## SC3_DE Usage
+## SingleCellExperiment Usage
 
-SC3_DE('/path/to/matrix.csv','/path/to/annotation.csv','matrix_format','/path/to/outputDir')  
+SingleCellExperiment('/path/to/matrix.csv','/path/to/annotation.csv','matrix_format','/path/to/outputDir')  
 
 ## SingleCellExperiment Result  
 Successful generate SingleCellExperiment from matrix.
@@ -69,7 +78,7 @@ Successful generate SingleCellExperiment from matrix.
         # obtain all input and output dir list
         matrix_files = self.getInputList('matrix_file')
         ann_files = self.getInputList('ann_file')
-        sceOutputDirs = self.getOutputDir('sceOutput')
+        sceOutputDirs = self.getOutput('sceOutput')
         matrix_format = self.getParam('matrix_format')
         assert matrix_format in ['LOG','ORIGIN']
         Rscript = self.getInput('Rscript')

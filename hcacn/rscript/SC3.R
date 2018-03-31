@@ -65,4 +65,4 @@ switch(processFlag,
     show("Wrong ProcessFlag, No process to be done."))
 
 # save sc3 object
-save(sce,file=paste(result_folder,paste("sce",processFlag,sep='_'),sep = "/"))
+save(sce,file=paste(result_folder,paste(paste("sce",processFlag,sep='_'),'RData',sep="."),sep = "/"))

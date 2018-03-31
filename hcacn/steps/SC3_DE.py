@@ -1,15 +1,11 @@
-# -*- coding: utf-8 -*-
-"""
-@author: Zhenyi Wang
-"""
+
 
 from ..core import Step,Configure
-
+from ..steps import SingleCellExperiment
 import os
-
 class SC3_DE(Step):
     def __init__(self,
-                 sce_file = None,
+                 sceInput = None,
                  outputpath = None,
                  cluster_num = 0,
                  cmdParam=None,
@@ -37,7 +33,7 @@ class SC3_DE(Step):
         
 
         # set all input and output parameters
-        self.setInput('sce_file',sce_file)
+        self.setParamIO('sceInput',sceInput)
         self.setParamIO('outputpath',outputpath) 
         # call self.initIO()
         self.initIO()
@@ -60,62 +56,85 @@ class SC3_DE(Step):
             self.setParamIO('outputpath',Configure.getTmpDir()) 
             outputpath = self.getParamIO('outputpath') 
 
-        sce_file = self.getParamIO('sce_file') 
-        # create output file paths and set
-        self.setOutputDir1To1('outputpaths',None,outputpath, 'Expression','jpg','sce_file')
-        self.setOutputDir1To1('fastqcOutput_Expreesion_jpg',None,outputpath, 'Expression.','jpg','sce_file')
-        self.setOutputDir1To1('fastqcOutput_Expreesion_jpg',None,outputpath, 'Expression.','jpg','sce_file')
+        sceInput = self.getParamIO('sceInput') 
+        #set all input files
+        self.setInputDirOrFile('sceInput',sceInput)
 
-       
+        # create output file paths and set
+        #self.setOutputDir1To1ByFunc('sceOutput',outputpath,func,"matrix_file")
+        #self.setOutputDir1To1('sc3OutputFolder',outputpath,None,"_folder","sceInput",sep='')
+        def func1(basename):
+            return basename+'/Expression.jpg'
+        def func2(basename):
+            return basename+'/DE_Gene.jpg'
+        def func3(basename):
+            return basename+'/Gene_Marker.jpg'          
+        self.setOutputDir1To1ByFunc('sc3Output_Expression.jpg',outputpath, func1,'sceInput')
+        self.setOutputDir1To1ByFunc('sc3Output_DE_Gene.jpg',outputpath, func2,'sceInput')
+        self.setOutputDir1To1ByFunc('sc3Output_Gene_Marker.jpg',outputpath, func3,'sceInput')
+
+        # Rscripts
+        self.setInputRscript('Rscript','SC3.R')
+
+        if sceInput is not None:
+            self._setInputSize(len(self.getInputList('sceInput')))
     def call(self,*args):
 
         Upstream = args[0]
-        if isinstance(Upstream,FastqDump):
-            fastqInput = Upstream.getOutput('fastqOutput1')
-            fastqInput.extend( Upstream.getOutput('fastqOutput2'))
-            self.setParamIO('fastqInput', fastqInput)
-        # set all required input parameters from upstream object
-        #上游可能為 “fastqInput1”,“fastqInput2”,“fastqOnput1”
-        #self.setParamIO('fastqInput',Upstream.getOutput('fastqOutput1'))
+        if isinstance(Upstream,SingleCellExperiment):
+            self.setParamIO('sceInput', Upstream.getOutput('sceOutput'))
 
-        print("Call the UpStream Node, Not implementation")
-
-        #other things
 
     def getMarkdownEN(self,):
+        Expression = self.getOutput('sc3Output_Expression.jpg')
+        DE_Gene = self.getOutput('sc3Output_DE_Gene.jpg')
+        Gene_Marker = self.getOutput('sc3Output_Gene_Marker.jpg')
+
+        Expression_sen = ['***For %s\n***\n![Expression](%s)'%(item.split("/")[-2],item) for item in Expression]
+        DE_Gene_sen = ['***For %s\n***\n![DE_Gene](%s)'%(item.split("/")[-2],item)for item in DE_Gene]
+        Gene_Marker_sen = ['***For %s\n***\n![Gene_Marker](%s)'%(item.split("/")[-2],item)for item in Gene_Marker]
+        Expression_sen = "\n".join(Expression_sen)
+        DE_Gene_sen = "\n".join(DE_Gene_sen)
+        Gene_Marker_sen = "\n".join(Gene_Marker_sen)
         mdtext = """
-## FastQC Usage
+## SC3_DE Usage
 
-FastQC('/path/to/input_fastq',[fastq/sra],'/path/to/output_dir')  
-Attention!  
-* In this release, only .fastq format file can be setting as input!  
+SC3_DE('/path/to/sce.RData','/path/to/output_dir',cluster_num)  
 
-## FastQC Quality Control Result  
-The FastQC Quality Control is shown below:  
-```{{r eval=TRUE, echo=FALSE, warning=FALSE, message=FALSE}}
-library(knitr)
-library(kableExtra)
-fastq_name <- {fastq_name}
-fastqc_html <- {fastqc_report}
-fq <- cbind(fastq_name, fastqc_html)
-colnames(fq) <- c("Fastq Name", "Fastq Report")
-kable(fq, "html") %>% kable_styling() %>% scroll_box(width = "1100px", height = "500px")
-```
+## SC3 Differential Expression Result  
+The SC3 Differential Expression result is shown below:  
 
-        
-"""
- 
+### Expression Result  
+
+{Expression} 
+### Differential Expression Detecet Result  
+
+{DE_Gene} 
+
+### Gene Marker Detect Result  
+
+{Gene_Marker}     
+""".format(Expression=Expression_sen ,
+    DE_Gene =DE_Gene_sen,
+    Gene_Marker =Gene_Marker_sen,
+        )
+
+
         return mdtext
             
             
     def _singleRun(self,i):
         # obtain all input and output dir list
-        fastqInput = self.getInputList('fastqInput')
-        fastqcOutputDir = self.getParamIO('fastqcOutputDir')
-
-        cmdline =['fastqc',
-                   '-t',str(self.getParam('threads')),
-                   '-o',fastqcOutputDir,
-                   fastqInput[i]
+        sceInputs = self.getInputList('sceInput')
+        cluster_num =  self.getParam('cluster_num')
+        sc3Outputjpgs = self.getOutput('sc3Output_Expression.jpg')
+        os.path.dirname
+        Rscript = self.getInput('Rscript')
+        cmdline =['Rscript',
+                  Rscript,
+                   sceInputs[i],
+                   str(cluster_num),
+                   os.path.dirname(sc3Outputjpgs[i]),
+                   'de'
                    ]
         self.callCmdline('V1', cmdline)

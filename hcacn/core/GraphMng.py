@@ -91,6 +91,7 @@ class GraphAll(GraphMng):
                  'SamToBam',
                  'Bamsort',
                  'BamSort',
+                 'Stringtie',
                  'Tophat2',
                  'Star',
                  'Cufflinks',
@@ -110,7 +111,11 @@ class GraphAll(GraphMng):
                  'BamToSam',
                  'DuplicateRemoval',
                  'MonocleQC',
-                 'Monocle_dimreduce_cluster'                 
+                 'Monocle_dimreduce_cluster'     
+                 # SC3
+                 'SingleCellExperiment',
+                 'SC3_DE',
+                 'SC3_Cluster'            
                 ]
         
         edge1 = [
@@ -122,9 +127,11 @@ class GraphAll(GraphMng):
                 ['Tophat2','SamToBam'],
                 ['SamToBam','Bamsort'],
                 ['Bamsort','Cufflinks'],
+                ['BamSort','Stringtie'],
                 ['SamToBam','BamSort'],
                 ['BamSort','Cufflinks'],
                 ['Cufflinks','Cuffmerge'],
+                ['Stringtie','Cuffmerge'],
                 ['BamSort','Cuffquant'],
                 ['Cuffquant','Cuffnorm'],
                 ['Cuffmerge','Cuffdiff'],
@@ -137,7 +144,7 @@ class GraphAll(GraphMng):
                 ['Star','HTSeq'],
                 #10x Genomeics
                 ['Cellranger','Seuratpreprocessing'],
-		        ['Seuratpreprocessing','Seuratrun'],
+                ['Seuratpreprocessing','Seuratrun'],
                 ['Qualification10x','PCA'],
                 #drop-seq
                 ['FastqToBam','BamMerge'],
@@ -172,7 +179,12 @@ class GraphAll(GraphMng):
                 ['BedSort', 'PeakCalling'],
                 ['PeakCalling', 'GenPeakWithFilter'],
                 ['LibComplexity', 'CellFilter'],
+                ['CellFilter', 'CellExtracterBam'],
                 ['RmDuplicates', 'VarAndClustering'],
+
+                #SC3
+                ['SingleCellExperiment', 'SC3_DE'],
+                ['SingleCellExperiment', 'SC3_Cluster'],
                 ]
 
         edge2 = [
@@ -180,6 +192,7 @@ class GraphAll(GraphMng):
                 ['GenPeakWithFilter', 'VarAndClustering'],
                 ['GenPeakWithFilter', 'FragInPeak'],
                 ['FragInPeak', 'CellFilter'],
+                ['RmDuplicates', 'CellExtracterBam'],
                 ['Cuffmerge','Cuffquant'],
                 ['Cuffmerge','Cuffnorm'],
                 ['Cuffquant','Cuffdiff']
@@ -198,8 +211,3 @@ class GraphATACgl(GraphMng):
                 ['SamToBam','BamToSam'],
                 ]
         super(GraphATACgl, self).__init__([edge1],[[]])
-        
-                
-        
-        
-        
