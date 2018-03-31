@@ -245,6 +245,7 @@ class StepBase:
         self.__inputSize = -1
         self.__upstreamSize = 1
         self.tmpdirStack = []
+        self.__callObj = None
         return 0
     
     def getStepID(self,):
@@ -274,7 +275,7 @@ class StepBase:
     def impInitIO(self,):
         raise Exception("method: initIO must be overwrited")
         
-    def __call__(self, *args): 
+    def __call__(self, *args):        
         notNoneNumb = 0
         for i in range(len(args)):
             if not args[i] is None:
@@ -284,6 +285,7 @@ class StepBase:
             raise Exception('there should be one upstream Step object in parameter')
         if len(args) != self.__upstreamSize:
             raise Exception("only support", self.__upstreamSize,"upstream")
+        self.__callObj = args
         self.call(*args)
         self.initIO()
         return self
@@ -422,7 +424,9 @@ class StepBase:
     def _preRun(self,):
         pass
         
-    def run(self,):        
+    def run(self,):
+        if self.__callObj is not None:
+            self.__call__(*self.__callObj)
         self.checkInputFilePath()
         self._preRun()
         self.checkOutputFilePath(checkExist = False)
@@ -756,6 +760,8 @@ class StepBase:
         if not os.path.exists(filepath):
             raise Exception('please check:',filepath, 'does not exists')
         return filepath
+    def setInputRscript(self,name,rscriptFilename):
+        self.setInput(name,self._getRscript(rscriptFilename))
     
     
 class Step(StepBase):

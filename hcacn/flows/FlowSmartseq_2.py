@@ -54,6 +54,7 @@ class FlowSmartseq_2(Flow):
         self._setObj('Cuffquant',cuffquant)
         self._setObj('Cuffdiff',cuffdiff)
         self._setObj('Report',rp)
+
         
     def _copy(self,):
         self._linkRecursive(self._getObj('Cuffdiff').getOutput('bias_params_info'), self.getFinalRsPath('Cuffdiff_Res'))
