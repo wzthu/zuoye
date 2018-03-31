@@ -1,35 +1,29 @@
 # -*- coding: utf-8 -*-
-"""
-Created on 2018-3-12 16:48:36
-
-@author: Song Shaoming
-"""
 
 from ..core import Step,Configure
 import os
 import subprocess
 
 class Cuffdiff(Step):
+	Configure.setRefSuffix('faInput','.fa',check=False)
 	def __init__(self,
-				 faInput = None,
-				 gtfInput = None,
-				 cxbInput = None,
-				 markerInput = None,
-				 outputDir = None,
-
-				 threads = None,
-				 cmdParam = None,
-				 **kwargs
-				):
+			faInput = None,
+			gtfInput = None,
+			cxbInput = None,
+			markerInput = None,
+			outputDir = None,
+			threads = None,
+			cmdParam = None,
+			**kwargs
+			):
 		super(Step, self).__init__(cmdParam,**kwargs)
-
 		self.setParamIO('faInput',faInput)
 		self.setParamIO('gtfInput',gtfInput)
 		self.setParamIO('cxbInput',cxbInput)
 		self.setParamIO('markerInput',markerInput)
 		self.setParamIO('outputDir',outputDir)
 		self.initIO()
-		
+
 		if threads is None:
 			threads = Configure.getThreads()
 		self.setParam('threads',threads)
@@ -50,11 +44,9 @@ class Cuffdiff(Step):
 			self.setInput('gtfInput',gtfInput)
 
 		if faInput is None:
-			faInput = Configure.getConfig('')
-			self.setInput('faInput',faInput)
+			faInput = Configure.getConfig('faInput')
 			self.setParamIO('faInput',faInput)
-		else:
-			self.setInput('faInput',faInput)
+		self.setInput('faInput',faInput)
 			
 		if outputDir is None:
 			self.setParamIO('outputDir',Configure.getTmpDir())
@@ -142,8 +134,6 @@ class Cuffdiff(Step):
 		gtfUpstream = args[0]
 
 		cxb = cxbUpstream.getOutput('abundances_cxb')
-		#print('===================')
-		#print(cxb)		
 		marker = ''
 		for i in range(len(cxb)):
 			#cxb[i] = self.convertToRealPath(cxb[i])
@@ -154,8 +144,6 @@ class Cuffdiff(Step):
 		self.setParamIO('markerInput',marker)
 
 		self.setParamIO('gtfInput',gtfUpstream.getOutput('merged_gtf'))
-		print('==================================')
-		print(gtfUpstream.getOutput('merged_gtf'))
 
 	def _singleRun(self,i):
 		gtfInput = self.getParamIO('gtfInput')
@@ -174,7 +162,6 @@ class Cuffdiff(Step):
 				'-p',str(self.getParam('threads')),
 				'-L',markerInput,
 				'-b',faInput,
-				
 				gtfInput[0],
 				cxbFin
 				]

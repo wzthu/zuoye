@@ -11,6 +11,7 @@ from ..core import Step,Configure
 import os
 
 
+
 class SamToBam(Step):
     # set default function: convert SAM to BAM
     def __init__(self,
@@ -41,10 +42,17 @@ class SamToBam(Step):
         # set all input files
         self.setInputDirOrFile('samInput', samInput)
         # set all output files
-        self.setOutputDir1To1('bamOutput', bamOutputDir, None, 'bam', 'samInput')
+        # self.setOutputDir1To1('bamOutput', bamOutputDir, None, 'bam', 'samInput')
 
         if samInput is not None:
             self._setInputSize(len(self.getInputList('samInput')))
+            bamOutput=list()
+            for i in range(len(self.getInputList('samInput'))):
+                bamOutput.append(os.path.join(bamOutputDir, 'sam2bam_'+str(i)+'.bam'))
+            self.setOutput('bamOutput',bamOutput)
+        else:
+            self.setOutput('bamOutput',None)
+
 
     def call(self, *args):
         samUpstream = args[0]
