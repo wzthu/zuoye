@@ -10,9 +10,11 @@ import subprocess
 import os
 
 class Cuffmerge(Step):
+    Configure.setRefSuffix('faInput','.fa',check=False)
+    Configure.setRefSuffix('gtfInput','.gtf',check=False)
     def __init__(self,
-                 faInput1 = None,  
-                 gtfInput1 = None,  
+                 faInput = None,  
+                 gtfInput = None,  
                  assembliesInput = None,
                  threads = None,
                  gtfOutputDir = None, 
@@ -20,8 +22,8 @@ class Cuffmerge(Step):
                  **kwargs):
         super(Step, self).__init__(cmdParam,**kwargs)
         
-        self.setParamIO('faInput1',faInput1)
-        self.setParamIO('gtfInput1',gtfInput1)
+        self.setParamIO('faInput',faInput)
+        self.setParamIO('gtfInput',gtfInput)
         self.setParamIO('assembliesInput',assembliesInput)
         self.setParamIO('gtfOutputDir',gtfOutputDir)
 
@@ -33,8 +35,8 @@ class Cuffmerge(Step):
             
         
     def impInitIO(self,):        
-        faInput1 = self.getParamIO('faInput1')
-        gtfInput1 = self.getParamIO('gtfInput1')
+        faInput = self.getParamIO('faInput')
+        gtfInput = self.getParamIO('gtfInput')
         assembliesInput = self.getParamIO('assembliesInput')
         gtfOutputDir = self.getParamIO('gtfOutputDir')
         if gtfOutputDir is None:
@@ -43,19 +45,15 @@ class Cuffmerge(Step):
         #set all input files        
         self.setInputDirOrFile('assembliesInput',assembliesInput) 
         
-        if faInput1 is None:
-            faInput1=Configure.getConfig('')
-            self.setIput('faInput1',faInput1)
-            self.setParamIO('faInput1',faInput1)
-        else:
-            self.setInput('faInput1',faInput1)
+        if faInput is None:
+            faInput=Configure.getConfig('faInput')
+            self.setParamIO('faInput',faInput)
+        self.setInput('faInput',faInput)
 
-        if gtfInput1 is None:
-            gtfInput1=Configure.getConfig('')
-            self.setIput('gtfInput1',gtfInput1)
-            self.setParamIO('gtfInput1',gtfInput1)
-        else:
-            self.setInput('gtfInput1',gtfInput1)
+        if gtfInput is None:
+            gtfInput=Configure.getConfig('gtfInput')
+            self.setParamIO('gtfInput',gtfInput)
+        self.setInput('gtfInput',gtfInput)
 
         if assembliesInput is not None:
             self._setInputSize(len(self.getInputList('assembliesInput')))
@@ -69,16 +67,16 @@ class Cuffmerge(Step):
     def call(self, *args):
         htseqUpstream = args[0]              
         self.setParamIO('assembliesInput',htseqUpstream.getOutput('assembliesOutput'))
-        # self.setParamIO('gtfInput1',htseqUpstream.getOutput('gtfOutput1'))
+        # self.setParamIO('gtfInput',htseqUpstream.getOutput('gtfOutput1'))
             
     def _singleRun(self, i):
-        faInput1 = self.getParamIO('faInput1')
-        gtfInput1 = self.getParamIO('gtfInput1')
+        faInput = self.getParamIO('faInput')
+        gtfInput = self.getParamIO('gtfInput')
         assembliesInput = self.getInputList('assembliesInput')
         gtfOutputDir = self.getParamIO('gtfOutputDir')
         cmdline = ['cuffmerge',
-                    '-g', gtfInput1,
-                    '-s', faInput1,
+                    '-g', gtfInput,
+                    '-s', faInput,
                     '-o', os.path.join(gtfOutputDir, 'cuffmerge_'+str(i)),
                     '-p', str(self.getParam('threads')),
                     assembliesInput[i]
@@ -101,5 +99,3 @@ Total map reads means that total number of reads mapped to genome
         """.format(mapRs = self.getOutput('stdOutput'))
 
         return mdtext
-            
-        

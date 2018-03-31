@@ -9,6 +9,7 @@ from ..core import Step,Configure
 import os
 
 class Cufflinks(Step):
+	Configure.setRefSuffix('gtfInput','.gtf',check=False)
 	def __init__(self,
 				 bamInput = None,
 				 gtfInput = None,
@@ -48,15 +49,12 @@ class Cufflinks(Step):
 		if outputDir is None:
 			self.setParamIO('outputDir',Configure.getTmpDir())
 
-
 		self.setInputDirOrFile('bamInput',bamInput)
 
 		if gtfInput is None:
-			gtfInput=Configure.getConfig('')
-			self.setIput('gtfInput',gtfInput)
+			gtfInput = Configure.getConfig('gtfInput')
 			self.setParamIO('gtfInput',gtfInput)
-		else:
-			self.setInput('gtfInput',gtfInput)
+		self.setInput('gtfInput',gtfInput)
 
 		self.setOutput('assembliesOutput',os.path.join(Configure.getTmpDir(), 'assemblies.txt'))
 		self.setOutput('stdOutput', os.path.join(Configure.getTmpDir(),'stdout.txt'))
