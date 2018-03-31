@@ -419,9 +419,12 @@ class StepBase:
             raise Exception(virPath,des,'does not create succesfull')
         
                 
-    
+    def _preRun(self,):
+        pass
+        
     def run(self,):        
         self.checkInputFilePath()
+        self._preRun()
         self.checkOutputFilePath(checkExist = False)
         if self.checkFinish():
             lines = ['=======================================',
