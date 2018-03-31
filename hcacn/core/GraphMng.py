@@ -175,6 +175,7 @@ class GraphAll(GraphMng):
                 ['BedSort', 'PeakCalling'],
                 ['PeakCalling', 'GenPeakWithFilter'],
                 ['LibComplexity', 'CellFilter'],
+                ['CellFilter', 'CellExtracterBam'],
                 ['RmDuplicates', 'VarAndClustering'],
                 ]
 
@@ -183,6 +184,7 @@ class GraphAll(GraphMng):
                 ['GenPeakWithFilter', 'VarAndClustering'],
                 ['GenPeakWithFilter', 'FragInPeak'],
                 ['FragInPeak', 'CellFilter'],
+                ['RmDuplicates', 'CellExtracterBam'],
                 ['Cuffmerge','Cuffquant'],
                 ['Cuffmerge','Cuffnorm'],
                 ['Cuffquant','Cuffdiff']
