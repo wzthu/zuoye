@@ -19,6 +19,14 @@ def strin(x, y):
 
     return 0
 
+class NoFilterdBAM(Exception):
+    def __init__(self, value):
+        self.value = value
+
+    def __str__(self):
+        return repr(self.value)
+
+
 class CellExtracterBam(Step):
     def __init__(self,
                  filterFile=None,
@@ -60,6 +68,11 @@ class CellExtracterBam(Step):
         save_file = []
         outputDir = self.getParamIO('outputDir')
 
+        flag_for_empty = os.path.getsize(filter_file)
+        if flag_for_empty == 0:
+            raise NoFilterdBAM('No file could pass the CellFilter step, please see the figure from '
+                               'CellFilter step and change your threshold!!')
+
         f = open(filter_file, 'r')
         for line in f.readlines():
             filenameflag = line.split()[0]
@@ -94,9 +107,9 @@ class CellExtracterBam(Step):
         bamOutput = self.getOutputList('bamOutput')
 
         cmdline = [
-            'cp', bamInput[i], bamOutput[i]
+            'ln', '-f', bamInput[i], bamOutput[i]
         ]
-        result = self.callCmdline('V1', cmdline)
+        result = self.callCmdline('V1', cmdline, stdoutToLog=False)
 
     def getMarkdownEN(self, ):
         mdtext = """"""

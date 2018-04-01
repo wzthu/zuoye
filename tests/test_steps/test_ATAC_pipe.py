@@ -41,13 +41,14 @@ peakc=PeakCalling()(bedsort)
 toppeak=GenPeakWithFilter(topPeak=50000,
                           blacklist='./minidata/atac/others/consensusBlacklist.bed')(peakc)
 
-# this is not the end
-result=VarAndClustering(threads=3)(rd, toppeak)
-
 lc=LibComplexity(memory='-Xmx4g')(rd)
 
 fip=FragInPeak()(mtf2, toppeak)
 
 cf=CellFilter()(lc, fip)
+
+ceb=CellExtracterBam()(cf, rd)
+
+result=VarAndClustering(threads=3)(ceb, toppeak)
 
 Schedule.run()

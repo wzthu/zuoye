@@ -181,6 +181,7 @@ class GraphAll(GraphMng):
                 ['LibComplexity', 'CellFilter'],
                 ['CellFilter', 'CellExtracterBam'],
                 ['RmDuplicates', 'VarAndClustering'],
+                ['CellExtracterBam', 'VarAndClustering'],
 
                 #SC3
                 ['SingleCellExperiment', 'SC3_DE'],

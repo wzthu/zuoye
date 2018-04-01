@@ -17,7 +17,6 @@ class FragInPeak(Step):
                  fragInput=None,
                  peakInput=None,
                  reportOutputDir=None,
-                 rScript='./FragInPeak.R',
                  cmdParam=None,
                  **kwargs):
         super(Step, self).__init__(cmdParam, **kwargs)
@@ -26,7 +25,6 @@ class FragInPeak(Step):
         self.setParamIO('fragInput', fragInput)
         self.setParamIO('peakInput', peakInput)
         self.setParamIO('reportOutputDir', reportOutputDir)
-        self.setParamIO('rScript', rScript)
         self.initIO()
 
         self._setUpstreamSize(2)
@@ -34,15 +32,19 @@ class FragInPeak(Step):
     def impInitIO(self):
         fragInput = self.getParamIO('fragInput')
         peakInput = self.getParamIO('peakInput')
-        rScript = self.getParamIO('rScript')
         reportOutputDir = self.getParamIO('reportOutputDir')
+
+        # FragInPeak.R
+        self.setInputRscript('FragInPeakR', 'FragInPeak.R')
 
         # set all input files
         self.setInputDirOrFile('fragInput', fragInput)
         self.setInputDirOrFile('peakInput', peakInput)
-        self.setInputDirOrFile('rScript', rScript)
         # set output files
         self.setOutputDirNTo1('percentage', None, 'FragInPeak.txt', 'fragInput')
+
+        if reportOutputDir is None:
+            self.setParamIO('reportOutputDir', Configure.getTmpDir())
 
         if peakInput is not None:
             self._setInputSize(len(self.getInputList('peakInput')))
@@ -60,11 +62,11 @@ class FragInPeak(Step):
     def _singleRun(self, i):
         fragInput = self.getInputList('fragInput')
         peakInput = self.getInputList('peakInput')
-        rScript = self.getInputList('rScript')
+        rScript = self.getInput('FragInPeakR')
         percentage = self.getOutputList('percentage')
 
         cmdline = [
-            'Rscript', rScript[i],
+            'Rscript', rScript,
             os.path.dirname(fragInput[i]),
             peakInput[i], percentage[i]
         ]
