@@ -111,7 +111,11 @@ class GraphAll(GraphMng):
                  'BamToSam',
                  'DuplicateRemoval',
                  'MonocleQC',
-                 'Monocle_dimreduce_cluster'                 
+                 'Monocle_dimreduce_cluster'     
+                 # SC3
+                 'SingleCellExperiment',
+                 'SC3_DE',
+                 'SC3_Cluster'            
                 ]
         
         edge1 = [
@@ -177,6 +181,10 @@ class GraphAll(GraphMng):
                 ['LibComplexity', 'CellFilter'],
                 ['CellFilter', 'CellExtracterBam'],
                 ['RmDuplicates', 'VarAndClustering'],
+
+                #SC3
+                ['SingleCellExperiment', 'SC3_DE'],
+                ['SingleCellExperiment', 'SC3_Cluster'],
                 ]
 
         edge2 = [
