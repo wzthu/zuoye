@@ -5,5 +5,5 @@
 from hcacn.core import Configure, Schedule
 from hcacn.steps import matrixRw
 Configure.setIdentity('zywang')
-matrixRw(matrixdata="matrix.txt", outputpath=None)
+matrixRw(matrixdata="./minidata/matrixRw/matrix.txt", outputpath=None)
 Schedule.run()

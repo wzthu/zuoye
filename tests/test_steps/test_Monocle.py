@@ -11,7 +11,7 @@ Configure.setIdentity('zywang')
 
 
 #Configure.enableDocker(False)
-MonocleQC_result = MonocleQC(matrixdata='out_gene_exon_tagged.dge.txt', outputpath='outputresult') 
+MonocleQC_result = MonocleQC(matrixdata='./minidata/Monocle/out_gene_exon_tagged.dge.txt', outputpath=None) 
 
 # To see if all input and output parameter are right in paramsIO 
 MonocleQC_result.paramsIO
@@ -24,7 +24,7 @@ MonocleQC_result.inputs
 
 MonocleQC_result.outputs
 
-MonocleDC_result = MonocleDC(outputpath='outputresult')(MonocleQC_result)
+MonocleDC_result = MonocleDC(outputpath=None, cluster_num=3)(MonocleQC_result)
 
 Schedule.run()
 

@@ -6,8 +6,8 @@
 from hcacn.core import Configure,Schedule
 from hcacn.flows import MatrixPreprocess
 
-Configure.setIdentity('zywang')
+Configure.setIdentity('MatrixPreprocessflowtest')
 
-matObj= MatrixPreprocess(matrixdata="matrix.txt", outputpath=None)()
+matObj= MatrixPreprocess(matrixdata="./minidata/matrixRW/matrix.txt", outputpath=None)()
 
 

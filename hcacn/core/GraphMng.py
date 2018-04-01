@@ -112,7 +112,9 @@ class GraphAll(GraphMng):
                  'DuplicateRemoval',
                 #Monocle
                  'MonocleQC',
-                 'MonocleDC'     
+                 'MonocleDC',
+                 #matrix preprocess
+                 'matrixRw',     
                  # SC3
                  'SingleCellExperiment',
                  'SC3_DE',

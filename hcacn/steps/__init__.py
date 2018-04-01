@@ -49,6 +49,7 @@ from .SingleCellExperiment import SingleCellExperiment
 from .SC3_Cluster import SC3_Cluster
 from .SC3_DE import SC3_DE
 from .Deseq2 import Deseq2
+from .matrixRw import matrixRw
 
 
 

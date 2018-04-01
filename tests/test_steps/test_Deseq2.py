@@ -6,5 +6,5 @@ from hcacn.core import Configure, Schedule
 from hcacn.steps import Deseq2
 
 Configure.setIdentity('zywang')
-Deseq2(matrixdata = "Deseq2testdata.txt", annotation = "condition.csv", outputpath = None)
+Deseq2(matrixdata = "./minidata/Deseq2/Deseq2testdata.txt", annotation = "./minidata/Deseq2/condition.csv", outputpath = None)
 Schedule.run()
