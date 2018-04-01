@@ -18,7 +18,7 @@ frag_len <- end(gr) - start(gr)
 frag_freq <- as.data.frame(table(frag_len))
 colnames(frag_freq) <- c("Length", "Frequency")
 
-tiff(figurefile)
+bmp(figurefile)
 plot(x = as.numeric(frag_freq$Length), 
      y = as.numeric(frag_freq$Frequency),
      type = "l", lty = 1,

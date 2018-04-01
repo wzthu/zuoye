@@ -90,7 +90,7 @@ write.table(x = variability_matrix, file = variability_path, quote = FALSE,
 options(bitmapType='cairo')
 
 # plot variability
-tiff(var.tiff)
+bmp(var.tiff)
 plotVariability(variability, use_plotly = FALSE)
 dev.off()
 
