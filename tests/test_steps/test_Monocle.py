@@ -3,9 +3,8 @@
 @author: Zhenyi Wang
  """
 from hcacn.core import Configure,Schedule
-from hcacn.steps import MonocleQC
-from hcacn.steps import Monocle_dimreduce_cluster
-import os
+from hcacn.steps import MonocleQC, MonocleDC
+
 
 Configure.setIdentity('zywang')
 #Configure.enableDocker(False)
@@ -25,9 +24,7 @@ MonocleQC_result.inputs
 
 MonocleQC_result.outputs
 
-#Monocle_dimreduce_cluster_result = Monocle_dimreduce_cluster(imageRdata='MonocleQCimage.Rdata',outputpath='outputresult')
-
-Monocle_dimreduce_cluster_result = Monocle_dimreduce_cluster(outputpath='outputresult')(MonocleQC_result)
+MonocleDC_result = MonocleDC(outputpath='outputresult')(MonocleQC_result)
 
 Schedule.run()
 

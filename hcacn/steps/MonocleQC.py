@@ -15,7 +15,7 @@ class MonocleQC(Step):
     > MonocleQC():_init_paramters
         matrixdata: str
     	A file(a table with txt format) path. The first row should be cells label, 
-    	and the first column should be genes name. Each column indicates a cell's data.
+    	and the first should be genes name. Each row indicates a cell's data.
     outputpath: str
         A str indicates the name of appointed folder that saves outputs.You should
         build that folder in advance. The absolute path is also legel. 
@@ -105,6 +105,8 @@ class MonocleQC(Step):
         self.setOutputDir1To1('meanexpression_disersionemprical',outputpath,'meanexpression_disersionemprical','jpg','matrixdata')
         self.setOutputDir1To1('PCvariance', outputpath,'PCvariance','jpg','matrixdata')
         self.setOutputDir1To1('MonocleQCimage', outputpath,'MonocleQCimage','Rdata','matrixdata')
+        self.setInputRscript('Rscript','MonocleQC.R')
+
     def call(self, *args):
         """
         called by Seurat()(object)
@@ -121,8 +123,9 @@ class MonocleQC(Step):
         num_cells_expressed_threshold = self.getParam('num_cells_expressed_threshold')
         TotalmRNAs = self.getParam('TotalmRNAs')
         mean_expression_threshold = self.getParam('mean_expression_threshold')
+        Rscript = self.getInput('Rscript')
         cmdline = ['Rscript',
-                    '/data8t_1/Rscript/MonocleQC.R',
+                    Rscript,
         			matrixdata,
                     str(min_expression),
                     str(num_cells_expressed_threshold),
