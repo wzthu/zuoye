@@ -15,7 +15,6 @@ from .Cuffnorm import Cuffnorm
 from .Cuffquant import Cuffquant
 from .DetectError import DetectError
 from .DigitalExpression import DigitalExpression
-from .EasyTreat import EasyTreat
 from .FastQC import FastQC
 from .FastqDump import FastqDump
 from .FastqToBam import FastqToBam
