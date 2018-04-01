@@ -5,6 +5,7 @@ from .BamToBed import BamToBed
 from .BamToFastq import BamToFastq
 from .BedSort import BedSort
 from .Bowtie2 import Bowtie2
+from .CellExtracterBam import CellExtracterBam
 from .CellFilter import CellFilter
 from .Cellranger import Cellranger
 from .Cuffdiff import Cuffdiff
