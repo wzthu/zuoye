@@ -21,6 +21,7 @@ class StarAlign(Step):
                  **kwargs):
         super(Step, self).__init__(cmdParam, ** kwargs)
 
+        Configure.setRefSuffix('starRef', '_refdata-cellranger-2.1.0/star', check=False)
         self.setParamIO('fastqInput', fastqInput)
         self.setParamIO('outFileDir', outFileDir)
         self.setParamIO('genomeDir', genomeDir)
@@ -60,6 +61,10 @@ class StarAlign(Step):
         tabOutput = self.getParamIO('tabOutput')
         genomeDir = self.getParamIO('genomeDir')
         outFileNamePrefix = self.getParam('outFileNamePrefix')
+
+        if genomeDir is None:
+            self.setParamIO('genomeDir', Configure.getConfig('starRef'))
+            genomeDir = self.getParamIO('genomeDir')
 
         for i in ['chrLength.txt', 'chrName.txt',
                   'exonGeTrInfo.tab', 'geneInfo.tab',
