@@ -53,7 +53,7 @@ class Deseq2(Step):
         self.setOutputDir1To1('MAplot',outputpath, 'MAplot','jpg','matrixdata')
         self.setOutputDir1To1('DEheatmap',outputpath, 'DEheatmap','png','matrixdata')
         #set R script
-        setInputRscript('Rscript', 'Deseq2.R')
+        self.setInputRscript('Rscript', 'Deseq2.R')
 
     def call(self, *args):
         # the first object
