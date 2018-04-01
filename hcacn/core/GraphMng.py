@@ -110,8 +110,11 @@ class GraphAll(GraphMng):
                  'SamToBam',
                  'BamToSam',
                  'DuplicateRemoval',
+                #Monocle
                  'MonocleQC',
-                 'Monocle_dimreduce_cluster'     
+                 'MonocleDC',
+                 #matrix preprocess
+                 'matrixRw',     
                  # SC3
                  'SingleCellExperiment',
                  'SC3_DE',
@@ -162,7 +165,7 @@ class GraphAll(GraphMng):
                 ['DetectError','DigitalExpression'],
                 ['DigitalExpression','MonocleQC'],
                 ['DigitalExpression', 'EasyTreat'],
-                ['MonocleQC','Monocle_dimreduce_cluster'],
+                ['MonocleQC','MonocleDC'],
                 # ATAC-seq
                 ['SRAToFastq', 'AdapterRemoval'],
                 ['AdapterRemoval', 'Bowtie2'],

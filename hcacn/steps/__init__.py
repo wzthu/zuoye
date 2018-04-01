@@ -27,7 +27,7 @@ from .HTSeq_sam2count import HTSeq_sam2count
 from .LibComplexity import LibComplexity
 from .MergeBamAlign import MergeBamAlign
 from .MergeToFrag import MergeToFrag
-from .Monocle_dimreduce_cluster import Monocle_dimreduce_cluster
+from .MonocleDC import MonocleDC
 from .MonocleQC import MonocleQC
 from .PeakCalling import PeakCalling
 from .RmChrOrMergeAllSample import RmChrOrMergeAllSample
@@ -49,6 +49,8 @@ from .VarAndClustering import VarAndClustering
 from .SingleCellExperiment import SingleCellExperiment
 from .SC3_Cluster import SC3_Cluster
 from .SC3_DE import SC3_DE
+from .Deseq2 import Deseq2
+from .matrixRw import matrixRw
 
 
 
