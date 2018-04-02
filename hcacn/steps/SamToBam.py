@@ -7,7 +7,7 @@ this program convert SAM to BAM, including reads filter
 
 """
 
-from ..core import Step,Configure
+from ..core import Step, Configure
 import os
 
 

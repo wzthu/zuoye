@@ -18,7 +18,6 @@ class VarAndClustering(Step):
                  peakInput=None,
                  genome=None,
                  threads=1,
-                 rScript='./ChromVarUtility.R',
                  cmdParam=None,
                  **kwargs):
         super(Step, self).__init__(cmdParam, **kwargs)
@@ -27,7 +26,6 @@ class VarAndClustering(Step):
         self.setParamIO('bamInput', bamInput)
         self.setParamIO('figureOutput', figureOutput)
         self.setParamIO('peakInput', peakInput)
-        self.setParamIO('rScript', rScript)
 
         self.initIO()
 
@@ -44,23 +42,20 @@ class VarAndClustering(Step):
         bamInput = self.getParamIO('bamInput')
         figureOutput = self.getParamIO('figureOutput')
         peakInput = self.getParamIO('peakInput')
-        rScript = self.getParamIO('rScript')
+
+        # ChromVarUtility.R
+        self.setInputRscript('ChromVarUtilityR', 'ChromVarUtility.R')
+
 
         # set all input files
         self.setInputDirOrFile('bamInput', bamInput)
         self.setInputDirOrFile('peakInput', peakInput)
-        self.setInputDirOrFile('rScript', rScript)
         # set all output files
-        self.setOutputDirNTo1('var.tiff', None, 'variation.tiff', 'bamInput')
-        self.setOutputDirNTo1('clustring.tiff', None, 'clustring.tiff', 'bamInput')
+        self.setOutputDirNTo1('var.tiff', None, 'variation.bmp', 'bamInput')
+        self.setOutputDirNTo1('clustring.tiff', None, 'clustring.bmp', 'bamInput')
         self.setOutputDirNTo1('dev.matrix', None, 'devmatrix.txt', 'bamInput')
         self.setOutputDirNTo1('var.matrix', None, 'varmatrix.txt', 'bamInput')
         self.setOutputDirNTo1('clu.matrix', None, 'clumatrix.txt', 'bamInput')
-        # self.setOutputDir1To1('var.tiff', figureOutput, None, '_var.tiff', 'peakInput', '')
-        # self.setOutputDir1To1('clustring.tiff', figureOutput, None, '_clustring.tiff', 'peakInput', '')
-        # self.setOutputDir1To1('dev.matrix', figureOutput, None, '_devmatrix.txt', 'peakInput', '')
-        # self.setOutputDir1To1('var.matrix', figureOutput, None, '_varmatrix.txt', 'peakInput', '')
-        # self.setOutputDir1To1('clu.matrix', figureOutput, None, '_clumatrix.txt', 'peakInput', '')
 
         if peakInput is not None:
             self._setInputSize(len(self.getInputList('peakInput')))
@@ -78,14 +73,14 @@ class VarAndClustering(Step):
     def _singleRun(self, i):
         bamInput = self.getInputList('bamInput')
         peakInput = self.getInputList('peakInput')
-        rScript = self.getInputList('rScript')
+        rScript = self.getInput('ChromVarUtilityR')
         varOutput = self.getOutputList('var.tiff')
         clustringOutput = self.getOutputList('clustring.tiff')
         devpath = self.getOutputList('dev.matrix')
         varpath = self.getOutputList('var.matrix')
         clupath = self.getOutputList('clu.matrix')
         cmdline = [
-            'Rscript', rScript[i],
+            'Rscript', rScript,
             os.path.dirname(bamInput[i]),
             peakInput[i],
             str(self.getParam('threads')),

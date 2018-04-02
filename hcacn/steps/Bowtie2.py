@@ -47,8 +47,6 @@ class Bowtie2(Step):
         #如果有两个输入，写成(类名1，类名2)，以此类推
     
     """
-    Configure.setRefSuffix('bt2Idx','',check=False)
-    Configure.setRefSuffix('bt2IdxFiles',['.1.bt2','.2.bt2','.3.bt2','.4.bt2','.rev.1.bt2','.rev.2.bt2'])
     def __init__(self,
                  fastqInput1 = None, 
                  fastqInput2 = None, 
@@ -96,7 +94,8 @@ class Bowtie2(Step):
         cmdParam: str or list of string
             current unsupported    
         """
-        
+        Configure.setRefSuffix('bt2Idx','',check=False)
+        Configure.setRefSuffix('bt2IdxFiles',['.1.bt2','.2.bt2','.3.bt2','.4.bt2','.rev.1.bt2','.rev.2.bt2'])
         # set all input and output parameters
         self.setParamIO('fastqInput1',fastqInput1)
         self.setParamIO('fastqInput2',fastqInput2)
