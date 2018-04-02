@@ -15,7 +15,7 @@ class MergeBamAlign(Step):
                  cmdParam = None,
                  **kwargs):
         super(Step, self).__init__(cmdParam, **kwargs)
-
+        Configure.setRefSuffix('mergeRef', '_refdata-cellranger-2.1.0/fasta', check=False)
         self.setParamIO('unmappedBamInput', unmappedBamInput)
         self.setParamIO('alignedBamInput', alignedBamInput)
         self.setParamIO('bamOutput', bamOutput)
@@ -31,7 +31,9 @@ class MergeBamAlign(Step):
         alignedBamInput = self.getParamIO('alignedBamInput')
         bamOutput = self.getParamIO('bamOutput')
         refInputDir = self.getParamIO('refInputDir')
-
+        if refInputDir is None:
+            self.setParamIO('refInputDir', Configure.getConfig('mergeRef'))
+            refInputDir = self.getParamIO('refInputDir')
         self.setInputDirOrFile('unmappedBamInput', unmappedBamInput)
         self.setInputDirOrFile('alignedBamInput', alignedBamInput)
         self.setInputDirOrFile('refSeqInput', os.path.join(refInputDir, 'genome.fa'))
