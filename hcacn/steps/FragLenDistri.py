@@ -16,7 +16,6 @@ class FragLenDistri(Step):
     def __init__(self,
                  bedInput=None,
                  figureOutputDir=None,
-                 rScript='./FragLenDistri.R',
                  cmdParam=None,
                  **kwargs):
         super(Step, self).__init__(cmdParam, **kwargs)
@@ -24,7 +23,6 @@ class FragLenDistri(Step):
         # set IO parameters
         self.setParamIO('bedInput', bedInput)
         self.setParamIO('figureOutputDir', figureOutputDir)
-        self.setParamIO('rScript', rScript)
         self.initIO()
 
         # set other parameters
@@ -32,13 +30,14 @@ class FragLenDistri(Step):
     def impInitIO(self):
         bedInput = self.getParamIO('bedInput')
         figureOutputDir = self.getParamIO('figureOutputDir')
-        rScript = self.getParamIO('rScript')
+
+        # FragLenDistri.R
+        self.setInputRscript('FragLenDistriR', 'FragLenDistri.R')
 
         # set all input files
         self.setInputDirOrFile('bedInput', bedInput)
-        self.setInputDirOrFile('rScript', rScript)
         # set all output files
-        self.setOutputDir1To1('figureOutput', figureOutputDir, None, 'tiff', 'bedInput')
+        self.setOutputDir1To1('figureOutput', figureOutputDir, None, 'bmp', 'bedInput')
 
         if figureOutputDir is None:
             self.setParamIO('figureOutputDir', Configure.getTmpDir())
@@ -56,10 +55,10 @@ class FragLenDistri(Step):
     def _singleRun(self, i):
         bedInput = self.getInputList('bedInput')  # list
         figureOutput = self.getOutputList('figureOutput')  # a file name
-        rScript = self.getInputList('rScript')
+        rScript = self.getInput('FragLenDistriR')
 
         cmdline = [
-            'Rscript', rScript[0],
+            'Rscript', rScript,
             bedInput[i], figureOutput[i]
         ]
         result = self.callCmdline('V1', cmdline)

@@ -16,7 +16,6 @@ class CellFilter(Step):
                  filterOutputDir=None,
                  libSizeCutOff=10000,  # number of reads from picardLibComplexity
                  fragInPeakCutOff=0.15,  # 15% reads in peak region
-                 rScript='./CellFilter.R',
                  cmdParam=None,
                  **kwargs):
         super(Step, self).__init__(cmdParam, **kwargs)
@@ -25,7 +24,6 @@ class CellFilter(Step):
         self.setParamIO('libCpxInput', libCpxInput)
         self.setParamIO('fragInPeakInput', fragInPeakInput)
         self.setParamIO('filterOutputDir', filterOutputDir)
-        self.setParamIO('rScript', rScript)
         self.initIO()
 
         # set other parameters
@@ -38,15 +36,16 @@ class CellFilter(Step):
         libCpxInput = self.getParamIO('libCpxInput')
         fragInPeakInput = self.getParamIO('fragInPeakInput')
         filterOutputDir = self.getParamIO('filterOutputDir')
-        rScript = self.getParamIO('rScript')
+
+        # CellFilter.R
+        self.setInputRscript('CellFilterR', 'CellFilter.R')
 
         # set all input files
         self.setInputDirOrFile('libCpxInput', libCpxInput)
         self.setInputDirOrFile('fragInPeakInput', fragInPeakInput)
-        self.setInputDirOrFile('rScript', rScript)
         # set all output files
         self.setOutputDirNTo1('reportOutput', None, 'CellFilter.txt', 'libCpxInput')
-        self.setOutputDirNTo1('figureOutput', None, 'CellFilter.tiff', 'libCpxInput')
+        self.setOutputDirNTo1('figureOutput', None, 'CellFilter.bmp', 'libCpxInput')
 
         if filterOutputDir is None:
             self.setParamIO('filterOutputDir', Configure.getTmpDir())
@@ -70,10 +69,10 @@ class CellFilter(Step):
         fragInPeakInput = self.getInputList('fragInPeakInput')  # only one file
         reportOutput = self.getOutputList('reportOutput')  # a file name
         figureOutput = self.getOutputList('figureOutput')  # a file name
-        rScript = self.getInputList('rScript')
+        rScript = self.getInput('CellFilterR')
 
         cmdline = [
-            'Rscript', rScript[i],
+            'Rscript', rScript,
             os.path.dirname(libCpxInput[i]), fragInPeakInput[i],
             reportOutput[i], figureOutput[i],
             str(self.getParam('libSizeCutOff')), str(self.getParam('fragInPeakCutOff'))

@@ -110,8 +110,15 @@ class GraphAll(GraphMng):
                  'SamToBam',
                  'BamToSam',
                  'DuplicateRemoval',
+                #Monocle
                  'MonocleQC',
-                 'Monocle_dimreduce_cluster'                 
+                 'MonocleDC',
+                 #matrix preprocess
+                 'matrixRw',     
+                 # SC3
+                 'SingleCellExperiment',
+                 'SC3_DE',
+                 'SC3_Cluster'            
                 ]
         
         edge1 = [
@@ -158,7 +165,7 @@ class GraphAll(GraphMng):
                 ['DetectError','DigitalExpression'],
                 ['DigitalExpression','MonocleQC'],
                 ['DigitalExpression', 'EasyTreat'],
-                ['MonocleQC','Monocle_dimreduce_cluster'],
+                ['MonocleQC','MonocleDC'],
                 # ATAC-seq
                 ['SRAToFastq', 'AdapterRemoval'],
                 ['AdapterRemoval', 'Bowtie2'],
@@ -177,6 +184,11 @@ class GraphAll(GraphMng):
                 ['LibComplexity', 'CellFilter'],
                 ['CellFilter', 'CellExtracterBam'],
                 ['RmDuplicates', 'VarAndClustering'],
+                ['CellExtracterBam', 'VarAndClustering'],
+
+                #SC3
+                ['SingleCellExperiment', 'SC3_DE'],
+                ['SingleCellExperiment', 'SC3_Cluster'],
                 ]
 
         edge2 = [

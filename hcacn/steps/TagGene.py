@@ -19,6 +19,7 @@ class TagGene(Step):
                  **kwargs):
         super(Step, self).__init__(cmdParam, **kwargs)
 
+        Configure.setRefSuffix('gtfRef', '_refdata-cellranger-2.1.0/genes/genes.gtf', check=False)
         self.setParamIO('bamInput', bamInput)
         self.setParamIO('bamOutput', bamOutput)
         self.setParamIO('gtfInput', gtfInput)
@@ -31,6 +32,9 @@ class TagGene(Step):
         bamInput = self.getParamIO('bamInput')
         bamOutput = self.getParamIO('bamOutput')
         gtfInput = self.getParamIO('gtfInput')
+        if gtfInput is None:
+            self.setParamIO('gtfInput', Configure.getConfig('gtfRef'))
+            gtfInput = self.getParamIO('gtfInput')
 
         self.setInputDirOrFile('bamInput', bamInput)
         self.setInputDirOrFile('gtfInput', gtfInput)

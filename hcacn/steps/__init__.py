@@ -5,6 +5,7 @@ from .BamToBed import BamToBed
 from .BamToFastq import BamToFastq
 from .BedSort import BedSort
 from .Bowtie2 import Bowtie2
+from .CellExtracterBam import CellExtracterBam
 from .CellFilter import CellFilter
 from .Cellranger import Cellranger
 from .Cuffdiff import Cuffdiff
@@ -14,7 +15,6 @@ from .Cuffnorm import Cuffnorm
 from .Cuffquant import Cuffquant
 from .DetectError import DetectError
 from .DigitalExpression import DigitalExpression
-from .EasyTreat import EasyTreat
 from .FastQC import FastQC
 from .FastqDump import FastqDump
 from .FastqToBam import FastqToBam
@@ -26,7 +26,7 @@ from .HTSeq_sam2count import HTSeq_sam2count
 from .LibComplexity import LibComplexity
 from .MergeBamAlign import MergeBamAlign
 from .MergeToFrag import MergeToFrag
-from .Monocle_dimreduce_cluster import Monocle_dimreduce_cluster
+from .MonocleDC import MonocleDC
 from .MonocleQC import MonocleQC
 from .PeakCalling import PeakCalling
 from .RmChrOrMergeAllSample import RmChrOrMergeAllSample
@@ -45,8 +45,11 @@ from .Tophat2 import Tophat2
 from .TrimAdapter import TrimAdapter
 from .TrimPolyA import TrimPolyA
 from .VarAndClustering import VarAndClustering
-
-
+from .SingleCellExperiment import SingleCellExperiment
+from .SC3_Cluster import SC3_Cluster
+from .SC3_DE import SC3_DE
+from .Deseq2 import Deseq2
+from .matrixRw import matrixRw
 
 
 

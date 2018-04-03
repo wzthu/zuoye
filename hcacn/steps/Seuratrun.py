@@ -56,7 +56,6 @@ class Seuratrun(Step):
         #     self.setParamIO('densematrix', densematrix)
         self.setParamIO('inputdir', inputdir)
         self.setParamIO('outputdir', outputdir)
-        self.setParamIO('rscript', rscript)
         # self.setParam('datatype', datatype)
         self.setParam('xlowcut', xlowcut)
         self.setParam('xhighcut', xhighcut)
@@ -71,9 +70,8 @@ class Seuratrun(Step):
         # genes = self.getParamIO('genes')
         outputdir = self.getParamIO('outputdir')
         inputdir = self.getParamIO('inputdir')
-        rscript = self.getParamIO('rscript')
 
-        self.setInputDirOrFile('rscript', rscript)
+        self.setInputRscript('rscript', '../rscript/Seuratrun.R')
         # if outputdir is None, os will error
         if outputdir is None:
            self.setParamIO('outputdir', Configure.getTmpDir())
@@ -110,7 +108,7 @@ class Seuratrun(Step):
         # genes = self.getParamIO('genes')
         # matrix = self.getParamIO('matrix')
         inputfile = self.getInput('inputfile')
-        rscript = self.getParamIO('rscript')
+        rscript = self.getInput('rscript')
         # datatype = self.getParam('datatype')
         # get output parameters
         outputdir = self.getParamIO('outputdir')
