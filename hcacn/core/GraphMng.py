@@ -177,6 +177,7 @@ class GraphAll(GraphMng):
                 ['BamToBed', 'MergeToFrag'],
                 ['BamToBed', 'RmChrOrMergeAllSample'],
                 ['RmChrOrMergeAllSample', 'MergeToFrag'],
+                ['MergeToFrag', 'FragLenDistri'],
                 ['MergeToFrag', 'FragInPeak'],
                 ['RmChrOrMergeAllSample', 'BedSort'],
                 ['BedSort', 'PeakCalling'],
