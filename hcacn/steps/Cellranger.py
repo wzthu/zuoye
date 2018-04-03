@@ -23,7 +23,7 @@ class Cellranger(Step):
             cmdParam: str or list of string
                 current unsupported
         """
-    Configure.setRefSuffix('cellranger', '.refdata-cellranger-hg19-1.2.0', check=False)
+
     def __init__(self,
                  outputdir = None,
                  fastqInput = None,
@@ -32,7 +32,7 @@ class Cellranger(Step):
                  cmdParam = None,
                  **kwargs):
         super(Step, self).__init__(cmdParam,**kwargs)
-
+        Configure.setRefSuffix('cellranger', '.refdata-cellranger-hg19-1.2.0', check=False)
         self.setParamIO('fastqInput', fastqInput)
         self.setParamIO('refile', refile)
         self.setParamIO('outputdir', outputdir)
