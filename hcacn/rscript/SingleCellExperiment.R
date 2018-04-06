@@ -9,9 +9,14 @@ rawdata_format <- Args[8]
 RData_file <- Args[9]
 
 
-ann <- read.csv(ann_file)
+
 matrix<-read.table(rawdata_file,sep = ",",row.names=1,header = TRUE,)
 
+  ann <- tryCatch({
+    read.csv(ann_file)
+  }, error = function(e) {
+    data.frame(row.names = colnames(matrix))
+  })
 show("Annotation File dimension:")
 show(dim(ann))
 show("Matrix File dimension:")

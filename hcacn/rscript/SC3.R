@@ -21,14 +21,25 @@ processFlag <- Args[9]
 # define processing function
 cluster <- function(sce,clusters_num,result_folder)
 {
+
+        # if need to auto estimate K 
+    if(estimate_k_flag ==TRUE)
+        {
+        show("Auto setting clusters number")
+        sce <- sc3_prepare(sce)
+        sce <- sc3_estimate_k(sce)
+        clusters_num <- metadata(sce)$sc3$k_estimation
+        }
+
+    # generate sc3 object 
+    sce <- sc3(sce, ks = clusters_num, biology = TRUE)
+
     jpeg(paste(result_folder,"Consensus_Cluster.jpg",sep = "/") )
     sc3_plot_consensus(sce, k = clusters_num )
     dev.off()
-    sc3_export_results_xls(sce,filename = paste(result_folder,"Result.xls",sep = "/"))
-}
 
-de <- function(sce,clusters_num,result_folder)
-{
+    sc3_export_results_xls(sce,filename = paste(result_folder,"Result.xls",sep = "/"))
+
     jpeg(paste(result_folder,"Expression.jpg",sep = "/") )
     sc3_plot_expression(sce, k = clusters_num)
     dev.off()
@@ -42,21 +53,21 @@ de <- function(sce,clusters_num,result_folder)
     dev.off()
 }
 
+de <- function(sce,clusters_num,result_folder)
+{
+
+    de_genes<-get_de_genes(dataset = assay(sce),labels = sce$cell_type)
+    marker_genes<-get_marker_genes(dataset = assay(sce),labels = sce$cell_type)
+    de_genes <- sort(de_genes)
+    write.table(de_genes,file=paste(result_folder,"De_genes.table",sep = "/") )
+    write.table(marker_genes,file=paste(result_folder,"Markers_genes.table",sep = "/") )
+
+}
+
 
 # load sce object
 load(sce_file)
     
-# if need to auto estimate K 
-if(estimate_k_flag ==TRUE)
-    {
-    show("Auto setting clusters number")
-    sce <- sc3_prepare(sce)
-    sce <- sc3_estimate_k(sce)
-    clusters_num <- metadata(sce)$sc3$k_estimation
-    }
-
-# generate sc3 object 
-sce <- sc3(sce, ks = clusters_num, biology = TRUE)
 
 # switch which function to be used
 switch(processFlag,
