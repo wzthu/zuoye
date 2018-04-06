@@ -53,7 +53,7 @@ libSizeCutOff <- log10(as.numeric(libSizeCutOff))
 fragInPeakCutOff <- 100*as.numeric(fragInPeakCutOff)
 
 options(bitmapType='cairo')
-tiff(figureOutput)
+bmp(figureOutput)
 plot(libcpx.df$libcpx, libcpx.df$fragInPeak, main = "Cell Filter",
      sub = "select cells locate in topright region",
      xlab = "Library size (log10 reads)", ylab = "Fragments in peaks (%)")

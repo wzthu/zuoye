@@ -49,7 +49,6 @@ class Seuratpreprocessing(Step):
         #     self.setParamIO('densematrix', densematrix)
         self.setParamIO('inputdir', inputdir)
         self.setParamIO('outputdir', outputdir)
-        self.setParamIO('rscript', rscript)
         self.setParam('datatype', datatype)
 
         self.initIO()
@@ -61,10 +60,9 @@ class Seuratpreprocessing(Step):
         # genes = self.getParamIO('genes')
         outputdir = self.getParamIO('outputdir')
         inputdir = self.getParamIO('inputdir')
-        rscript = self.getParamIO('rscript')
         datatype = self.getParam('datatype')
 
-        self.setInputDirOrFile('rscript', rscript)
+        self.setInputRscript('rscript', '../rscript/Seuratpreprocessing.R')
         # if outputdir is None, os will error
         if outputdir is None:
            self.setParamIO('outputdir', Configure.getTmpDir())
@@ -109,7 +107,7 @@ class Seuratpreprocessing(Step):
         # genes = self.getParamIO('genes')
         # matrix = self.getParamIO('matrix')
         inputdir = self.getParamIO('inputdir')
-        rscript = self.getParamIO('rscript')
+        rscript = self.getInput('rscript')
         datatype = self.getParam('datatype')
         # get output parameters
         outputdir = self.getParamIO('outputdir')

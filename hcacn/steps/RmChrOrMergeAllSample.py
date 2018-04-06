@@ -16,7 +16,7 @@ class RmChrOrMergeAllSample(Step):
     def __init__(self,
                  bedInput=None,
                  bedOutputDir=None,
-                 savedchr = None,
+                 savedchr=None,
                  cmdParam=None,
                  **kwargs):
         super(Step, self).__init__(cmdParam, **kwargs)

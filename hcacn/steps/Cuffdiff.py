@@ -5,7 +5,7 @@ import os
 import subprocess
 
 class Cuffdiff(Step):
-	Configure.setRefSuffix('faInput','.fa',check=False)
+
 	def __init__(self,
 			faInput = None,
 			gtfInput = None,
@@ -17,6 +17,7 @@ class Cuffdiff(Step):
 			**kwargs
 			):
 		super(Step, self).__init__(cmdParam,**kwargs)
+		Configure.setRefSuffix('faInput','.fa',check=False)
 		self.setParamIO('faInput',faInput)
 		self.setParamIO('gtfInput',gtfInput)
 		self.setParamIO('cxbInput',cxbInput)

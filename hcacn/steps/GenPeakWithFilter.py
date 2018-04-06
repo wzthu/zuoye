@@ -23,7 +23,6 @@ class GenPeakWithFilter(Step):
                  overlapRate=0.2,
                  extendRange=250,
                  topPeak=50000,
-                 rScript='./PeakFilter.R',
                  cmdParam=None,
                  **kwargs):
         super(Step, self).__init__(cmdParam, **kwargs)
@@ -32,7 +31,6 @@ class GenPeakWithFilter(Step):
         self.setParamIO('summitInput', summitInput)
         self.setParamIO('bedOutputDir', bedOutputDir)
         self.setParamIO('blacklist', blacklist)
-        self.setParamIO('rScript', rScript)
 
         self.initIO()
 
@@ -44,13 +42,14 @@ class GenPeakWithFilter(Step):
     def impInitIO(self):
         summitInput = self.getParamIO('summitInput')
         blacklist = self.getParamIO('blacklist')
-        rScript = self.getParamIO('rScript')
         bedOutputDir = self.getParamIO('bedOutputDir')
+
+        # PeakFilter.R
+        self.setInputRscript('PeakFilterR', 'PeakFilter.R')
 
         # set all input files
         self.setInputDirOrFile('summitInput', summitInput)
         self.setInputDirOrFile('blacklist', blacklist)
-        self.setInputDirOrFile('rScript', rScript)
         # set all output files
         self.setOutputDir1To1('bedOutput', bedOutputDir, None, '_filterd.bed', 'summitInput', '')
 
@@ -68,11 +67,11 @@ class GenPeakWithFilter(Step):
     def _singleRun(self, i):
         summitInput = self.getInputList('summitInput')
         blacklist = self.getInputList('blacklist')
-        rScript = self.getInputList('rScript')
+        rScript = self.getInput('PeakFilterR')
         bedOutput = self.getOutputList('bedOutput')
 
         cmdline = [
-            'Rscript', rScript[i], summitInput[i],
+            'Rscript', rScript, summitInput[i],
             blacklist[i], bedOutput[i],
             str(self.getParam('overlapRate')), str(self.getParam('extendRange')),
             str(self.getParam('topPeak'))

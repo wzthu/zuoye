@@ -3,16 +3,15 @@
 @author: Zhenyi Wang
  """
 from hcacn.core import Configure,Schedule
-from hcacn.steps import MonocleQC
-from hcacn.steps import Monocle_dimreduce_cluster
-import os
+from hcacn.steps import MonocleQC, MonocleDC
+
 
 Configure.setIdentity('zywang')
 #Configure.enableDocker(False)
 
 
 #Configure.enableDocker(False)
-MonocleQC_result = MonocleQC(matrixdata='out_gene_exon_tagged.dge.txt', outputpath='outputresult') 
+MonocleQC_result = MonocleQC(matrixdata='./minidata/Monocle/out_gene_exon_tagged.dge.txt', outputpath=None) 
 
 # To see if all input and output parameter are right in paramsIO 
 MonocleQC_result.paramsIO
@@ -25,9 +24,7 @@ MonocleQC_result.inputs
 
 MonocleQC_result.outputs
 
-#Monocle_dimreduce_cluster_result = Monocle_dimreduce_cluster(imageRdata='MonocleQCimage.Rdata',outputpath='outputresult')
-
-Monocle_dimreduce_cluster_result = Monocle_dimreduce_cluster(outputpath='outputresult')(MonocleQC_result)
+MonocleDC_result = MonocleDC(outputpath=None, cluster_num=3)(MonocleQC_result)
 
 Schedule.run()
 

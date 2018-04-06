@@ -28,8 +28,8 @@ class Flow:
         for i in range(len(args)):
             if not isinstance(args[i],Flow):
                 raise Exception('only Pipe subclasses are supported')
-        
-        self._call(*args)
+        if len(args) > 0 :
+            self._call(*args)
         self.run()
         return self
     
