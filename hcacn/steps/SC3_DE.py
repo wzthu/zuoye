@@ -7,7 +7,6 @@ class SC3_DE(Step):
     def __init__(self,
                  sceInput = None,
                  outputpath = None,
-                 cluster_num = 0,
                  cmdParam=None,
                  **kwargs):
         """
@@ -40,7 +39,7 @@ class SC3_DE(Step):
         #set other parameters
 
 
-        self.setParam('cluster_num',cluster_num)
+
         #self._setMultiRun()
         
     def impInitIO(self,):
@@ -64,14 +63,11 @@ class SC3_DE(Step):
         #self.setOutputDir1To1ByFunc('sceOutput',outputpath,func,"matrix_file")
         #self.setOutputDir1To1('sc3OutputFolder',outputpath,None,"_folder","sceInput",sep='')
         def func1(basename):
-            return basename+'/Expression.jpg'
+            return basename+'/De_genes.table'
         def func2(basename):
-            return basename+'/DE_Gene.jpg'
-        def func3(basename):
-            return basename+'/Gene_Marker.jpg'          
-        self.setOutputDir1To1ByFunc('sc3Output_Expression.jpg',outputpath, func1,'sceInput')
-        self.setOutputDir1To1ByFunc('sc3Output_DE_Gene.jpg',outputpath, func2,'sceInput')
-        self.setOutputDir1To1ByFunc('sc3Output_Gene_Marker.jpg',outputpath, func3,'sceInput')
+            return basename+'/Markers_genes.table'          
+        self.setOutputDir1To1ByFunc('sc3Output_De_genes.table',outputpath, func1,'sceInput')
+        self.setOutputDir1To1ByFunc('sc3Output_Markers_genes.table',outputpath, func2,'sceInput')
 
         # Rscripts
         self.setInputRscript('Rscript','SC3.R')
@@ -86,38 +82,48 @@ class SC3_DE(Step):
 
 
     def getMarkdownEN(self,):
-        Expression = self.getOutput('sc3Output_Expression.jpg')
-        DE_Gene = self.getOutput('sc3Output_DE_Gene.jpg')
-        Gene_Marker = self.getOutput('sc3Output_Gene_Marker.jpg')
 
-        Expression_sen = ['***For %s\n***\n![Expression](%s)'%(item.split("/")[-2],item) for item in Expression]
-        DE_Gene_sen = ['***For %s\n***\n![DE_Gene](%s)'%(item.split("/")[-2],item)for item in DE_Gene]
-        Gene_Marker_sen = ['***For %s\n***\n![Gene_Marker](%s)'%(item.split("/")[-2],item)for item in Gene_Marker]
-        Expression_sen = "\n".join(Expression_sen)
-        DE_Gene_sen = "\n".join(DE_Gene_sen)
-        Gene_Marker_sen = "\n".join(Gene_Marker_sen)
+        Result_table = self.getOutput('sc3Output_De_genes.table')
+        list_name = [  item.split("/")[-2] for item in Result_table]
+        list_name = "c(\"" + "\",\"".join(list_name) + "\")"
+        list_table = "c(\"" + "\",\"".join(Result_table) + "\")"
+        # print(list_table)
+        # print(list_name)
         mdtext = """
 ## SC3_DE Usage
 
-SC3_DE('/path/to/sce.RData','/path/to/output_dir',cluster_num)  
-
+SC3_DE('/path/to/sce.RData','/path/to/output_dir')  
+To find differential genes,Annotation file to build SingleCellExpeiment Object is needed!! the column name of labels in Annotation file must be "cell_type"
 ## SC3 Differential Expression Result  
 The SC3 Differential Expression result is shown below:  
+### Differential Expression Genes Result  
 
-### Expression Result  
+```{{r eval=TRUE, echo=FALSE, warning=FALSE, message=FALSE}}
+library(knitr)
+library(kableExtra)
+list_name <- {list_name}
+list_table <- {list_table}
+for (i in 1:length(list_name))
+{{
+    #show(i)
+    de_genes <- read.table(list_table[[i]])
+    name <- list_name[[i]]
+    colnames(de_genes) <- paste(name,"Pvalue",sep=".")
+    col <- rownames(de_genes)[1:10]
+    value <- de_genes[1:10,]
+    data <- cbind(col, value)
+    colnames(data) <- c(name, "Pvalue")
+    #kable(data, "html") %>% kable_styling() %>% scroll_box(width = "1100px", height = "500px")
+    print(data)
 
-{Expression} 
-### Differential Expression Detecet Result  
+}}
 
-{DE_Gene} 
+```
 
-### Gene Marker Detect Result  
 
-{Gene_Marker}     
-""".format(Expression=Expression_sen ,
-    DE_Gene =DE_Gene_sen,
-    Gene_Marker =Gene_Marker_sen,
-        )
+
+  
+""".format(  list_name =list_name, list_table =list_table)
 
 
         return mdtext
@@ -126,15 +132,14 @@ The SC3 Differential Expression result is shown below:
     def _singleRun(self,i):
         # obtain all input and output dir list
         sceInputs = self.getInputList('sceInput')
-        cluster_num =  self.getParam('cluster_num')
-        sc3Outputjpgs = self.getOutput('sc3Output_Expression.jpg')
+        sc3OutputTables = self.getOutput('sc3Output_De_genes.table')
         os.path.dirname
         Rscript = self.getInput('Rscript')
         cmdline =['Rscript',
                   Rscript,
                    sceInputs[i],
-                   str(cluster_num),
-                   os.path.dirname(sc3Outputjpgs[i]),
+                   str(0),   # need no anything about cluster numbers
+                   os.path.dirname(sc3OutputTables[i]),
                    'de'
                    ]
         self.callCmdline('V1', cmdline)

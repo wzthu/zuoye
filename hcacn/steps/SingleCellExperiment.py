@@ -10,7 +10,7 @@ from ..core import Step,Configure
 class SingleCellExperiment(Step):
     def __init__(self,
                  matrix_file = None,
-                 ann_file = None,
+                 ann_file = "",
                  matrix_format = None,
                  outputpath = None,
                  cmdParam=None,
@@ -41,7 +41,8 @@ class SingleCellExperiment(Step):
 
         #set all input files
         self.setInputDirOrFile('matrix_file',matrix_file)
-        self.setInputDirOrFile('ann_file',ann_file)
+        if ann_file != "":
+            self.setInputDirOrFile('ann_file',ann_file)
 
         # create output file paths and set
         self.setOutputDir1To1('sceOutput',outputpath,None,".RData","matrix_file",sep='')
@@ -76,8 +77,13 @@ Successful generate SingleCellExperiment from matrix.
             
     def _singleRun(self,i):
         # obtain all input and output dir list
-        matrix_files = self.getInputList('matrix_file')
-        ann_files = self.getInputList('ann_file')
+        ann_file = self.getParamIO('ann_file')
+        print(ann_file)
+        matrix_files = self.getInputList('matrix_file') 
+        if ann_file !="":
+            ann_files = self.getInputList('ann_file')  
+        else:
+            ann_files = [ "None" for matrix in matrix_files]
         sceOutputDirs = self.getOutput('sceOutput')
         matrix_format = self.getParam('matrix_format')
         assert matrix_format in ['LOG','ORIGIN']

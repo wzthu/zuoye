@@ -66,10 +66,18 @@ class SC3_Cluster(Step):
         def func1(basename):
             return basename+'/Consensus_Cluster.jpg'
         def func2(basename):
-            return basename+'/Result.xls'       
+            return basename+'/Result.xls'     
+        def func3(basename):
+            return basename+'/Expression.jpg'
+        def func4(basename):
+            return basename+'/DE_Gene.jpg'
+        def func5(basename):
+            return basename+'/Gene_Marker.jpg'          
         self.setOutputDir1To1ByFunc('sc3Output_EConsensus_Cluster.jpg',outputpath, func1,'sceInput')
         self.setOutputDir1To1ByFunc('sc3Output_Result.xls',outputpath, func2,'sceInput')
-
+        self.setOutputDir1To1ByFunc('sc3Output_Expression.jpg',outputpath, func3,'sceInput')
+        self.setOutputDir1To1ByFunc('sc3Output_DE_Gene.jpg',outputpath, func4,'sceInput')
+        self.setOutputDir1To1ByFunc('sc3Output_Gene_Marker.jpg',outputpath, func5,'sceInput') 
 
         # Rscripts
         self.setInputRscript('Rscript','SC3.R')
@@ -85,8 +93,17 @@ class SC3_Cluster(Step):
 
     def getMarkdownEN(self,):
         EConsensus_Cluster = self.getOutput('sc3Output_EConsensus_Cluster.jpg')
-        EConsensus_Cluster_sen = ['***For %s***\n![EConsensus Cluster](%s)'%(item.split("/")[-2],item) for item in EConsensus_Cluster]
+        Expression = self.getOutput('sc3Output_Expression.jpg')
+        DE_Gene = self.getOutput('sc3Output_DE_Gene.jpg')
+        Gene_Marker = self.getOutput('sc3Output_Gene_Marker.jpg')
+        EConsensus_Cluster_sen = ['***For %s***\n![EConsensus Cluster](%s)\n'%(item.split("/")[-2],item) for item in EConsensus_Cluster]
+        Expression_sen = ['***For %s\n***\n![Expression](%s)\n'%(item.split("/")[-2],item) for item in Expression]
+        DE_Gene_sen = ['***For %s\n***\n![DE_Gene](%s)\n'%(item.split("/")[-2],item)for item in DE_Gene]
+        Gene_Marker_sen = ['***For %s\n***\n![Gene_Marker](%s)\n'%(item.split("/")[-2],item)for item in Gene_Marker]
         EConsensus_Cluster_sen = "\n".join(EConsensus_Cluster_sen)
+        Expression_sen = "\n".join(Expression_sen)
+        DE_Gene_sen = "\n".join(DE_Gene_sen)
+        Gene_Marker_sen = "\n".join(Gene_Marker_sen)
 
         Result_xls = self.getOutput('sc3Output_Result.xls')
         list_name = [  item.split("/")[-2] for item in EConsensus_Cluster]
@@ -102,6 +119,17 @@ The SC3 Cluster result is shown below:
 
 ### EConsensus_Cluster Result  
 {EConsensus_Cluster}   
+
+### Expression Result  
+
+{Expression} 
+### Differential Expression Detecet Result  
+
+{DE_Gene} 
+
+### Gene Marker Detect Result  
+
+{Gene_Marker}    
 
 ### Excel Result  
 
@@ -119,11 +147,14 @@ kable(sc, "html") %>% kable_styling() %>% scroll_box(width = "1100px", height = 
 
 
 """.format(EConsensus_Cluster=EConsensus_Cluster_sen ,
+    Expression=Expression_sen ,
+    DE_Gene =DE_Gene_sen,
+    Gene_Marker =Gene_Marker_sen,
     list_name =list_name,
     list_excel =list_excel,
         )
 
-        print(mdtext)
+        #print(mdtext)
         return mdtext
             
             
