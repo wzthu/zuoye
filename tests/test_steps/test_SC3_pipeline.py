@@ -24,9 +24,9 @@ sce = SingleCellExperiment(matrix_file='/data8t_1/hca/zuoye/minidata/downstream/
 			)
 
 # Warning! Annotation file is needed!! the column name of labels must be "cell_type"
-sc3_de = SC3_DE(
- 	outputpath = None,
-                 )(sce)
+# sc3_de = SC3_DE(
+#  	outputpath = None,
+#                  )(sce)
 
 
 sc3_cluster = SC3_Cluster(
