@@ -51,6 +51,6 @@ from .SC3_DE import SC3_DE
 from .Deseq2 import Deseq2
 from .matrixRw import matrixRw
 from .FragLenDistri import FragLenDistri
-
-
+from .Monocle2QC import Monocle2QC
+from .Monocle2Pseudo import Monocle2Pseudo
 
