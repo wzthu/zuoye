@@ -40,8 +40,14 @@ class MonocleDimentionReductionAndClusterFlow(Flow):
         num_PCA = self._getParam('num_PCA')
         cluster_num = self._getParam('cluster_num')
         MonocleQC_result = MonocleQC(matrixdata = matrixdata, 
-                                     outputpath = None)
-        MonocleDC_result = MonocleDC(outputpath = None)(MonocleQC_result)
+                                     outputpath = None,
+                                     min_expression = min_expression,
+                                     num_cells_expressed_threshold = num_cells_expressed_threshold,
+                                     TotalmRNAs = TotalmRNAs, 
+                                     mean_expression_threshold = mean_expression_threshold)
+        MonocleDC_result = MonocleDC(outputpath = None,
+                                     num_PCA = num_PCA,
+                                     cluster_num = cluster_num)(MonocleQC_result)
         rp = Report()
         rp.add('Monocle Quality Control Results',[MonocleQC_result])
         rp.add('Monocle Dimension Reduction And Density Peak Clustering Results',[MonocleDC_result])
