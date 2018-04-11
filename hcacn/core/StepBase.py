@@ -12,12 +12,13 @@ import time
 import subprocess
 import re
 from .. import rscript 
+from multiprocessing import cpu_count,Pool
 
 
 
 class Configure:   
     __config = {
-        'threads' : 2,
+        'threads' : cpu_count(),
         'genome' : None,
         'tmpdir' : os.path.abspath('./'),
         'refdir' : None,
@@ -35,6 +36,7 @@ class Configure:
                # 'V':'hca:latest'
                 },
         'identity':None,
+        'multiprog':False
         }  
         
     __refSuffix = dict()
@@ -217,6 +219,13 @@ class Configure:
         else:
             return cls.__config['regpipe'][pipeName]
     
+    @classmethod
+    def setMultiProg(cls,val=True):
+        cls.__config['multiprog']=val
+        
+    @classmethod
+    def getMultiProg(cls):
+        return cls.__config['multiprog']
     
         
 
@@ -246,6 +255,7 @@ class StepBase:
         self.__upstreamSize = 1
         self.tmpdirStack = []
         self.__callObj = None
+        self.__threadsPerSingleRun = 1
         return 0
     
     def getStepID(self,):
@@ -472,13 +482,27 @@ class StepBase:
             else:
                 if self.__inputSize == -1:
                     raise Exception('call self._setInputSize(your sample size) in impInitIO')
-                for i in range(self.__inputSize):
-                    self._singleRun(i)
-                    if Configure.isDocker():
-                        self.callCmdline('V1', 'chmod 777 -R ' + Configure.getTmpDir(),shell = True, stdoutToLog = False)
-                    else:
-                        pass#self.callCmdline('V1', 'chmod 777 -R ' + self.top(), shell = True, stdoutToLog = False)                  
-            
+                if Configure.getMultiProg():
+                    print('multimultimulti')
+                    maxThreads = Configure.getThreads()
+                    pool = Pool(int(maxThreads/self.__threadsPerSingleRun))                
+                    for i in range(self.__inputSize):
+                        pool.apply_async(self._singleRun,(i,))
+                    pool.close()
+                    pool.join()
+                    for i in range(self.__inputSize):
+                        #self._singleRun(i)
+                        if Configure.isDocker():
+                            self.callCmdline('V1', 'chmod 777 -R ' + Configure.getTmpDir(),shell = True, stdoutToLog = False)
+                        else:
+                            pass#self.callCmdline('V1', 'chmod 777 -R ' + self.top(), shell = True, stdoutToLog = False)                  
+                else:
+                     for i in range(self.__inputSize):
+                        self._singleRun(i)
+                        if Configure.isDocker():
+                            self.callCmdline('V1', 'chmod 777 -R ' + Configure.getTmpDir(),shell = True, stdoutToLog = False)
+                        else:
+                            pass#s
             self.pop()        
             if Configure.isDocker():                 
                 self.__virtual = False
@@ -724,6 +748,10 @@ class StepBase:
     
     def _setMultiRun(self,):
         self.__multiRun = True
+    
+    def _setSingleRun(self, threadsPerRun=1):
+        self.__multiRun = False
+        self.__threadsPerSingleRun = threadsPerRun
         
     def _setInputSize(self,inputSize):
         self.__inputSize = inputSize
