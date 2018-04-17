@@ -4,8 +4,6 @@ from ..core import Step,Configure,Schedule
 from .FastqDump import FastqDump
 import os
 class Tophat2(Step):
-    Configure.setRefSuffix('bt2Idx','.bt2.index/bt2_index',check=False)
-    Configure.setRefSuffix('gtfInput','.gtf',check=False)
     def  __init__(self,
                   fastqInput1 = None,
                   fastqInput2 = None,
@@ -16,7 +14,8 @@ class Tophat2(Step):
                   cmdParam = None,
                  **kwargs):
         super(Step, self).__init__(cmdParam,**kwargs)
-
+        Configure.setRefSuffix('bt2Idx','.bt2.index/bt2_index',check=False)
+        Configure.setRefSuffix('gtfInput','.gtf',check=False)
         # set all input and output parameters
         self.setParamIO('fastqInput1',fastqInput1)
         self.setParamIO('fastqInput2',fastqInput2)

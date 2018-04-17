@@ -34,6 +34,8 @@ rcmas=RmChrOrMergeAllSample(savedchr=chr_info)(bb)
 
 mtf2=MergeToFrag()(rcmas)
 
+fld=FragLenDistri()(mtf2)
+
 bedsort=BedSort()(rcmas)
 
 peakc=PeakCalling()(bedsort)

@@ -113,6 +113,8 @@ class GraphAll(GraphMng):
                 #Monocle
                  'MonocleQC',
                  'MonocleDC',
+		 'Monocle2QC',
+		 'Monocle2Pseudo',
                  #matrix preprocess
                  'matrixRw',     
                  # SC3
@@ -177,6 +179,7 @@ class GraphAll(GraphMng):
                 ['BamToBed', 'MergeToFrag'],
                 ['BamToBed', 'RmChrOrMergeAllSample'],
                 ['RmChrOrMergeAllSample', 'MergeToFrag'],
+                ['MergeToFrag', 'FragLenDistri'],
                 ['MergeToFrag', 'FragInPeak'],
                 ['RmChrOrMergeAllSample', 'BedSort'],
                 ['BedSort', 'PeakCalling'],
@@ -189,6 +192,8 @@ class GraphAll(GraphMng):
                 #SC3
                 ['SingleCellExperiment', 'SC3_DE'],
                 ['SingleCellExperiment', 'SC3_Cluster'],
+		#Monocle
+		['Monocle2QC','Monocle2Pseudo'],
                 ]
 
         edge2 = [

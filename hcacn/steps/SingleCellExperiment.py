@@ -21,8 +21,13 @@ class SingleCellExperiment(Step):
 
         # set all input and output parameters
         self.setParamIO('matrix_file',matrix_file)
-        self.setParamIO('ann_file',ann_file)
         self.setParamIO('outputpath',outputpath) 
+        # if ther is not None in ann_file, the flag will be True
+        if ann_file:
+            self.setParam("ann_file_flag",True)
+        else :
+            self.setParam("ann_file_flag",False)
+        self.setParamIO('ann_file',ann_file)
         # call self.initIO()
         self.initIO()
         #set other parameters
@@ -37,11 +42,15 @@ class SingleCellExperiment(Step):
 
         # obtain all input and output parameters
         matrix_file = self.getParamIO('matrix_file')
-        ann_file = self.getParamIO('ann_file')
+
+        
 
         #set all input files
         self.setInputDirOrFile('matrix_file',matrix_file)
-        self.setInputDirOrFile('ann_file',ann_file)
+        ann_file_flag = self.getParam('ann_file_flag')
+        if ann_file_flag :
+            ann_file = self.getParamIO('ann_file')
+            self.setInputDirOrFile('ann_file',ann_file)
 
         # create output file paths and set
         self.setOutputDir1To1('sceOutput',outputpath,None,".RData","matrix_file",sep='')
@@ -76,8 +85,13 @@ Successful generate SingleCellExperiment from matrix.
             
     def _singleRun(self,i):
         # obtain all input and output dir list
-        matrix_files = self.getInputList('matrix_file')
-        ann_files = self.getInputList('ann_file')
+        
+        matrix_files = self.getInputList('matrix_file') 
+        ann_file_flag = self.getParam('ann_file_flag')
+        if ann_file_flag :
+            ann_files = self.getInputList('ann_file')  
+        else:
+            ann_files = [ "None" for matrix in matrix_files]
         sceOutputDirs = self.getOutput('sceOutput')
         matrix_format = self.getParam('matrix_format')
         assert matrix_format in ['LOG','ORIGIN']

@@ -23,6 +23,7 @@ class Cellranger(Step):
             cmdParam: str or list of string
                 current unsupported
         """
+
     def __init__(self,
                  outputdir = None,
                  fastqInput = None,
@@ -31,6 +32,7 @@ class Cellranger(Step):
                  cmdParam = None,
                  **kwargs):
         super(Step, self).__init__(cmdParam,**kwargs)
+        Configure.setRefSuffix('cellranger', '.refdata-cellranger-hg19-1.2.0', check=False)
         self.setParamIO('fastqInput', fastqInput)
         self.setParamIO('refile', refile)
         self.setParamIO('outputdir', outputdir)
@@ -40,12 +42,17 @@ class Cellranger(Step):
         #Configure.enableDocker(False)
         self._setMultiRun()
 
-    def impInitIO(self,):        
+    def impInitIO(self,):
         fastqInput = self.getParamIO('fastqInput')
         refile = self.getParamIO('refile')
         outputdir = self.getParamIO('outputdir')
 
         self.setInputDirOrFile('fastqInput', fastqInput)
+
+        if refile is None:
+            self.setParamIO('refile', Configure.getConfig('cellranger'))
+            refile = self.getParamIO('refile')
+
         self.setInputDirOrFile('version', os.path.join(refile, 'version'))
         self.setInputDirOrFile('Reference', os.path.join(refile, 'reference.json'))
         self.setInputDirOrFile('README', os.path.join(refile, 'README.BEFORE.MODIFYING'))
@@ -69,6 +76,7 @@ class Cellranger(Step):
             self.resultdir = ''
 
         self.setParamIO('finaldir', os.path.join(outputdir, self.resultdir, 'outs', 'filtered_gene_bc_matrices', 'hg19'))
+        self.setOutputDirNTo1('summary', os.path.join(outputdir, self.resultdir,'outs', 'web_summary.html'), '', 'fastqInput')
         self.setOutputDirNTo1('genes', os.path.join(outputdir, self.resultdir,'outs', 'filtered_gene_bc_matrices', 'hg19', 'genes.tsv'), '', 'fastqInput')
         self.setOutputDirNTo1('matrix', os.path.join(outputdir, self.resultdir,'outs', 'filtered_gene_bc_matrices', 'hg19', 'matrix.mtx'), '', 'fastqInput')
         self.setOutputDirNTo1('barcodes', os.path.join(outputdir,self.resultdir, 'outs', 'filtered_gene_bc_matrices', 'hg19', 'barcodes.tsv'), '', 'fastqInput')
@@ -124,6 +132,7 @@ class Cellranger(Step):
                            % (refile, fastqInput)]
                 self.callCmdline(cmdline=cmdline, dockerVersion='V1', stdoutToLog=False)
 
+
     def getMarkdownEN(self, ):
         rmd = '''	
 ## Cellranger
@@ -139,4 +148,5 @@ class Cellranger(Step):
 
         '''
         return rmd
+
 
