@@ -94,4 +94,3 @@ class DiffExp(Flow):
             pass
           else:
             print('This algorithm is unavailable!') 
-            

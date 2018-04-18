@@ -2,14 +2,14 @@
 
 from ..core import Flow, Report, Configure, Schedule
 from ..steps import FastqToBam, BamMerge, TagBarcode, FilterBam, TrimAdapter, TrimPolyA, BamToFastq, StarAlign, SortBam, MergeBamAlign, TagGene, DetectError, DigitalExpression
-print('222')
+
 import os
 
 class DropseqFlow(Flow):
     def __init__(self,
                  fastqInput1,
                  fastqInput2,
-                 refDir = None,
+                 refInput = None,
                  refdir= None,
                  genome = None,
                  resultDir = './result',
@@ -17,10 +17,24 @@ class DropseqFlow(Flow):
                  cellBarcodeEnd = 16,
                  molecularBarcodeStart = 17,
                  molecularBarcodeEnd = 26,
+                 cellBarcodeRead = 1,
+                 cellNumBaseBelowQuality = 1,
+                 molecularBarcodeRead = 1,
+                 molecularNumBaseBelowQuality = 1,
+                 cellBaseQuality = 10,
+                 molecularBaseQuality = 10,
+                 cellDiscardRead = False,
+                 molecularDiscardRead = True,
+                 adaperMisMatches = 0,
+                 adaperNumBases = 5,
+                 polyAMisMatches = 0,
+                 polyANumBases = 6,
                  adapterSeq = 'AAGCAGTGGTATCAACGCAGAGTACATGGG',
                  starThreads = 16,
                  starOutFileNamePrefix = 'star',
-                 expectedCellNum = 100):
+                 secondAlign = False,
+                 pairedRun = False,
+                 expectedCellNum = 10000):
         super(DropseqFlow, self).__init__(resultDir = resultDir,
                                           refdir = refdir,
                                           genome = genome,
@@ -35,7 +49,21 @@ class DropseqFlow(Flow):
         self._setParam('starThreads', starThreads)
         self._setParam('starOutFileNamePrefix', starOutFileNamePrefix)
         self._setParam('expectedCellNum', expectedCellNum)
-        self._setParam('refDir', refDir)
+        self._setParam('refInput', refInput)
+        self._setParam('cellBarcodeRead', cellBarcodeRead)
+        self._setParam('cellNumBaseBelowQuality', cellNumBaseBelowQuality)
+        self._setParam('molecularBarcodeRead', molecularBarcodeRead)
+        self._setParam('molecularNumBaseBelowQuality', molecularNumBaseBelowQuality)
+        self._setParam('cellDiscardRead', cellDiscardRead)
+        self._setParam('molecularDiscardRead', molecularDiscardRead)
+        self._setParam('cellBaseQuality', cellBaseQuality)
+        self._setParam('molecularBaseQuality', molecularBaseQuality)
+        self._setParam('adaperMisMatches', adaperMisMatches)
+        self._setParam('adaperNumBases', adaperNumBases)
+        self._setParam('polyAMisMatches', polyAMisMatches)
+        self._setParam('polyANumBases', polyANumBases)
+        self._setParam('secondAlign', secondAlign)
+        self._setParam('pairedRun', pairedRun)
         print('DropseqFlow init')
 
     def _call(self, *args):
@@ -52,32 +80,48 @@ class DropseqFlow(Flow):
         starThreads = self._getParam('starThreads')
         starOutFileNamePrefix = self._getParam('starOutFileNamePrefix')
         expectedCellNum = self._getParam('expectedCellNum')
-        refDir = self._getParam('refDir')
-
-        if refDir is None:
+        refInput = self._getParam('refInput')
+        cellBarcodeRead = self._getParam('cellBarcodeRead')
+        cellNumBaseBelowQuality = self._getParam('cellNumBaseBelowQuality')
+        molecularBarcodeRead = self._getParam('cellBarcodeRead')
+        molecularNumBaseBelowQuality = self._getParam('molecularNumBaseBelowQuality')
+        cellDiscardRead = self._getParam('cellDiscardRead')
+        molecularDiscardRead = self._getParam('molecularDiscardRead')
+        cellBaseQuality = self._getParam('cellBaseQuality')
+        molecularBaseQuality = self._getParam('molecularBaseQuality')
+        adaperMisMatches = self._getParam('adaperMisMatches')
+        adaperNumBases = self._getParam('adaperNumBases')
+        polyAMisMatches = self._getParam('polyAMisMatches')
+        polyANumBases = self._getParam('polyANumBases')
+        secondAlign = self._getParam('secondAlign')
+        pairedRun = self._getParam('pairedRun')
+        
+        if refInput is None:
             starRef = None
             mergeRef = None
             gtfRef = None
         else:
-            starRef = refDir + '/star'
-            mergeRef = refDir + '/fasta'
-            gtfRef = refDir + '/genes/genes.gtf'
+            starRef = refInput + '/star'
+            mergeRef = refInput + '/fasta'
+            gtfRef = refInput + '/genes/genes.gtf'
 
         f2b = FastqToBam(fastqInput1 = fastqInput1, fastqInput2 = fastqInput2)
         bm = BamMerge()(f2b)
         tbc = TagBarcode(baseStart = cellBarcodeStart, baseEnd = cellBarcodeEnd,
-                        barcodeRead = 1, discardRead = False,
-                        tagName = 'XC', numBaseBelowQuality = 1)(bm)
+                        barcodeRead = cellBarcodeRead, discardRead = cellDiscardRead,
+                        tagName = 'XC', numBaseBelowQuality = cellNumBaseBelowQuality,
+                        baseQuality = cellBaseQuality)(bm)
         tbm = TagBarcode(baseStart = molecularBarcodeStart, baseEnd = molecularBarcodeEnd,
-                        barcodeRead = 1, discardRead = True,
-                        tagName = 'XM', numBaseBelowQuality = 1)(tbc)
+                        barcodeRead = molecularBarcodeRead, discardRead = molecularDiscardRead,
+                        tagName = 'XM', numBaseBelowQuality = molecularNumBaseBelowQuality,
+                        baseQuality = cellBaseQuality)(tbc)
         fb = FilterBam(tagReject = 'XQ')(tbm)
-        ta = TrimAdapter(adapterSeq = adapterSeq, misMatches = 0, numBases = 5)(fb)
-        tp = TrimPolyA(misMatches = 0, numBases = 6)(ta)
+        ta = TrimAdapter(adapterSeq = adapterSeq, misMatches = adaperMisMatches, numBases = adaperNumBases)(fb)
+        tp = TrimPolyA(misMatches = polyAMisMatches, numBases = polyANumBases)(ta)
         b2f = BamToFastq()(tp)
-        sa = StarAlign(outFileNamePrefix = starOutFileNamePrefix, genomeDir = starRef, threads = 16)(b2f)
+        sa = StarAlign(outFileNamePrefix = starOutFileNamePrefix, genomeDir = starRef, threads = starThreads)(b2f)
         sb = SortBam(sortOrder = 'queryname')(sa) 
-        mba = MergeBamAlign(refInputDir = mergeRef, secondAlign = False, pairedRun = False)(tp, sb)
+        mba = MergeBamAlign(refInputDir = mergeRef, secondAlign = secondAlign, pairedRun = pairedRun)(tp, sb)
         tg = TagGene(gtfInput = gtfRef, tag='GE')(mba)
         de = DetectError(numCells = expectedCellNum, primerSeqence = adapterSeq)(tg)
         dge = DigitalExpression(numCells = expectedCellNum)(de)
