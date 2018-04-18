@@ -9,6 +9,7 @@ from ..core import Step,Configure
 import os
 
 class Cufflinks(Step):
+	Configure.setRefSuffix('gtfInput','.gtf',check=False)
 
 	def __init__(self,
 				 bamInput = None,
@@ -24,7 +25,6 @@ class Cufflinks(Step):
 				 **kwargs
 				):
 		super(Step, self).__init__(cmdParam,**kwargs)
-		Configure.setRefSuffix('gtfInput','.gtf',check=False)
 		self.setParamIO('bamInput',bamInput)
 		self.setParamIO('gtfInput',gtfInput)
 		self.setParamIO('outputDir',outputDir)

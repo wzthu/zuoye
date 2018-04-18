@@ -99,7 +99,7 @@ class GraphAll(GraphMng):
                  'Cuffquant',
                  'Cuffnorm',
                  'Cuffdiff',
-                 'HTSeq',
+                 'HTSeq_sam2count',
                 # 10x涉及的类的名称
                  'Quantification10x',
                  'PCA',
@@ -128,6 +128,8 @@ class GraphAll(GraphMng):
                 ['FastqDump','Hisat2'],
                 ['FastqDump','Tophat2'],
                 ['FastqDump','FastQC'],
+                ['Hisat2','HTSeq_sam2count'],
+                ['Tophat2','HTSeq_sam2count'],
                 ['Hisat2','SamToBam'],
                 ['Tophat2','SamToBam'],
                 ['SamToBam','Bamsort'],
