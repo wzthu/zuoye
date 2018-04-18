@@ -5,7 +5,7 @@ class DiffExp(Flow):
 	def __init__(self,
 				 algorithm = 'SC3',
 				 matrixdata = None,
-				 c3matrix_file= None,
+				 sc3matrix_file= None,
 				 matrix_format = 'ORIGIN',
 				 sc3ann = "",
 				 resultDir='./result'):
