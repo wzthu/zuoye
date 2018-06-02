@@ -12,6 +12,6 @@ Configure.setIdentity('Clustertest')
 clusterObj= Cluster(matrixdata="./minidata/Monocle/out_gene_exon_tagged.dge.txt",
 	                algorithm = 'Monocle', resultDir='./result')()
 #test sc3
-#ClusterObj= Cluster(sc3matrix_file = "./minidata/sc3cluster/",
-#	                sc3ann = './minidata/sc3annotation/',
-#	                algorithm = 'sc3', resultDir='./result')()
+ClusterObj= Cluster(sc3matrix_file = "./minidata/sc3cluster/",
+	                sc3ann = './minidata/sc3annotation/',
+	                algorithm = 'sc3', resultDir='./result')()
